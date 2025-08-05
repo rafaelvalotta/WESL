@@ -1,0 +1,8 @@
+numpy==1.26.4
+xarray==2025.1.0
+matplotlib==3.10.0
+scipy==1.15.0
+pyproj==3.7.0
+openmdao==3.26.0
+pywake
+
