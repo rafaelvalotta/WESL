@@ -1,2 +1,3 @@
 *.pyc
 *.html
+/optimizer/interarray/__pycache__
