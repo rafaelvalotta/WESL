@@ -2,10 +2,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import openmdao.api as om
 import xarray as xr
+from matplotlib.patches import FancyArrowPatch
 
-from waveField import RandomGridWaveField, UniformWaveField
-from wec_device import OSWECDevice
 
+import sys, pathlib
+
+# --- bootstrap to support running this file directly (no hardcoded absolute paths) ---
+if __name__ == "__main__" and __package__ is None:
+    import os
+    # add parent of WaveEnergy/ (i.e., optimizer/) to sys.path
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# ------------------------------------------------------------------------------
+
+# Then use package imports consistently
+from WaveEnergy.waveField import RandomGridWaveField, UniformWaveField
+from WaveEnergy.wec_device import OSWECDevice
+from WaveEnergy.wecFarm import WecFarm
 
 # ------------------------
 # Helpers
@@ -247,7 +259,7 @@ if __name__ == "__main__":
     gain_pct = 100.0 * (AEP_opt - AEP_init) / max(1e-9, abs(AEP_init))
     print("\n=== Farm AEP Optimization ===")
     print(f"Devices: {len(x_init)},  Spacing min = {D_min:.1f} m")
-    print(f"AEP total [GWh/yr]: init={AEP_init:.3f}   opt={AEP_opt:.3f}   gain={gain_pct:.2f}%")
+    print(f"AEP total [GWh]: init={AEP_init:.3f}   opt={AEP_opt:.3f}   gain={gain_pct:.2f}%")
 
     # ---- 5) Background AEP map (single device) + paths ----
     Amap = aep_single_device_map(site, device, Hc, Tc, Dc)
@@ -258,7 +270,17 @@ if __name__ == "__main__":
     cbar = plt.colorbar(cf, ax=ax); cbar.set_label("AEP [GWh]")
 
     for i in range(len(x_init)):
-        ax.plot([x_init[i], x_opt[i]], [y_init[i], y_opt[i]], '-k', lw=1.2, alpha=0.7)
+
+        arrow = FancyArrowPatch(
+            (x_init[i], y_init[i]), (x_opt[i], y_opt[i]),
+            arrowstyle='-|>',                 # clean arrow head
+            linestyle=(0, (6, 3)),            # dashed: 6 on, 3 off
+            color='k', lw=1.2, alpha=0.7,
+            mutation_scale=12,                # arrowhead size
+            shrinkA=0, shrinkB=0
+        )
+
+        ax.add_patch(arrow)
         ax.scatter([x_init[i]], [y_init[i]], marker='o', s=60, facecolors='white', edgecolors='k', label="Initial Position")
         ax.scatter([y_opt[i]*0 + x_opt[i]], [x_opt[i]*0 + y_opt[i]],
                 marker='*', s=100, facecolors='yellow', edgecolors='k', zorder=5, label="Final Position")

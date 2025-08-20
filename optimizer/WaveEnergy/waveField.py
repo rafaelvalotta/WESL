@@ -2,13 +2,14 @@
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
-from utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
-
 try:
-    from scipy.ndimage import gaussian_filter
-    _HAVE_SCIPY = True
-except Exception:
-    _HAVE_SCIPY = False
+    from .utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
+except ImportError:
+    # Fallback if someone runs this file directly (not recommended)
+    from WaveEnergy.utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
+    
+from scipy.ndimage import gaussian_filter
+
 
 
 class XRWaveField:
@@ -244,13 +245,10 @@ class RandomGridWaveField(XRWaveField):
 
         # Optional spatial smoothing to produce correlated fields
         if smooth_sigma and smooth_sigma > 0:
-            if not _HAVE_SCIPY:
-                print("Warning: scipy not found; smoothing skipped.")
-            else:
-                for ih in range(nH):
-                    for it in range(nT):
-                        for idd in range(nD):
-                            arr[ih, it, idd] = gaussian_filter(arr[ih, it, idd], sigma=smooth_sigma, mode='nearest')
+            for ih in range(nH):
+                for it in range(nT):
+                    for idd in range(nD):
+                        arr[ih, it, idd] = gaussian_filter(arr[ih, it, idd], sigma=smooth_sigma, mode='nearest')
 
         # Normalize per (x,y) cell
         s = arr.reshape(nH * nT * nD, nx * ny).sum(axis=0).reshape(1, 1, 1, nx, ny)

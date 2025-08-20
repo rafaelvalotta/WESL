@@ -1,10 +1,10 @@
 # wec_farm.py
 import numpy as np
 import xarray as xr
-from waveField import RandomGridWaveField, UniformWaveField
-from wec_device import OSWECDevice
+from WaveEnergy.waveField import RandomGridWaveField, UniformWaveField
+from WaveEnergy.wec_device import OSWECDevice
 
-class WecFarm:
+class WecFarm():
     """
     Minimal farm using one device model for all WECs.
     AEP is returned per device in GWh/year.

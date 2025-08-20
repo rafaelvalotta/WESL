@@ -9,6 +9,7 @@ from scipy.spatial.distance import pdist, squareform
 from matplotlib.path import Path
 from matplotlib.patches import Circle
 import os
+import sys, pathlib
 
 
 # AEP Calculator: PyWake Dependencies
@@ -20,10 +21,23 @@ from py_wake.wind_turbines.generic_wind_turbines import GenericWindTurbine
 from interarray.interface import heuristic_wrapper
 from interarray.farmrepo import g,g1
 
+# --- module-friendly header: lets this script run from anywhere without hardcoding ---
+if __package__ is None or __package__ == "":
+    # Add project root (the parent of "WaveEnergy") to sys.path at runtime
+    this = pathlib.Path(__file__).resolve()
+    # If this is .../optimizer/WaveEnergy/optimize_wec_loc.py, parents[1] == .../optimizer
+    sys.path.insert(0, str(this.parents[1]))
+# -------------------------------------------------------------------------------
+
+from WaveEnergy.waveField import RandomGridWaveField
+from WaveEnergy.wec_device import OSWECDevice
+from WaveEnergy.wecFarm import WecFarm
+
+
 
 # Open the NetCDF water depth dataset
 current_dir = os.getcwd() # grabs current directory
-ds = xr.open_dataset(current_dir+'/optimizer/test2.nc')
+ds = xr.open_dataset(current_dir+'/test2.nc')
 
 # Extract elevation, longitude, and latitude
 elevation = ds.elevation
@@ -226,6 +240,56 @@ class FixedBottomWindFarm(om.ExplicitComponent):
 
         print(outputs['AEP'])
 
+
+class WecFarmAepComp(om.ExplicitComponent):
+    """
+    Total WEC AEP [GWh] for a set of device positions (x_wec, y_wec),
+    computed via the provided WecFarm instance.
+
+    Options
+    -------
+    farm : WecFarm  # your existing class (holds site, device, bins, etc.)
+    """
+
+    def initialize(self):
+        self.options.declare("farm")  # instance of your WecFarm
+
+    def setup(self):
+        farm = self.options["farm"]
+        nd = int(len(farm.x))  # number of devices from the farm
+
+        # inputs default to the farm's current layout
+        self.add_input("x_wec", val=farm.x.copy())
+        self.add_input("y_wec", val=farm.y.copy())
+
+        # scalar output in GWh
+        self.add_output("wec_AEP_total", val=0.0)
+
+        # finite-difference step ≈ half a grid cell for stable SLSQP gradients
+        site = farm.site
+        if ("x" in site.ds.coords) and (site.ds.x.size > 1):
+            dx = float(np.diff(site.ds.x).mean())
+        else:
+            dx = max(1.0, float(np.ptp(farm.x)) / 20.0)
+        if ("y" in site.ds.coords) and (site.ds.y.size > 1):
+            dy = float(np.diff(site.ds.y).mean())
+        else:
+            dy = max(1.0, float(np.ptp(farm.y)) / 20.0)
+        fd_step = 0.5 * min(dx, dy)
+
+        self.declare_partials(of="wec_AEP_total", wrt=["x_wec", "y_wec"],
+                              method="fd", form="central",
+                              step_calc="abs", step=fd_step)
+
+    def compute(self, inputs, outputs):
+        farm = self.options["farm"]
+
+        # update farm layout from optimizer design vars
+        farm.x = np.asarray(inputs["x_wec"], float)
+        farm.y = np.asarray(inputs["y_wec"], float)
+
+        # total AEP in GWh (your farm already does the unit conversion)
+        outputs["wec_AEP_total"] = farm.aep_farm()
 
 class OffshoreSystemPlot(om.ExplicitComponent):
     """
@@ -461,6 +525,35 @@ class PairWiseSpacing(om.ExplicitComponent):
 
         outputs['Spacing_Matrix'] = nonzero_values
 
+class SpacingConstraintComp(om.ExplicitComponent):
+    """
+    c[k] = d_ij - D_min  for all i<j.  Enforce lower=0 to get d_ij >= D_min.
+    """
+    def initialize(self):
+        self.options.declare("nd", types=int)
+        self.options.declare("D_min", types=float)
+
+    def setup(self):
+        nd = self.options["nd"]
+        self.pairs = [(i, j) for i in range(nd) for j in range(i+1, nd)]
+        self.add_input("x", val=np.zeros(nd))
+        self.add_input("y", val=np.zeros(nd))
+        self.add_output("c", val=np.zeros(len(self.pairs)))
+
+        self.declare_partials(of="c", wrt=["x", "y"],
+                              method="fd", form="central",
+                              step_calc="abs", step=50.0)
+
+    def compute(self, inputs, outputs):
+        x = np.asarray(inputs["x"], float)
+        y = np.asarray(inputs["y"], float)
+        D_min = float(self.options["D_min"])
+
+        c = np.zeros(len(self.pairs))
+        for k, (i, j) in enumerate(self.pairs):
+            c[k] = np.hypot(x[i]-x[j], y[i]-y[j]) - D_min
+        outputs["c"] = c
+
 
 class PolygonBoundaryConstraint(om.ExplicitComponent):
     """
@@ -488,8 +581,36 @@ class PolygonBoundaryConstraint(om.ExplicitComponent):
         inside = self.polygon_path.contains_points(points)  # returns boolean array
         outputs['inside_polygon'] = np.logical_not(inside).astype(float)  # constraint: all must be <= 0
 
-prob = om.Problem()
+# --- WEC site (wave climate) on same UTM frame as Vineyard ---
+# Bin edges (coarse is fine for step 1)
+H_edges = np.linspace(0.5, 4.0, 16)
+T_edges = np.linspace(5.0, 10.0, 16)
+D_edges = np.linspace(0.0, 90.0, 13)
 
+# Make the WEC climate cover the farm + a margin SOUTH (downstream in your plot)
+bx_min, bx_max = boundary[:,0].min(), boundary[:,0].max()
+by_min, by_max = boundary[:,1].min(), boundary[:,1].max()
+
+xg = np.linspace(bx_min - 1500, bx_max + 1500, 41)
+yg = np.linspace(by_min - 3000, by_max + 500, 41)
+
+wec_site = RandomGridWaveField(H_edges, T_edges, D_edges, xg, yg, smooth_sigma=0.5)
+
+# Device (alpha can be tuned later; 5.0 usually lands ~2–3 GWh/device with your surrogate)
+wec_device = OSWECDevice()
+
+# Initial WEC positions: 2 rows south of the wind farm footprint
+ncols = 6
+x_line = np.linspace(bx_min + 800, bx_max - 800, ncols)
+y_rows = np.array([by_min - 2200, by_min - 1700])
+
+x_wec_init = np.concatenate([x_line, x_line])              # 12 devices
+y_wec_init = np.concatenate([np.full(ncols, y_rows[0]),
+                             np.full(ncols, y_rows[1])])
+nd_wec = x_wec_init.size
+
+
+prob = om.Problem()
 prob.model.add_subsystem('FBWF', 
                          FixedBottomWindFarm(), 
                          promotes_inputs=['x', 'y'])
@@ -505,6 +626,31 @@ prob.model.add_subsystem('OffshoreSystemPlot',
 
 prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.AEP')
 
+wec_ivc = om.IndepVarComp()
+wec_ivc.add_output('x_wec', x_wec_init)
+wec_ivc.add_output('y_wec', y_wec_init)
+prob.model.add_subsystem('wec_ivc', wec_ivc)
+
+# Instantiate, then set options explicitly
+
+wec_farm = WecFarm(site=wec_site, x=x_wec_init, y=y_wec_init, device=wec_device)
+
+# Create the component and pass ONLY the farm option
+wec_comp = WecFarmAepComp()
+wec_comp.options['farm'] = wec_farm
+
+# Add it to the problem
+prob.model.add_subsystem('WEC', wec_comp)
+
+# (keep your existing wec_ivc + connects)
+# prob.model.connect('wec_ivc.x_wec', 'WEC.x_wec')
+# prob.model.connect('wec_ivc.y_wec', 'WEC.y_wec')
+
+
+prob.model.connect('wec_ivc.x_wec', 'WEC.x_wec')
+prob.model.connect('wec_ivc.y_wec', 'WEC.y_wec')
+
+
 prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
 
 prob.driver.options['optimizer'] = 'COBYLA'
@@ -518,5 +664,11 @@ prob.model.add_constraint('Spacing_Constraint.Spacing_Matrix', scaler=0.01)
 
 prob.setup()
 
+# --- Sanity check: evaluate once so WEC AEP is computed and printed ---
+prob.run_model()
+
 prob.run_driver()
+val_opt = prob.get_val('WEC.wec_AEP_total').item()
+print(f"WEC farm AEP (opt) [GWh]: {val_opt:.3f}")
+
 

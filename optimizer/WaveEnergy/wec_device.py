@@ -2,6 +2,19 @@
 import numpy as np
 from tensorflow.keras.models import load_model
 import joblib
+from pathlib import Path
+
+
+# Resolve paths relative to this file
+_HERE = Path(__file__).resolve().parent
+_MODEL_DIR = _HERE / "WESL_WEC_Surrogate_models" / "OSWEC_model"
+
+# If filenames change later, you can glob; for now, keep explicit:
+KERAS_PATH   = _MODEL_DIR / "OSWEC_WESL_surrogate_model_v0_0_2.keras"
+SCALER_X_PATH = _MODEL_DIR / "Scalers" / "scaler_X.save"
+SCALER_Y_PATH = _MODEL_DIR / "Scalers" / "scaler_y.save"
+
+
 
 class OSWECDevice:
     """
@@ -9,11 +22,12 @@ class OSWECDevice:
     - power_point(H,T,D) -> kW at a single sea state
     - power_grid(Hc,Tc,Dc) -> kW on a grid (optional helper)
     """
+    dir = "optimizer/WaveEnergy/"
     def __init__(self,
                  alpha=58,
-                 model_path="WESL_WEC_Surrogate_models/OSWEC_model/OSWEC_WESL_surrogate_model_v0_0_2.keras",
-                 scaler_X_path="WESL_WEC_Surrogate_models/OSWEC_model/Scalers/scaler_X.save",
-                 scaler_y_path="WESL_WEC_Surrogate_models/OSWEC_model/Scalers/scaler_y.save",
+                 model_path=KERAS_PATH,
+                 scaler_X_path=SCALER_X_PATH,
+                 scaler_y_path=SCALER_Y_PATH,
                  feature_order=("Height_m", "Period_s", "Direction_deg"),
                  clip_ranges={"Height_m":(0.5,4.0), "Period_s":(5.0,10.0), "Direction_deg":(0.0,90.0)},
                  p_scale=1.0):
