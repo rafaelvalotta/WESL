@@ -1,3 +1,6 @@
 *.pyc
 *.html
 /optimizer/interarray/__pycache__
+.DS_Store
+optimizer/WaveEnergy/optimize_wec_loc_out/.openmdao_out
+/optimizer/WaveEnergy/optimize_wec_loc_out
