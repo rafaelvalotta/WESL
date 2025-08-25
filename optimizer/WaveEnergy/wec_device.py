@@ -16,7 +16,7 @@ SCALER_Y_PATH = _MODEL_DIR / "Scalers" / "scaler_y.save"
 
 
 
-class OSWECDevice:
+class OSWECDevice():
     """
     Minimal OSWEC device using a saved Keras surrogate + scalers.
     - power_point(H,T,D) -> kW at a single sea state

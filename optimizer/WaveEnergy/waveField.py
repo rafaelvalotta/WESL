@@ -7,12 +7,12 @@ try:
 except ImportError:
     # Fallback if someone runs this file directly (not recommended)
     from WaveEnergy.utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
-    
+
 from scipy.ndimage import gaussian_filter
 
 
 
-class XRWaveField:
+class XRWaveField():
     """
     XR-backed wave field.
     ds coords: H, T, D (bin centers). Optional: x, y (spatial grid).
