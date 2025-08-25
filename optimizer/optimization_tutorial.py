@@ -330,6 +330,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         self.options.declare('boundary', types=np.ndarray)
         self.options.declare('spacing_diameter', default=6*222, types=(float, int)) # upgrade here for the spacing
         self.options.declare('wec_diam', default=150.0, types=(float, int))  # WEC spacing ring (diameter)
+        self.options.declare('wec_boundary', types=np.ndarray)
 
 
     def setup(self):
@@ -367,6 +368,9 @@ class OffshoreSystemPlot(om.ExplicitComponent):
             X_viz, Y_viz, depth_viz,
             cmap='Blues_r', shading='auto', vmin=-50, vmax=-20
         )
+        self.im.set_zorder(0)
+
+
         self.fig.colorbar(self.im, ax=self.ax, label="Water Depth (m)")
 
 
@@ -385,6 +389,12 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                  label='Boundary', 
                  c='black', 
                  linestyle = '--')
+        
+        wec_b = self.options['wec_boundary']
+        wec_b_closed = np.vstack([wec_b, wec_b[0]])  # append first point to close loop
+        plt.plot(wec_b_closed[:, 0], wec_b_closed[:, 1],
+                label='WEC boundary', c='k', linestyle=':', lw=1.5)
+
         self.fig.tight_layout(rect=[0, 0, 1, 0.86])   # a bit more top margin
         self.fig.subplots_adjust(top=0.82)
         plt.ion()
@@ -401,7 +411,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
             r0 = Rectangle((x_wec_init[i] - rect_w0/2.0, y_wec_init[i] - rect_h0/2.0),
                         rect_w0, rect_h0,
                         facecolor='lime', edgecolor='green',
-                        linewidth=1.0, alpha=0.75, zorder=5,
+                        linewidth=1.0, alpha=0.75, zorder=2,
                         label='WEC (init)' if i == 0 else None)
             self.ax.add_patch(r0)
             self.wec_init_rects.append(r0)
@@ -539,7 +549,6 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         wf_pct  = 0.0 if not self.wf_init  else (wf  / self.wf_init  - 1.0) * 100.0
         wec_pct = 0.0 if not self.wec_init else (wec / self.wec_init - 1.0) * 100.0
         tot_pct = 0.0 if not self.tot_init else (tot / self.tot_init - 1.0) * 100.0
-        wec_d = 0.0 if not self.wec_init else (wec - self.wec_init)
 
 
         # --- Draw WEC rectangles + spacing ring ---
@@ -553,8 +562,8 @@ class OffshoreSystemPlot(om.ExplicitComponent):
             rect = Rectangle((xw[i] - rect_w/2.0, yw[i] - rect_h/2.0),
                             rect_w, rect_h,
                             angle=0.0,
-                            facecolor='gold', edgecolor='gold',
-                            linewidth=1.0, alpha=1, zorder=6,
+                            facecolor='gold', edgecolor='brown',
+                            linewidth=1.0, alpha=1, zorder=8,
                             label='WEC (final)' if i == 0 else None)
             self.ax.add_patch(rect); self.wec_rects.append(rect)
 
@@ -731,6 +740,24 @@ class PolygonBoundaryConstraint(om.ExplicitComponent):
         inside = self.polygon_path.contains_points(points)  # returns boolean array
         outputs['inside_polygon'] = np.logical_not(inside).astype(float)  # constraint: all must be <= 0
 
+class WecBoundaryConstraint(om.ExplicitComponent):
+    """Constraint: all WEC devices must lie inside the given polygon (<= 0)."""
+    def initialize(self):
+        self.options.declare('boundary', types=np.ndarray)  # Nx2 polygon in UTM
+
+    def setup(self):
+        self.add_input('x_wec', shape=nd_wec)
+        self.add_input('y_wec', shape=nd_wec)
+        self.add_output('inside_polygon', shape=nd_wec)  # 0 if inside, 1 if outside
+        self.declare_partials('*', '*', method='fd')      # COBYLA is derivative-free anyway
+        self.polygon_path = Path(self.options['boundary'])
+
+    def compute(self, inputs, outputs):
+        pts = np.column_stack((inputs['x_wec'], inputs['y_wec']))
+        inside = self.polygon_path.contains_points(pts)     # True if inside
+        outputs['inside_polygon'] = np.logical_not(inside).astype(float)  # want <= 0
+
+
 # --- WEC site (wave climate) on same UTM frame as Vineyard ---
 # Bin edges (coarse is fine for step 1)
 H_edges = np.linspace(0.5, 4.0, 16)
@@ -738,8 +765,23 @@ T_edges = np.linspace(5.0, 10.0, 16)
 D_edges = np.linspace(0.0, 90.0, 13)
 
 # WEC wavefield grid to the RIGHT of the wind farm
-xg = np.linspace(390000.0, 415000.0, 41)
+xg = np.linspace(387500.0, 415000.0, 41)
 yg = np.linspace(4530000.0, 4560000.0, 41)
+# --- Simple WEC rectangular boundary (slightly smaller than the wave grid) ---
+pad = 1000.0  # shrink on each side [m]; tweak as you like
+wec_xmin = float(xg.min()) + pad
+wec_xmax = float(xg.max()) - pad
+wec_ymin = float(yg.min()) + pad 
+wec_ymax = float(yg.max()) - pad 
+
+# rectangle as a polygon (clockwise)
+wec_boundary_rect = np.array([
+    [wec_xmin, wec_ymin],
+    [wec_xmax, wec_ymin],
+    [wec_xmax, wec_ymax],
+    [wec_xmin, wec_ymax],
+])
+
 
 
 wec_site = RandomGridWaveField(H_edges, T_edges, D_edges, xg, yg, smooth_sigma=0.5)
@@ -758,7 +800,7 @@ y_wec_init = np.array([
     4538000.0, 4534000.0, 4535000.0,
     4545000.0, 4545000.0, 4545000.0,
     4550000.0, 4539500.0, 4440000.0,
-    4555000.0, 4455000.0, 4559000.0
+    4555000.0, 4455000.0, 4550000.0
 ], dtype=float)
 
 nd_wec = len(x_wec_init)
@@ -779,13 +821,25 @@ prob.model.add_subsystem('Spacing_Constraint',
                          PairWiseSpacing(), 
                          promotes_inputs=['x', 'y'])
 
+prob.model.add_subsystem(
+    'WF_Boundary',
+    PolygonBoundaryConstraint(boundary=boundary),
+    promotes_inputs=['x', 'y']
+)
+
 prob.model.add_subsystem('OffshoreSystemPlot',
-                         OffshoreSystemPlot(boundary=boundary),
+                         OffshoreSystemPlot(boundary=boundary, wec_boundary=wec_boundary_rect),
                          promotes_inputs=['x', 'y', 'x_wec', 'y_wec']
 )
 
 # Add it to the problem
 prob.model.add_subsystem('WEC', wec_comp, promotes_inputs=['x_wec', 'y_wec'])
+
+prob.model.add_subsystem(
+    'WEC_Boundary',
+    WecBoundaryConstraint(boundary=wec_boundary_rect),
+    promotes_inputs=['x_wec', 'y_wec']
+)
 
 # Combined objective: minimize wind_AEP_neg - w * wec_AEP
 prob.model.add_subsystem('obj', om.ExecComp('f = A - w*W', w=0.5), #w=0.5 is a sane starting weight so WEC moves matter. Increase if you want the optimizer to favor WEC more.
@@ -819,6 +873,10 @@ prob.model.add_design_var('y_wec', lower=wec_ymin, upper=wec_ymax,
 prob.model.add_objective('f', scaler=0.01)
 
 prob.model.add_constraint('Spacing_Constraint.Spacing_Matrix', lower=6*_diameter , scaler=0.01)
+prob.model.add_constraint('WEC_Boundary.inside_polygon', upper=0.0)
+prob.model.add_constraint('WF_Boundary.inside_polygon', upper=0.0)
+
+
 
 
 
