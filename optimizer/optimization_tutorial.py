@@ -7,7 +7,7 @@ from pyproj import Transformer
 import openmdao.api as om
 from scipy.spatial.distance import pdist, squareform
 from matplotlib.path import Path
-from matplotlib.patches import Circle
+from matplotlib.patches import Circle, Rectangle
 import os
 import sys, pathlib
 
@@ -210,6 +210,7 @@ wind_turbines = SG_14222() # wind turbine object
 site = VineyardWind() # site object
 sim_res = Bastankhah_PorteAgel_2014(site, wind_turbines, k=0.0324555)
 aep_init = sim_res(x_coordinates, y_coordinates).aep().sum() #AEP
+_diameter = 222
 
 # Beginning of WESL optimizer
 class FixedBottomWindFarm(om.ExplicitComponent):
@@ -299,22 +300,37 @@ class OffshoreSystemPlot(om.ExplicitComponent):
     def initialize(self):
         self.options.declare('boundary', types=np.ndarray)
         self.options.declare('spacing_diameter', default=6*222, types=(float, int)) # upgrade here for the spacing
+        self.options.declare('wec_diam', default=150.0, types=(float, int))  # WEC spacing ring (diameter)
+
 
     def setup(self):
         n = len(x_coordinates)  # global or pass via options
         self.add_input('x', np.zeros(n))
         self.add_input('y', np.zeros(n))
-        self.add_input('AEP', val=0.0)
+        self.add_input('wf_AEP', val=0.0)
+        self.add_input('wec_AEP', val=0.0)
+        self.add_input('x_wec', val=x_wec_init.copy())
+        self.add_input('y_wec', val=y_wec_init.copy())
+
+
 
         self.iteration = 0
         self.circles = []
         self.turbine_scatter = None  
         self.cableA = None
         self.cableB = None
+        self.wec_init = None
+        self.wec_scatter = None
+        self.wf_init  = None      # <- ADD
+        self.tot_init = None      # <- ADD
+        self.wec_rects = []
+        self.wec_init_rects = []
+
+
 
 
         # Beginning of the plot definition
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figsize=[8, 4])
         
         # Defines the water depth map
         plt.pcolormesh(lon_grid_fine, 
@@ -331,35 +347,58 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                  label='Boundary', 
                  c='black', 
                  linestyle = '--')
-        plt.tight_layout()
+        self.fig.tight_layout(rect=[0, 0, 1, 0.86])   # a bit more top margin
+        self.fig.subplots_adjust(top=0.82)
         plt.ion()
         self.ax.scatter(x_coordinates,
                         y_coordinates, 
                         c='orange', 
                         marker = '.', 
                         s=8, 
-                        label='Initial Layout')
+                        label='WT (init)')
+        
+        # --- Draw WEC initial rectangles (lime) once in setup ---
+        rect_w0, rect_h0 = 250.0, 750.0
+        for i in range(len(x_wec_init)):
+            r0 = Rectangle((x_wec_init[i] - rect_w0/2.0, y_wec_init[i] - rect_h0/2.0),
+                        rect_w0, rect_h0,
+                        facecolor='lime', edgecolor='green',
+                        linewidth=1.0, alpha=0.75, zorder=5,
+                        label='WEC (init)' if i == 0 else None)
+            self.ax.add_patch(r0)
+            self.wec_init_rects.append(r0)
+
         self.text_box = self.ax.text(0.01, 
                                      0.99, 
                                      '', 
                                      transform=self.ax.transAxes, 
                                      verticalalignment='top', 
-                                     fontsize=10, 
+                                     fontsize=8, 
                                      bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
         self.ax.set_xlabel('X [m]')
         self.ax.set_ylabel('Y [m]')
-        self.ax.set_xlim(360000, 390000)
-        self.ax.set_ylim(4.53E6, 4.56E6)
+        self.ax.set_xlim(360000, 420000)
+        self.ax.set_ylim(4.53E6, 4.560E6)
+        self.ax.set_aspect('equal', adjustable='box')
 
     def compute(self, inputs, outputs):
+        
+
         x = inputs['x']
         y = inputs['y']
-        aep = float(inputs['AEP'])
         spacing_radius = self.options['spacing_diameter'] / 2
 
         # Remove previous turbine positions (except for the initial layout)
         if self.turbine_scatter is not None:
             self.turbine_scatter.remove()
+
+        if self.wec_scatter is not None:
+            self.wec_scatter.remove()
+
+        # Remove old WEC rectangles
+        for r in getattr(self, 'wec_rects', []):
+            r.remove()
+        self.wec_rects = []
 
         if self.cableA is not None:
             for line in self.cableA:
@@ -380,7 +419,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                                                y,
                                                marker = '2', 
                                                c='black', 
-                                               label='Current Design')
+                                               label='WT (final)')
 
         # Draw new spacing circles
         for xi, yi in zip(x, y):
@@ -436,6 +475,59 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         # plt.scatter(WTcentroid[0],WTcentroid[1],label='Substation',c='red')
         self.ax.scatter(WTcentroid[0],WTcentroid[1],label='Substation',c='red')
 
+        # --- AEP numbers and baselines ---
+        wf_neg = float(inputs['wf_AEP'])   # FBWF.AEP is negative
+        wf = -wf_neg                       # positive WF AEP [GWh]
+        wec = float(inputs['wec_AEP'])     # positive WEC AEP [GWh]
+        
+
+        if self.wf_init is None and wf > 0.0:
+            self.wf_init = wf
+        if self.wec_init is None and wec > 0.0:
+            self.wec_init = wec
+
+        tot = wf + wec
+        if self.tot_init is None and (self.wf_init is not None) and (self.wec_init is not None):
+            self.tot_init = self.wf_init + self.wec_init
+
+        wf_pct  = 0.0 if not self.wf_init  else (wf  / self.wf_init  - 1.0) * 100.0
+        wec_pct = 0.0 if not self.wec_init else (wec / self.wec_init - 1.0) * 100.0
+        tot_pct = 0.0 if not self.tot_init else (tot / self.tot_init - 1.0) * 100.0
+        wec_d = 0.0 if not self.wec_init else (wec - self.wec_init)
+
+
+        # --- Draw WEC rectangles + spacing ring ---
+        xw = np.asarray(inputs['x_wec'])
+        yw = np.asarray(inputs['y_wec'])
+        rect_w = 250   # thin
+        rect_h = 750.0   # tall
+        # wec_r  = float(self.options['wec_diam']) / 2.0
+
+        for i in range(len(xw)):
+            rect = Rectangle((xw[i] - rect_w/2.0, yw[i] - rect_h/2.0),
+                            rect_w, rect_h,
+                            angle=0.0,
+                            facecolor='gold', edgecolor='gold',
+                            linewidth=1.0, alpha=1, zorder=6,
+                            label='WEC (final)' if i == 0 else None)
+            self.ax.add_patch(rect); self.wec_rects.append(rect)
+
+            # ring = Circle((xw[i], yw[i]), wec_r, edgecolor='gold',
+            #             linestyle='--', facecolor='none',
+            #             linewidth=1.0, alpha=0.9,
+            #             label='WEC spacing' if i == 0 else None)
+            # self.ax.add_patch(ring); self.wec_rects.append(ring)
+
+        # --- Update textbox (WF, WEC, Total) ---
+        self.text_box.set_text(
+            f"Iter: {self.iteration}\n"
+            f"WF  AEP: {wf:.3f} GWh ({wf_pct:.2f}%)\n"
+            f"WEC AEP: {wec:.3f} GWh ({wec_pct:.2f}%)\n"
+            f"Total  : {tot:.3f} GWh ({tot_pct:.2f}%)"
+        )
+
+
+
         # colors = ['b','g','r','c','m','y','k','bg','gr','rc','cm']
         colors = ['y', '#b87333' ]
 
@@ -459,20 +551,20 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                 elif i == 1:
                     self.cableB = self.ax.plot(xs,ys,'{}'.format(colors[i]),linewidth=1.2)
 
-        # Update iteration info
-        self.text_box.set_text(
-            f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
-        )
         # plt.show()
 
         plt.draw()
         plt.pause(0.001) 
-        # self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
-        # Rebuild legend without duplicates
+        # Clear any previous figure-level legends to avoid stacking
+        for lg in list(self.fig.legends):
+            lg.remove()
+
         handles, labels = self.ax.get_legend_handles_labels()
-        by_label = dict(zip(labels, handles))  # removes duplicates based on label
-        self.ax.legend(by_label.values(), by_label.keys(),
-                    loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
+        # Deduplicate by label
+        by_label = {lab: h for h, lab in zip(handles, labels) if lab}
+        self.fig.legend(by_label.values(), by_label.keys(),
+                        loc='upper center', bbox_to_anchor=(0.5, 0.995),
+                        ncol=4, fontsize=8, frameon=True)
 
 
         # self.plot_electrical_layout = plot_electrical_cables1(x,y,iter=1)
@@ -587,28 +679,42 @@ H_edges = np.linspace(0.5, 4.0, 16)
 T_edges = np.linspace(5.0, 10.0, 16)
 D_edges = np.linspace(0.0, 90.0, 13)
 
-# Make the WEC climate cover the farm + a margin SOUTH (downstream in your plot)
-bx_min, bx_max = boundary[:,0].min(), boundary[:,0].max()
-by_min, by_max = boundary[:,1].min(), boundary[:,1].max()
+# WEC wavefield grid to the RIGHT of the wind farm
+xg = np.linspace(390000.0, 415000.0, 41)
+yg = np.linspace(4530000.0, 4560000.0, 41)
 
-xg = np.linspace(bx_min - 1500, bx_max + 1500, 41)
-yg = np.linspace(by_min - 3000, by_max + 500, 41)
 
 wec_site = RandomGridWaveField(H_edges, T_edges, D_edges, xg, yg, smooth_sigma=0.5)
 
 # Device (alpha can be tuned later; 5.0 usually lands ~2–3 GWh/device with your surrogate)
 wec_device = OSWECDevice()
 
-# Initial WEC positions: 2 rows south of the wind farm footprint
-ncols = 6
-x_line = np.linspace(bx_min + 800, bx_max - 800, ncols)
-y_rows = np.array([by_min - 2200, by_min - 1700])
+x_wec_init = np.array([
+    400000.0, 418000.0, 412000.0,
+    394000.0, 411000.0, 415300.0,
+    396000.0, 415000.0, 414700.0,
+    399000.0, 413000.0, 395000.0
+], dtype=float)
 
-x_wec_init = np.concatenate([x_line, x_line])              # 12 devices
-y_wec_init = np.concatenate([np.full(ncols, y_rows[0]),
-                             np.full(ncols, y_rows[1])])
-nd_wec = x_wec_init.size
+y_wec_init = np.array([
+    4538000.0, 4534000.0, 4535000.0,
+    4545000.0, 4545000.0, 4545000.0,
+    4550000.0, 4539500.0, 4440000.0,
+    4555000.0, 4455000.0, 4539000.0
+], dtype=float)
 
+nd_wec = len(x_wec_init)
+
+wec_ivc = om.IndepVarComp()
+wec_ivc.add_output('x_wec', x_wec_init)
+wec_ivc.add_output('y_wec', y_wec_init)
+
+# Instantiate, then set options explicitly
+
+wec_farm = WecFarm(site=wec_site, x=x_wec_init, y=y_wec_init, device=wec_device)
+# Create the component and pass ONLY the farm option
+wec_comp = WecFarmAepComp()
+wec_comp.options['farm'] = wec_farm
 
 prob = om.Problem()
 prob.model.add_subsystem('FBWF', 
@@ -624,51 +730,84 @@ prob.model.add_subsystem('OffshoreSystemPlot',
                          promotes_inputs=['x', 'y']
 )
 
-prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.AEP')
-
-wec_ivc = om.IndepVarComp()
-wec_ivc.add_output('x_wec', x_wec_init)
-wec_ivc.add_output('y_wec', y_wec_init)
 prob.model.add_subsystem('wec_ivc', wec_ivc)
-
-# Instantiate, then set options explicitly
-
-wec_farm = WecFarm(site=wec_site, x=x_wec_init, y=y_wec_init, device=wec_device)
-
-# Create the component and pass ONLY the farm option
-wec_comp = WecFarmAepComp()
-wec_comp.options['farm'] = wec_farm
 
 # Add it to the problem
 prob.model.add_subsystem('WEC', wec_comp)
 
-# (keep your existing wec_ivc + connects)
-# prob.model.connect('wec_ivc.x_wec', 'WEC.x_wec')
-# prob.model.connect('wec_ivc.y_wec', 'WEC.y_wec')
+# Combined objective: minimize wind_AEP_neg - w * wec_AEP
+prob.model.add_subsystem('obj', om.ExecComp('f = A - w*W', w=0.5), #w=0.5 is a sane starting weight so WEC moves matter. Increase if you want the optimizer to favor WEC more.
+                         promotes_outputs=['f'])
 
-
+prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.wf_AEP')
+prob.model.connect('WEC.wec_AEP_total', 'OffshoreSystemPlot.wec_AEP')
+prob.model.connect('FBWF.AEP', 'obj.A')               # A is negative wind AEP
+prob.model.connect('WEC.wec_AEP_total', 'obj.W')      # W is positive WEC AEP
 prob.model.connect('wec_ivc.x_wec', 'WEC.x_wec')
 prob.model.connect('wec_ivc.y_wec', 'WEC.y_wec')
+prob.model.connect('wec_ivc.x_wec', 'OffshoreSystemPlot.x_wec')
+prob.model.connect('wec_ivc.y_wec', 'OffshoreSystemPlot.y_wec')
+
+
+
+prob.model.set_input_defaults('x', x_coordinates)
+prob.model.set_input_defaults('y', y_coordinates)
+
+prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.01)
+prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.01)
+
+
+wec_xmin = float(wec_site.ds.x.min()); wec_xmax = float(wec_site.ds.x.max())
+wec_ymin = float(wec_site.ds.y.min()); wec_ymax = float(wec_site.ds.y.max())
+
+prob.model.add_design_var('wec_ivc.x_wec', lower=wec_xmin, upper=wec_xmax,
+                          ref=wec_xmax, ref0=wec_xmin)
+prob.model.add_design_var('wec_ivc.y_wec', lower=wec_ymin, upper=wec_ymax,
+                          ref=wec_ymax, ref0=wec_ymin)
+
+prob.model.add_objective('f', scaler=0.01)
+
+prob.model.add_constraint('Spacing_Constraint.Spacing_Matrix', lower=6*_diameter , scaler=0.01)
+
+
 
 
 prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
 
 prob.driver.options['optimizer'] = 'COBYLA'
+prob.driver.options['maxiter'] = 500
+prob.driver.options['tol']     = 1e-4
+prob.driver.opt_settings['maxfun'] = 20000
 
-prob.model.set_input_defaults('x', x_coordinates)
-prob.model.set_input_defaults('y', y_coordinates)
-prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.01)
-prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.01)
-prob.model.add_objective('FBWF.AEP',  scaler=0.01)
-prob.model.add_constraint('Spacing_Constraint.Spacing_Matrix', scaler=0.01)
 
 prob.setup()
 
 # --- Sanity check: evaluate once so WEC AEP is computed and printed ---
 prob.run_model()
 
+# Baselines
+wec_aep_init = prob.get_val('WEC.wec_AEP_total').item()
+wf_aep_init  = -prob.get_val('FBWF.AEP').item()  # make positive
+tot_aep_init = wf_aep_init + wec_aep_init
+
+
 prob.run_driver()
-val_opt = prob.get_val('WEC.wec_AEP_total').item()
-print(f"WEC farm AEP (opt) [GWh]: {val_opt:.3f}")
+
+wec_aep_opt = prob.get_val('WEC.wec_AEP_total').item()
+wf_aep_opt  = -prob.get_val('FBWF.AEP').item()
+tot_aep_opt = wf_aep_opt + wec_aep_opt
+
+wec_d  = wec_aep_opt - wec_aep_init
+wf_d   = wf_aep_opt  - wf_aep_init
+tot_d  = tot_aep_opt - tot_aep_init
+
+wec_pct = 0.0 if wec_aep_init == 0 else (wec_aep_opt / wec_aep_init - 1.0) * 100.0
+wf_pct  = 0.0 if wf_aep_init  == 0 else (wf_aep_opt  / wf_aep_init  - 1.0) * 100.0
+tot_pct = 0.0 if tot_aep_init == 0 else (tot_aep_opt / tot_aep_init - 1.0) * 100.0
+
+print("\n=== AEP Summary (GWh) ===")
+print(f"WF   : init={wf_aep_init:.3f}  opt={wf_aep_opt:.3f}  Δ={wf_d:.3f}  ({wf_pct:.2f}%)")
+print(f"WEC  : init={wec_aep_init:.3f} opt={wec_aep_opt:.3f} Δ={wec_d:.3f} ({wec_pct:.2f}%)")
+print(f"TOTAL: init={tot_aep_init:.3f} opt={tot_aep_opt:.3f} Δ={tot_d:.3f} ({tot_pct:.2f}%)")
 
 
