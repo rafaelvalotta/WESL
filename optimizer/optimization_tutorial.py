@@ -44,6 +44,7 @@ elevation = ds.elevation
 lon = ds.lon
 lat = ds.lat
 
+
 # Vineyard Wind turbine coordinates (lat and long) in degrees
 x_coordinates = np.array([ -70.46480443069069, -70.44211908841751, -70.44211908841751,
     -70.41943374614488, -70.39800870066537, -70.46354413389761,
@@ -119,11 +120,39 @@ lon_grid, lat_grid = np.meshgrid(subset_lon, subset_lat)
 points = np.column_stack((lon_grid.ravel(), lat_grid.ravel()))
 values = subset_elevation.values.ravel()
 
-# Interpolate the data onto the fine grid
-interpolated_elevation = griddata(points, 
-                                  values, 
-                                  (lon_grid_fine, lat_grid_fine), 
-                                  method='cubic')
+# # Interpolate the data onto the fine grid (original grid)
+# interpolated_elevation = griddata(points, 
+#                                   values, 
+#                                   (lon_grid_fine, lat_grid_fine), 
+#                                   method='cubic')
+
+# --- Visualization grid in UTM to cover WF + WEC area ---
+VIZ_XMIN, VIZ_XMAX = 345000.0, 455000.0   # <-- change to taste
+VIZ_YMIN, VIZ_YMAX = 4.520e6, 4.570e6 
+
+# Use the full NetCDF coverage for interpolation
+min_lon = float(ds.lon.min()); max_lon = float(ds.lon.max())
+min_lat = float(ds.lat.min()); max_lat = float(ds.lat.max())
+
+subset_ds = ds.sel(lon=slice(min_lon, max_lon), lat=slice(min_lat, max_lat))
+subset_lon = subset_ds.lon.values
+subset_lat = subset_ds.lat.values
+
+# lon/lat -> UTM for the bathy points
+subset_x, subset_y = transformer.transform(subset_lon, subset_lat)
+PX, PY = np.meshgrid(subset_x, subset_y)                     # points in UTM
+points = np.column_stack((PX.ravel(), PY.ravel()))
+values = subset_ds.elevation.values.ravel()
+
+# Viz grid in UTM (wider limits)
+nx, ny = 800, 600
+x_viz = np.linspace(VIZ_XMIN, VIZ_XMAX, nx)
+y_viz = np.linspace(VIZ_YMIN, VIZ_YMAX, ny)
+X_viz, Y_viz = np.meshgrid(x_viz, y_viz)
+
+# Interpolate (no nearest fallback—let NaNs show where there’s no data)
+depth_viz = griddata(points, values, (X_viz, Y_viz), method='cubic')
+
 
 # Conversion again from degrees to utm
 min_lon, min_lat = transformer.transform(min_lon, min_lat)
@@ -325,6 +354,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         self.tot_init = None      # <- ADD
         self.wec_rects = []
         self.wec_init_rects = []
+        self.wec_move_arrows = []
 
 
 
@@ -332,16 +362,24 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         # Beginning of the plot definition
         self.fig, self.ax = plt.subplots(figsize=[8, 4])
         
-        # Defines the water depth map
-        plt.pcolormesh(lon_grid_fine, 
-                    lat_grid_fine, 
-                    interpolated_elevation, 
-                    cmap='Blues_r', 
-                    shading='auto', 
-                    vmin=-50, 
-                    vmax=-20)
+        # Water depth background on the wider viz grid
+        self.im = self.ax.pcolormesh(
+            X_viz, Y_viz, depth_viz,
+            cmap='Blues_r', shading='auto', vmin=-50, vmax=-20
+        )
+        self.fig.colorbar(self.im, ax=self.ax, label="Water Depth (m)")
 
-        plt.colorbar(label="Water Depth (m)")
+
+        # # Defines the water depth map
+        # plt.pcolormesh(lon_grid_fine, 
+        #             lat_grid_fine, 
+        #             interpolated_elevation, 
+        #             cmap='Blues_r', 
+        #             shading='auto', 
+        #             vmin=-50, 
+        #             vmax=-20)
+
+        # plt.colorbar(label="Water Depth (m)")
         plt.plot(boundary[:, 0], 
                  boundary[:, 1], 
                  label='Boundary', 
@@ -377,7 +415,10 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                                      bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
         self.ax.set_xlabel('X [m]')
         self.ax.set_ylabel('Y [m]')
-        self.ax.set_xlim(360000, 420000)
+        # Use the wider inspection window
+        # self.ax.set_xlim(VIZ_XMIN, VIZ_XMAX)
+        # self.ax.set_ylim(VIZ_YMIN, VIZ_YMAX)
+        self.ax.set_xlim(360000, 415000)
         self.ax.set_ylim(4.53E6, 4.560E6)
         self.ax.set_aspect('equal', adjustable='box')
 
@@ -414,6 +455,11 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         for circ in self.circles:
             circ.remove()
         self.circles.clear()
+
+        # REMOVE OLD ARROWS (ADD THIS BLOCK)
+        for a in getattr(self, 'wec_move_arrows', []):
+            a.remove()
+        self.wec_move_arrows = []
 
         self.turbine_scatter = self.ax.scatter(x,
                                                y,
@@ -511,6 +557,18 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                             linewidth=1.0, alpha=1, zorder=6,
                             label='WEC (final)' if i == 0 else None)
             self.ax.add_patch(rect); self.wec_rects.append(rect)
+
+        # Draw arrows from initial -> final WEC positions (simple and clear)
+        x0 = np.asarray(x_wec_init)
+        y0 = np.asarray(y_wec_init)
+
+        n = len(x0)
+        for i in range(n):
+            arr = self.ax.annotate(
+                '', xy=(xw[i], yw[i]), xytext=(x0[i], y0[i]),
+                arrowprops=dict(arrowstyle='-|>', linestyle=(0, (6, 3)), lw=0.75, color='black', shrinkA=0, shrinkB=0)
+            )
+            self.wec_move_arrows.append(arr)
 
             # ring = Circle((xw[i], yw[i]), wec_r, edgecolor='gold',
             #             linestyle='--', facecolor='none',
@@ -690,24 +748,20 @@ wec_site = RandomGridWaveField(H_edges, T_edges, D_edges, xg, yg, smooth_sigma=0
 wec_device = OSWECDevice()
 
 x_wec_init = np.array([
-    400000.0, 418000.0, 412000.0,
-    394000.0, 411000.0, 415300.0,
-    396000.0, 415000.0, 414700.0,
-    399000.0, 413000.0, 395000.0
+    390000.0, 408000.0, 402000.0,
+    394000.0, 401000.0, 405300.0,
+    396000.0, 405000.0, 404700.0,
+    399000.0, 403000.0, 390000.0
 ], dtype=float)
 
 y_wec_init = np.array([
     4538000.0, 4534000.0, 4535000.0,
     4545000.0, 4545000.0, 4545000.0,
     4550000.0, 4539500.0, 4440000.0,
-    4555000.0, 4455000.0, 4539000.0
+    4555000.0, 4455000.0, 4559000.0
 ], dtype=float)
 
 nd_wec = len(x_wec_init)
-
-wec_ivc = om.IndepVarComp()
-wec_ivc.add_output('x_wec', x_wec_init)
-wec_ivc.add_output('y_wec', y_wec_init)
 
 # Instantiate, then set options explicitly
 
@@ -727,13 +781,11 @@ prob.model.add_subsystem('Spacing_Constraint',
 
 prob.model.add_subsystem('OffshoreSystemPlot',
                          OffshoreSystemPlot(boundary=boundary),
-                         promotes_inputs=['x', 'y']
+                         promotes_inputs=['x', 'y', 'x_wec', 'y_wec']
 )
 
-prob.model.add_subsystem('wec_ivc', wec_ivc)
-
 # Add it to the problem
-prob.model.add_subsystem('WEC', wec_comp)
+prob.model.add_subsystem('WEC', wec_comp, promotes_inputs=['x_wec', 'y_wec'])
 
 # Combined objective: minimize wind_AEP_neg - w * wec_AEP
 prob.model.add_subsystem('obj', om.ExecComp('f = A - w*W', w=0.5), #w=0.5 is a sane starting weight so WEC moves matter. Increase if you want the optimizer to favor WEC more.
@@ -743,15 +795,14 @@ prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.wf_AEP')
 prob.model.connect('WEC.wec_AEP_total', 'OffshoreSystemPlot.wec_AEP')
 prob.model.connect('FBWF.AEP', 'obj.A')               # A is negative wind AEP
 prob.model.connect('WEC.wec_AEP_total', 'obj.W')      # W is positive WEC AEP
-prob.model.connect('wec_ivc.x_wec', 'WEC.x_wec')
-prob.model.connect('wec_ivc.y_wec', 'WEC.y_wec')
-prob.model.connect('wec_ivc.x_wec', 'OffshoreSystemPlot.x_wec')
-prob.model.connect('wec_ivc.y_wec', 'OffshoreSystemPlot.y_wec')
+
 
 
 
 prob.model.set_input_defaults('x', x_coordinates)
 prob.model.set_input_defaults('y', y_coordinates)
+prob.model.set_input_defaults('x_wec', x_wec_init)
+prob.model.set_input_defaults('y_wec', y_wec_init)
 
 prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.01)
 prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.01)
@@ -760,9 +811,9 @@ prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]
 wec_xmin = float(wec_site.ds.x.min()); wec_xmax = float(wec_site.ds.x.max())
 wec_ymin = float(wec_site.ds.y.min()); wec_ymax = float(wec_site.ds.y.max())
 
-prob.model.add_design_var('wec_ivc.x_wec', lower=wec_xmin, upper=wec_xmax,
+prob.model.add_design_var('x_wec', lower=wec_xmin, upper=wec_xmax,
                           ref=wec_xmax, ref0=wec_xmin)
-prob.model.add_design_var('wec_ivc.y_wec', lower=wec_ymin, upper=wec_ymax,
+prob.model.add_design_var('y_wec', lower=wec_ymin, upper=wec_ymax,
                           ref=wec_ymax, ref0=wec_ymin)
 
 prob.model.add_objective('f', scaler=0.01)
