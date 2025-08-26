@@ -239,7 +239,7 @@ wind_turbines = SG_14222() # wind turbine object
 site = VineyardWind() # site object
 sim_res = Bastankhah_PorteAgel_2014(site, wind_turbines, k=0.0324555)
 aep_init = sim_res(x_coordinates, y_coordinates).aep().sum() #AEP
-_diameter = 222
+_diameter = 222.0
 
 # Beginning of WESL optimizer
 class FixedBottomWindFarm(om.ExplicitComponent):
@@ -328,7 +328,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
 
     def initialize(self):
         self.options.declare('boundary', types=np.ndarray)
-        self.options.declare('spacing_diameter', default=6*222, types=(float, int)) # upgrade here for the spacing
+        self.options.declare('spacing_diameter', default=6*222.0, types=(float, int)) # upgrade here for the spacing
         self.options.declare('wec_diam', default=150.0, types=(float, int))  # WEC spacing ring (diameter)
         self.options.declare('wec_boundary', types=np.ndarray)
 
@@ -361,7 +361,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
 
 
         # Beginning of the plot definition
-        self.fig, self.ax = plt.subplots(figsize=[16, 8])
+        self.fig, self.ax = plt.subplots(figsize=[12, 6])
         
         # Water depth background on the wider viz grid
         self.im = self.ax.pcolormesh(
@@ -642,55 +642,53 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         self.iteration += 1
 
 
-class PairWiseSpacing(om.ExplicitComponent):
-    """
-    Pair-Wise Spacing Constraint Component
-    """
-    def setup(self):
+# class PairWiseSpacing(om.ExplicitComponent):
+#     """
+#     Pair-Wise Spacing Constraint Component
+#     """
+#     def setup(self):
 
-        # X-Layout Coordinates
-        self.add_input('x', np.zeros(len(x_coordinates)))
+#         # X-Layout Coordinates
+#         self.add_input('x', np.zeros(len(x_coordinates)))
 
-        # Y-Layout Coordinates
-        self.add_input('y', np.zeros(len(y_coordinates)))
+#         # Y-Layout Coordinates
+#         self.add_input('y', np.zeros(len(y_coordinates)))
         
-        self.add_output('Spacing_Matrix', np.zeros(len(x_coordinates)*len(x_coordinates)-len(x_coordinates)))
+#         self.add_output('Spacing_Matrix', np.zeros(len(x_coordinates)*len(x_coordinates)-len(x_coordinates)))
 
-    def setup_partials(self):
+#     def setup_partials(self):
         
-        self.declare_partials('*', '*', method='fd')
+#         self.declare_partials('*', '*', method='fd')
 
-    def compute(self, inputs, outputs):
-        x = inputs['x']
-        y = inputs['y']
+#     def compute(self, inputs, outputs):
+#         x = inputs['x']
+#         y = inputs['y']
 
-        points = np.column_stack((x, y))  
+#         points = np.column_stack((x, y))  
 
-        dist_matrix = squareform(pdist(points))
+#         dist_matrix = squareform(pdist(points))
 
-        flat_dist_matrix = dist_matrix.reshape(-1)
-        nonzero_values = flat_dist_matrix[flat_dist_matrix != 0]
+#         flat_dist_matrix = dist_matrix.reshape(-1)
+#         nonzero_values = flat_dist_matrix[flat_dist_matrix != 0]
 
-        d_min = 6*222
+#         d_min = 6*222
 
-        if np.any(nonzero_values < d_min):
-            print("Some values below the minimum were found.")
-        else:
-            print("All nonzero values are above the minimum.")
+#         if np.any(nonzero_values < d_min):
+#             print("Some values below the minimum were found.")
+#         else:
+#             print("All nonzero values are above the minimum.")
 
-        min_spac = min(nonzero_values)/80
+#         min_spac = min(nonzero_values)/80
 
-        print(f"Minimum Spacing is {min_spac:.2f}D")
+#         print(f"Minimum Spacing is {min_spac:.2f}D")
 
-        outputs['Spacing_Matrix'] = nonzero_values
+#         outputs['Spacing_Matrix'] = nonzero_values
 
-class SpacingConstraintComp(om.ExplicitComponent):
-    """
-    c[k] = d_ij - D_min  for all i<j.  Enforce lower=0 to get d_ij >= D_min.
-    """
+class WtSpacingConstraint(om.ExplicitComponent):
+    """Enforce d_ij >= D_min for all i<j using c = d_ij - D_min >= 0."""
     def initialize(self):
         self.options.declare("nd", types=int)
-        self.options.declare("D_min", types=float)
+        self.options.declare("D_min", types=(float, int))
 
     def setup(self):
         nd = self.options["nd"]
@@ -698,47 +696,66 @@ class SpacingConstraintComp(om.ExplicitComponent):
         self.add_input("x", val=np.zeros(nd))
         self.add_input("y", val=np.zeros(nd))
         self.add_output("c", val=np.zeros(len(self.pairs)))
-
-        self.declare_partials(of="c", wrt=["x", "y"],
-                              method="fd", form="central",
-                              step_calc="abs", step=10.0)
+        # small FD step; SLSQP uses gradients
+        self.declare_partials(of="c", wrt=["x", "y"], method="fd", form="central", step=10.0)
 
     def compute(self, inputs, outputs):
         x = np.asarray(inputs["x"], float)
         y = np.asarray(inputs["y"], float)
-        D_min = float(self.options["D_min"])
-
-        c = np.zeros(len(self.pairs))
+        Dmin = float(self.options["D_min"])
+        c = outputs["c"]
         for k, (i, j) in enumerate(self.pairs):
-            c[k] = np.hypot(x[i]-x[j], y[i]-y[j]) - D_min
-        outputs["c"] = c
+            dij = np.hypot(x[i]-x[j], y[i]-y[j])  # includes zeros if overlapped
+            c[k] = dij - Dmin
+
+
+class WecSpacingConstraint(om.ExplicitComponent):
+    def initialize(self):
+        self.options.declare("nd", types=int)
+        self.options.declare("D_min", types=(float, int))
+
+    def setup(self):
+        nd = self.options["nd"]
+        self.pairs = [(i, j) for i in range(nd) for j in range(i+1, nd)]
+        self.add_input("x_wec", val=np.zeros(nd))
+        self.add_input("y_wec", val=np.zeros(nd))
+        self.add_output("c_wec", val=np.zeros(len(self.pairs)))
+        self.declare_partials(of="c_wec", wrt=["x_wec", "y_wec"], method="fd", form="central", step=10.0)
+
+    def compute(self, inputs, outputs):
+        x = np.asarray(inputs["x_wec"], float)
+        y = np.asarray(inputs["y_wec"], float)
+        Dmin = float(self.options["D_min"])
+        for k, (i, j) in enumerate(self.pairs):
+            outputs["c_wec"][k] = np.hypot(x[i]-x[j], y[i]-y[j]) - Dmin
+
 
 
 class PolygonBoundaryConstraint(om.ExplicitComponent):
-    """
-    Constraint to ensure turbines stay within the defined polygon boundary
-    """
-
+    """Enforce: all points are inside a closed polygon (<= 0)."""
     def initialize(self):
         self.options.declare('boundary', types=np.ndarray)
 
     def setup(self):
-        self.add_input('x', shape=len(x_coordinates))
-        self.add_input('y', shape=len(y_coordinates))
-        self.add_output('inside_polygon', shape=len(x_coordinates))  # Boolean mask (0 if inside, 1 if outside)
+        n = len(x_coordinates)  # WT count
+        self.add_input('x', shape=n)
+        self.add_input('y', shape=n)
+        self.add_output('inside_polygon', shape=n)
 
         self.declare_partials('*', '*', method='fd')
 
-        # Create a Path object from the boundary
-        self.polygon_path = Path(self.options['boundary'])
+        b = np.asarray(self.options['boundary'])
+        verts = np.vstack([b, b[0]])  # close
+        codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
+        self.polygon_path = Path(verts, codes)
 
     def compute(self, inputs, outputs):
-        x = inputs['x']
-        y = inputs['y']
-        points = np.column_stack((x, y))
+        pts = np.column_stack((inputs['x'], inputs['y']))
+        inside = self.polygon_path.contains_points(pts, radius=-1e-9)
+        outputs['inside_polygon'] = (~inside).astype(float)  # want <= 0
 
-        inside = self.polygon_path.contains_points(points)  # returns boolean array
-        outputs['inside_polygon'] = np.logical_not(inside).astype(float)  # constraint: all must be <= 0
+
+
 
 class WecBoundaryConstraint(om.ExplicitComponent):
     """Constraint: all WEC devices must lie inside the given polygon (<= 0)."""
@@ -759,7 +776,7 @@ class WecBoundaryConstraint(om.ExplicitComponent):
     def compute(self, inputs, outputs):
         pts = np.column_stack((inputs['x_wec'], inputs['y_wec']))
         # negative radius -> treat boundary points as inside (robust against FP)
-        inside = self.polygon_path.contains_points(pts, radius=-1e-9)
+        inside = self.polygon_path.contains_points(pts, radius=-1e-5)
         outputs['inside_polygon'] = (~inside).astype(float)   # want <= 0
 
 
@@ -820,9 +837,11 @@ prob.model.add_subsystem('FBWF',
                          FixedBottomWindFarm(), 
                          promotes_inputs=['x', 'y'])
 
-prob.model.add_subsystem('Spacing_Constraint', 
-                         PairWiseSpacing(), 
-                         promotes_inputs=['x', 'y'])
+prob.model.add_subsystem(
+    'WT_Spacing',
+    WtSpacingConstraint(nd=len(x_coordinates), D_min=6*_diameter),
+    promotes_inputs=['x','y']
+)
 
 prob.model.add_subsystem(
     'WF_Boundary',
@@ -837,6 +856,13 @@ prob.model.add_subsystem('OffshoreSystemPlot',
 
 # Add it to the problem
 prob.model.add_subsystem('WEC', wec_comp, promotes_inputs=['x_wec', 'y_wec'])
+
+
+prob.model.add_subsystem(
+    'WEC_Spacing',
+    WecSpacingConstraint(nd=nd_wec, D_min=500), # D = 800m for now
+    promotes_inputs=['x_wec','y_wec']
+)
 
 prob.model.add_subsystem(
     'WEC_Boundary',
@@ -862,8 +888,8 @@ prob.model.set_input_defaults('y', y_coordinates)
 prob.model.set_input_defaults('x_wec', x_wec_init)
 prob.model.set_input_defaults('y_wec', y_wec_init)
 
-prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.001)
-prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.001)
+prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.0001)
+prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.0001)
 
 
 bx0, bx1 = wec_boundary_rect[:,0].min(), wec_boundary_rect[:,0].max()
@@ -874,9 +900,10 @@ prob.model.add_design_var('y_wec', lower=by0, upper=by1, ref=by1, ref0=by0)
 
 prob.model.add_objective('f', scaler=0.01)
 
-prob.model.add_constraint('Spacing_Constraint.Spacing_Matrix', lower=6*_diameter , scaler=0.01)
+prob.model.add_constraint('WT_Spacing.c', lower=0.0)   # no extra scaler
 prob.model.add_constraint('WEC_Boundary.inside_polygon', upper=0.0)
 prob.model.add_constraint('WF_Boundary.inside_polygon', upper=0.0)
+prob.model.add_constraint('WEC_Spacing.c_wec', lower=0.0)
 
 
 
@@ -906,7 +933,8 @@ prob.run_model()
 # Baselines
 wec_aep_init = prob.get_val('WEC.wec_AEP_total').item()
 wf_aep_init  = -prob.get_val('FBWF.AEP').item()  # make positive
-tot_aep_init = wf_aep_init + wec_aep_init
+tot_aep_init = wf_aep_init + wec_aep_init 
+
 
 
 prob.run_driver()
