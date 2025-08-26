@@ -286,7 +286,6 @@ class WecFarmAepComp(om.ExplicitComponent):
 
     def setup(self):
         farm = self.options["farm"]
-        nd = int(len(farm.x))  # number of devices from the farm
 
         # inputs default to the farm's current layout
         self.add_input("x_wec", val=farm.x.copy())
@@ -305,7 +304,8 @@ class WecFarmAepComp(om.ExplicitComponent):
             dy = float(np.diff(site.ds.y).mean())
         else:
             dy = max(1.0, float(np.ptp(farm.y)) / 20.0)
-        fd_step = 0.5 * min(dx, dy)
+
+        fd_step = 0.1 * min(dx, dy)
 
         self.declare_partials(of="wec_AEP_total", wrt=["x_wec", "y_wec"],
                               method="fd", form="central",
@@ -361,7 +361,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
 
 
         # Beginning of the plot definition
-        self.fig, self.ax = plt.subplots(figsize=[8, 4])
+        self.fig, self.ax = plt.subplots(figsize=[16, 8])
         
         # Water depth background on the wider viz grid
         self.im = self.ax.pcolormesh(
@@ -562,7 +562,7 @@ class OffshoreSystemPlot(om.ExplicitComponent):
             rect = Rectangle((xw[i] - rect_w/2.0, yw[i] - rect_h/2.0),
                             rect_w, rect_h,
                             angle=0.0,
-                            facecolor='gold', edgecolor='brown',
+                            facecolor='gold', edgecolor='orange',
                             linewidth=1.0, alpha=1, zorder=8,
                             label='WEC (final)' if i == 0 else None)
             self.ax.add_patch(rect); self.wec_rects.append(rect)
@@ -701,7 +701,7 @@ class SpacingConstraintComp(om.ExplicitComponent):
 
         self.declare_partials(of="c", wrt=["x", "y"],
                               method="fd", form="central",
-                              step_calc="abs", step=50.0)
+                              step_calc="abs", step=10.0)
 
     def compute(self, inputs, outputs):
         x = np.asarray(inputs["x"], float)
@@ -748,14 +748,19 @@ class WecBoundaryConstraint(om.ExplicitComponent):
     def setup(self):
         self.add_input('x_wec', shape=nd_wec)
         self.add_input('y_wec', shape=nd_wec)
-        self.add_output('inside_polygon', shape=nd_wec)  # 0 if inside, 1 if outside
-        self.declare_partials('*', '*', method='fd')      # COBYLA is derivative-free anyway
-        self.polygon_path = Path(self.options['boundary'])
+        self.add_output('inside_polygon', shape=nd_wec)
+        self.declare_partials('*', '*', method='fd')
+
+        b = np.asarray(self.options['boundary'])
+        verts = np.vstack([b, b[0]])  # repeat first vertex
+        codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
+        self.polygon_path = Path(verts, codes)
 
     def compute(self, inputs, outputs):
         pts = np.column_stack((inputs['x_wec'], inputs['y_wec']))
-        inside = self.polygon_path.contains_points(pts)     # True if inside
-        outputs['inside_polygon'] = np.logical_not(inside).astype(float)  # want <= 0
+        # negative radius -> treat boundary points as inside (robust against FP)
+        inside = self.polygon_path.contains_points(pts, radius=-1e-9)
+        outputs['inside_polygon'] = (~inside).astype(float)   # want <= 0
 
 
 # --- WEC site (wave climate) on same UTM frame as Vineyard ---
@@ -790,17 +795,15 @@ wec_site = RandomGridWaveField(H_edges, T_edges, D_edges, xg, yg, smooth_sigma=0
 wec_device = OSWECDevice()
 
 x_wec_init = np.array([
-    390000.0, 408000.0, 402000.0,
-    394000.0, 401000.0, 405300.0,
-    396000.0, 405000.0, 404700.0,
-    399000.0, 403000.0, 390000.0
+    390000.0, 397000.0, 404000.0, 411000.0,
+    390000.0, 397000.0, 404000.0, 411000.0,
+    390000.0, 397000.0, 404000.0, 411000.0
 ], dtype=float)
 
 y_wec_init = np.array([
-    4538000.0, 4534000.0, 4535000.0,
-    4545000.0, 4545000.0, 4545000.0,
-    4550000.0, 4539500.0, 4440000.0,
-    4555000.0, 4455000.0, 4550000.0
+    4533000.0, 4533000.0, 4533000.0, 4533000.0,
+    4544000.0, 4544000.0, 4544000.0, 4544000.0,
+    4555000.0, 4555000.0, 4555000.0, 4555000.0
 ], dtype=float)
 
 nd_wec = len(x_wec_init)
@@ -845,6 +848,7 @@ prob.model.add_subsystem(
 prob.model.add_subsystem('obj', om.ExecComp('f = A - w*W', w=0.5), #w=0.5 is a sane starting weight so WEC moves matter. Increase if you want the optimizer to favor WEC more.
                          promotes_outputs=['f'])
 
+
 prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.wf_AEP')
 prob.model.connect('WEC.wec_AEP_total', 'OffshoreSystemPlot.wec_AEP')
 prob.model.connect('FBWF.AEP', 'obj.A')               # A is negative wind AEP
@@ -858,17 +862,15 @@ prob.model.set_input_defaults('y', y_coordinates)
 prob.model.set_input_defaults('x_wec', x_wec_init)
 prob.model.set_input_defaults('y_wec', y_wec_init)
 
-prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.01)
-prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.01)
+prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.001)
+prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.001)
 
 
-wec_xmin = float(wec_site.ds.x.min()); wec_xmax = float(wec_site.ds.x.max())
-wec_ymin = float(wec_site.ds.y.min()); wec_ymax = float(wec_site.ds.y.max())
+bx0, bx1 = wec_boundary_rect[:,0].min(), wec_boundary_rect[:,0].max()
+by0, by1 = wec_boundary_rect[:,1].min(), wec_boundary_rect[:,1].max()
 
-prob.model.add_design_var('x_wec', lower=wec_xmin, upper=wec_xmax,
-                          ref=wec_xmax, ref0=wec_xmin)
-prob.model.add_design_var('y_wec', lower=wec_ymin, upper=wec_ymax,
-                          ref=wec_ymax, ref0=wec_ymin)
+prob.model.add_design_var('x_wec', lower=bx0, upper=bx1, ref=bx1, ref0=bx0)
+prob.model.add_design_var('y_wec', lower=by0, upper=by1, ref=by1, ref0=by0)
 
 prob.model.add_objective('f', scaler=0.01)
 
@@ -883,11 +885,18 @@ prob.model.add_constraint('WF_Boundary.inside_polygon', upper=0.0)
 
 prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
 
-prob.driver.options['optimizer'] = 'COBYLA'
-prob.driver.options['maxiter'] = 500
-prob.driver.options['tol']     = 1e-4
-prob.driver.opt_settings['maxfun'] = 20000
+# prob.driver.options['optimizer'] = 'COBYLA'
+# prob.driver.options['maxiter'] = 500
+# prob.driver.options['tol']     = 1e-4
+# prob.driver.opt_settings['maxfun'] = 20000
 
+
+prob.driver.options['optimizer'] = 'SLSQP'
+prob.driver.options['maxiter']  = 50        # adjust as you like
+prob.driver.options['tol']      = 1e-6
+# SciPy SLSQP-specific knobs
+prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
+prob.driver.opt_settings['disp'] = True
 
 prob.setup()
 
