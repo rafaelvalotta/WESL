@@ -21,23 +21,38 @@ from py_wake.wind_turbines.generic_wind_turbines import GenericWindTurbine
 from interarray.interface import heuristic_wrapper
 from interarray.farmrepo import g,g1
 
-# --- module-friendly header: lets this script run from anywhere without hardcoding ---
-if __package__ is None or __package__ == "":
-    # Add project root (the parent of "WaveEnergy") to sys.path at runtime
-    this = pathlib.Path(__file__).resolve()
-    # If this is .../optimizer/WaveEnergy/optimize_wec_loc.py, parents[1] == .../optimizer
-    sys.path.insert(0, str(this.parents[1]))
+try:
+    THIS_FILE = pathlib.Path(__file__).resolve()
+except NameError:
+    # e.g. interactive/IPython fallback
+    THIS_FILE = pathlib.Path.cwd()
+
+PROJECT_ROOT = THIS_FILE.parents[0]            # .../optimizer
+PKG_ROOT     = THIS_FILE.parent                # .../optimizer/WaveEnergy (where this file lives)
+
+# ensure project root is importable (for interarray/WaveEnergy local imports)
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# Optional: switch the working dir to project root (only if you really want to)
+# os.chdir(PROJECT_ROOT)
+
+# Data file lives in .../optimizer/test2.nc
+DATA_PATH = PROJECT_ROOT / "test2.nc"
+if not DATA_PATH.exists():
+    raise FileNotFoundError(
+        f"Couldn't find {DATA_PATH}. Put 'test2.nc' in {PROJECT_ROOT} "
+        f"or adjust DATA_PATH accordingly."
+    )
 # -------------------------------------------------------------------------------
+
+# Open the NetCDF water depth dataset (path is robust no matter where you run from)
+ds = xr.open_dataset(str(DATA_PATH))
 
 from WaveEnergy.waveField import RandomGridWaveField
 from WaveEnergy.wec_device import OSWECDevice
 from WaveEnergy.wecFarm import WecFarm
 
-
-
-# Open the NetCDF water depth dataset
-current_dir = os.getcwd() # grabs current directory
-ds = xr.open_dataset(current_dir+'/test2.nc')
 
 # Extract elevation, longitude, and latitude
 elevation = ds.elevation
@@ -531,10 +546,14 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         # plt.scatter(WTcentroid[0],WTcentroid[1],label='Substation',c='red')
         self.ax.scatter(WTcentroid[0],WTcentroid[1],label='Substation',c='red')
 
-        # --- AEP numbers and baselines ---
-        wf_neg = float(inputs['wf_AEP'])   # FBWF.AEP is negative
-        wf = -wf_neg                       # positive WF AEP [GWh]
-        wec = float(inputs['wec_AEP'])     # positive WEC AEP [GWh]
+        # In OffshoreSystemPlot.compute(...)
+        wf_neg = inputs['wf_AEP'].item()   # this is still NEGATIVE (because FBWF.AEP returns -WF_AEP)
+        wec    = inputs['wec_AEP'].item()  # positive
+        wf     = -wf_neg                   # positive (actual WF AEP)
+
+        # ...then use wf, wec as before:
+        tot = wf + wec
+
         
 
         if self.wf_init is None and wf > 0.0:
@@ -542,7 +561,6 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         if self.wec_init is None and wec > 0.0:
             self.wec_init = wec
 
-        tot = wf + wec
         if self.tot_init is None and (self.wf_init is not None) and (self.wec_init is not None):
             self.tot_init = self.wf_init + self.wec_init
 
@@ -731,36 +749,81 @@ class WecSpacingConstraint(om.ExplicitComponent):
 
 
 
+# class PolygonBoundaryConstraint(om.ExplicitComponent):
+#     """Enforce: all points are inside a closed polygon (<= 0)."""
+#     def initialize(self):
+#         self.options.declare('boundary', types=np.ndarray)
+
+#     def setup(self):
+#         n = len(x_coordinates)  # WT count
+#         self.add_input('x', shape=n)
+#         self.add_input('y', shape=n)
+#         self.add_output('inside_polygon', shape=n)
+
+#         self.declare_partials('*', '*', method='fd')
+
+#         b = np.asarray(self.options['boundary'])
+#         verts = np.vstack([b, b[0]])  # close
+#         codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
+#         self.polygon_path = Path(verts, codes)
+
+#     def compute(self, inputs, outputs):
+#         pts = np.column_stack((inputs['x'], inputs['y']))
+#         inside = self.polygon_path.contains_points(pts, radius=-1e-9)
+#         outputs['inside_polygon'] = (~inside).astype(float)  # want <= 0
+
 class PolygonBoundaryConstraint(om.ExplicitComponent):
-    """Enforce: all points are inside a closed polygon (<= 0)."""
+    """Enforce: negative = inside, positive = outside (value is signed distance to boundary)."""
     def initialize(self):
         self.options.declare('boundary', types=np.ndarray)
 
     def setup(self):
-        n = len(x_coordinates)  # WT count
+        n = len(x_coordinates)
         self.add_input('x', shape=n)
         self.add_input('y', shape=n)
-        self.add_output('inside_polygon', shape=n)
-
+        self.add_output('inside_polygon', shape=n)   # keep name for compatibility
         self.declare_partials('*', '*', method='fd')
 
         b = np.asarray(self.options['boundary'])
-        verts = np.vstack([b, b[0]])  # close
+        self.boundary = b.copy()
+        # Path only used to test inside/outside; distance is computed explicitly
+        verts = np.vstack([b, b[0]])
         codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
         self.polygon_path = Path(verts, codes)
 
+        # Precompute edges (Ai -> Bi)
+        self._A = b
+        self._B = np.roll(b, -1, axis=0)
+        self._AB = self._B - self._A
+        self._AB2 = (self._AB[:, 0]**2 + self._AB[:, 1]**2)
+
+    def _signed_dist(self, P):
+        # inside mask (treat near-edge as inside with tiny negative radius)
+        inside = self.polygon_path.contains_points(P, radius=-1e-6)
+
+        # distance to each edge segment
+        dmin = np.full(P.shape[0], np.inf)
+        for Ai, AB, AB2 in zip(self._A, self._AB, self._AB2):
+            AP = P - Ai
+            t = np.clip((AP[:, 0]*AB[0] + AP[:, 1]*AB[1]) / AB2, 0.0, 1.0)
+            C = Ai + t[:, None]*AB
+            d2 = (P[:, 0]-C[:, 0])**2 + (P[:, 1]-C[:, 1])**2
+            d = np.sqrt(d2)
+            dmin = np.minimum(dmin, d)
+        # negative inside, positive outside
+        return np.where(inside, -dmin, dmin)
+
     def compute(self, inputs, outputs):
         pts = np.column_stack((inputs['x'], inputs['y']))
-        inside = self.polygon_path.contains_points(pts, radius=-1e-9)
-        outputs['inside_polygon'] = (~inside).astype(float)  # want <= 0
+        outputs['inside_polygon'] = self._signed_dist(pts)
 
 
 
 
 class WecBoundaryConstraint(om.ExplicitComponent):
-    """Constraint: all WEC devices must lie inside the given polygon (<= 0)."""
+    """Same as above, but for WEC centers."""
     def initialize(self):
-        self.options.declare('boundary', types=np.ndarray)  # Nx2 polygon in UTM
+        self.options.declare('boundary', types=np.ndarray)
 
     def setup(self):
         self.add_input('x_wec', shape=nd_wec)
@@ -769,15 +832,33 @@ class WecBoundaryConstraint(om.ExplicitComponent):
         self.declare_partials('*', '*', method='fd')
 
         b = np.asarray(self.options['boundary'])
-        verts = np.vstack([b, b[0]])  # repeat first vertex
+        self.boundary = b.copy()
+        verts = np.vstack([b, b[0]])
         codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
         self.polygon_path = Path(verts, codes)
 
+        self._A = b
+        self._B = np.roll(b, -1, axis=0)
+        self._AB = self._B - self._A
+        self._AB2 = (self._AB[:, 0]**2 + self._AB[:, 1]**2)
+
+    def _signed_dist(self, P):
+        inside = self.polygon_path.contains_points(P, radius=-1e-6)
+        dmin = np.full(P.shape[0], np.inf)
+        for Ai, AB, AB2 in zip(self._A, self._AB, self._AB2):
+            AP = P - Ai
+            t = np.clip((AP[:, 0]*AB[0] + AP[:, 1]*AB[1]) / AB2, 0.0, 1.0)
+            C = Ai + t[:, None]*AB
+            d2 = (P[:, 0]-C[:, 0])**2 + (P[:, 1]-C[:, 1])**2
+            d = np.sqrt(d2)
+            dmin = np.minimum(dmin, d)
+        return np.where(inside, -dmin, dmin)
+
     def compute(self, inputs, outputs):
         pts = np.column_stack((inputs['x_wec'], inputs['y_wec']))
-        # negative radius -> treat boundary points as inside (robust against FP)
-        inside = self.polygon_path.contains_points(pts, radius=-1e-5)
-        outputs['inside_polygon'] = (~inside).astype(float)   # want <= 0
+        outputs['inside_polygon'] = self._signed_dist(pts)
+
+
 
 
 # --- WEC site (wave climate) on same UTM frame as Vineyard ---
@@ -901,8 +982,12 @@ prob.model.add_design_var('y_wec', lower=by0, upper=by1, ref=by1, ref0=by0)
 prob.model.add_objective('f', scaler=0.01)
 
 prob.model.add_constraint('WT_Spacing.c', lower=0.0)   # no extra scaler
-prob.model.add_constraint('WEC_Boundary.inside_polygon', upper=0.0)
-prob.model.add_constraint('WF_Boundary.inside_polygon', upper=0.0)
+WT_PAD  = 300.0   # turbines must be ≥300 m from WF boundary
+# For WECs, if you want the whole 250×750 m rectangle to fit, use half-diagonal ≈ 395 m + extra:
+WEC_PAD = 450.0   # >= 450 m from WEC boundary so the whole rectangle stays inside
+prob.model.add_constraint('WF_Boundary.inside_polygon',  upper=-WT_PAD)
+prob.model.add_constraint('WEC_Boundary.inside_polygon', upper=-WEC_PAD)
+
 prob.model.add_constraint('WEC_Spacing.c_wec', lower=0.0)
 
 
@@ -928,6 +1013,16 @@ prob.driver.opt_settings['disp'] = True
 prob.setup()
 
 # --- Sanity check: evaluate once so WEC AEP is computed and printed ---
+# quick check that your current seed is inside the polygon
+b = boundary
+verts = np.vstack([b, b[0]])
+codes = np.ones(len(verts), dtype=np.uint8) * Path.LINETO
+codes[0]  = Path.MOVETO
+codes[-1] = Path.CLOSEPOLY
+ppath = Path(verts, codes)
+inside0 = ppath.contains_points(np.c_[x_coordinates, y_coordinates], radius=-1e-6)
+print(f"[WF_Boundary] seed inside: {inside0.sum()}/{inside0.size}")
+
 prob.run_model()
 
 # Baselines
