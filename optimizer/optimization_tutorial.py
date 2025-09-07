@@ -281,7 +281,7 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         x = inputs['x']
         y = inputs['y']
 
-        outputs['AEP'] = -sim_res(x, y).aep().sum()
+        outputs['AEP'] = -sim_res(x, y).aep().sum() # AEP computation 
 
         print(outputs['AEP'])
 
