@@ -7,9 +7,8 @@ from pyproj import Transformer
 import openmdao.api as om
 from scipy.spatial.distance import pdist, squareform
 from matplotlib.path import Path
-from matplotlib.patches import Circle, Rectangle
+from matplotlib.patches import Circle
 import os
-import sys, pathlib
 
 
 # AEP Calculator: PyWake Dependencies
@@ -21,44 +20,15 @@ from py_wake.wind_turbines.generic_wind_turbines import GenericWindTurbine
 from interarray.interface import heuristic_wrapper
 from interarray.farmrepo import g,g1
 
-try:
-    THIS_FILE = pathlib.Path(__file__).resolve()
-except NameError:
-    # e.g. interactive/IPython fallback
-    THIS_FILE = pathlib.Path.cwd()
 
-PROJECT_ROOT = THIS_FILE.parents[0]            # .../optimizer
-PKG_ROOT     = THIS_FILE.parent                # .../optimizer/WaveEnergy (where this file lives)
-
-# ensure project root is importable (for interarray/WaveEnergy local imports)
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-# Optional: switch the working dir to project root (only if you really want to)
-# os.chdir(PROJECT_ROOT)
-
-# Data file lives in .../optimizer/test2.nc
-DATA_PATH = PROJECT_ROOT / "test2.nc"
-if not DATA_PATH.exists():
-    raise FileNotFoundError(
-        f"Couldn't find {DATA_PATH}. Put 'test2.nc' in {PROJECT_ROOT} "
-        f"or adjust DATA_PATH accordingly."
-    )
-# -------------------------------------------------------------------------------
-
-# Open the NetCDF water depth dataset (path is robust no matter where you run from)
-ds = xr.open_dataset(str(DATA_PATH))
-
-from WaveEnergy.waveField import RandomGridWaveField
-from WaveEnergy.wec_device import OSWECDevice
-from WaveEnergy.wecFarm import WecFarm
-
+# Open the NetCDF water depth dataset
+current_dir = os.getcwd() # grabs current directory
+ds = xr.open_dataset(current_dir+'/optimizer/test2.nc')
 
 # Extract elevation, longitude, and latitude
 elevation = ds.elevation
 lon = ds.lon
 lat = ds.lat
-
 
 # Vineyard Wind turbine coordinates (lat and long) in degrees
 x_coordinates = np.array([ -70.46480443069069, -70.44211908841751, -70.44211908841751,
@@ -135,39 +105,11 @@ lon_grid, lat_grid = np.meshgrid(subset_lon, subset_lat)
 points = np.column_stack((lon_grid.ravel(), lat_grid.ravel()))
 values = subset_elevation.values.ravel()
 
-# # Interpolate the data onto the fine grid (original grid)
-# interpolated_elevation = griddata(points, 
-#                                   values, 
-#                                   (lon_grid_fine, lat_grid_fine), 
-#                                   method='cubic')
-
-# --- Visualization grid in UTM to cover WF + WEC area ---
-VIZ_XMIN, VIZ_XMAX = 345000.0, 455000.0   # <-- change to taste
-VIZ_YMIN, VIZ_YMAX = 4.520e6, 4.570e6 
-
-# Use the full NetCDF coverage for interpolation
-min_lon = float(ds.lon.min()); max_lon = float(ds.lon.max())
-min_lat = float(ds.lat.min()); max_lat = float(ds.lat.max())
-
-subset_ds = ds.sel(lon=slice(min_lon, max_lon), lat=slice(min_lat, max_lat))
-subset_lon = subset_ds.lon.values
-subset_lat = subset_ds.lat.values
-
-# lon/lat -> UTM for the bathy points
-subset_x, subset_y = transformer.transform(subset_lon, subset_lat)
-PX, PY = np.meshgrid(subset_x, subset_y)                     # points in UTM
-points = np.column_stack((PX.ravel(), PY.ravel()))
-values = subset_ds.elevation.values.ravel()
-
-# Viz grid in UTM (wider limits)
-nx, ny = 800, 600
-x_viz = np.linspace(VIZ_XMIN, VIZ_XMAX, nx)
-y_viz = np.linspace(VIZ_YMIN, VIZ_YMAX, ny)
-X_viz, Y_viz = np.meshgrid(x_viz, y_viz)
-
-# Interpolate (no nearest fallback—let NaNs show where there’s no data)
-depth_viz = griddata(points, values, (X_viz, Y_viz), method='cubic')
-
+# Interpolate the data onto the fine grid
+interpolated_elevation = griddata(points, 
+                                  values, 
+                                  (lon_grid_fine, lat_grid_fine), 
+                                  method='cubic')
 
 # Conversion again from degrees to utm
 min_lon, min_lat = transformer.transform(min_lon, min_lat)
@@ -254,7 +196,6 @@ wind_turbines = SG_14222() # wind turbine object
 site = VineyardWind() # site object
 sim_res = Bastankhah_PorteAgel_2014(site, wind_turbines, k=0.0324555)
 aep_init = sim_res(x_coordinates, y_coordinates).aep().sum() #AEP
-_diameter = 222.0
 
 # Beginning of WESL optimizer
 class FixedBottomWindFarm(om.ExplicitComponent):
@@ -281,60 +222,10 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         x = inputs['x']
         y = inputs['y']
 
-        outputs['AEP'] = -sim_res(x, y).aep().sum() # AEP computation 
+        outputs['AEP'] = -sim_res(x, y).aep().sum()
 
         print(outputs['AEP'])
 
-
-class WecFarmAepComp(om.ExplicitComponent):
-    """
-    Total WEC AEP [GWh] for a set of device positions (x_wec, y_wec),
-    computed via the provided WecFarm instance.
-
-    Options
-    -------
-    farm : WecFarm  # your existing class (holds site, device, bins, etc.)
-    """
-
-    def initialize(self):
-        self.options.declare("farm")  # instance of your WecFarm
-
-    def setup(self):
-        farm = self.options["farm"]
-
-        # inputs default to the farm's current layout
-        self.add_input("x_wec", val=farm.x.copy())
-        self.add_input("y_wec", val=farm.y.copy())
-
-        # scalar output in GWh
-        self.add_output("wec_AEP_total", val=0.0)
-
-        # finite-difference step ≈ half a grid cell for stable SLSQP gradients
-        site = farm.site
-        if ("x" in site.ds.coords) and (site.ds.x.size > 1):
-            dx = float(np.diff(site.ds.x).mean())
-        else:
-            dx = max(1.0, float(np.ptp(farm.x)) / 20.0)
-        if ("y" in site.ds.coords) and (site.ds.y.size > 1):
-            dy = float(np.diff(site.ds.y).mean())
-        else:
-            dy = max(1.0, float(np.ptp(farm.y)) / 20.0)
-
-        fd_step = 0.1 * min(dx, dy)
-
-        self.declare_partials(of="wec_AEP_total", wrt=["x_wec", "y_wec"],
-                              method="fd", form="central",
-                              step_calc="abs", step=fd_step)
-
-    def compute(self, inputs, outputs):
-        farm = self.options["farm"]
-
-        # update farm layout from optimizer design vars
-        farm.x = np.asarray(inputs["x_wec"], float)
-        farm.y = np.asarray(inputs["y_wec"], float)
-
-        # total AEP in GWh (your farm already does the unit conversion)
-        outputs["wec_AEP_total"] = farm.aep_farm()
 
 class OffshoreSystemPlot(om.ExplicitComponent):
     """
@@ -343,128 +234,68 @@ class OffshoreSystemPlot(om.ExplicitComponent):
 
     def initialize(self):
         self.options.declare('boundary', types=np.ndarray)
-        self.options.declare('spacing_diameter', default=6*222.0, types=(float, int)) # upgrade here for the spacing
-        self.options.declare('wec_diam', default=150.0, types=(float, int))  # WEC spacing ring (diameter)
-        self.options.declare('wec_boundary', types=np.ndarray)
-
+        self.options.declare('spacing_diameter', default=6*222, types=(float, int)) # upgrade here for the spacing
 
     def setup(self):
         n = len(x_coordinates)  # global or pass via options
         self.add_input('x', np.zeros(n))
         self.add_input('y', np.zeros(n))
-        self.add_input('wf_AEP', val=0.0)
-        self.add_input('wec_AEP', val=0.0)
-        self.add_input('x_wec', val=x_wec_init.copy())
-        self.add_input('y_wec', val=y_wec_init.copy())
-
-
+        self.add_input('AEP', val=0.0)
 
         self.iteration = 0
         self.circles = []
         self.turbine_scatter = None  
         self.cableA = None
         self.cableB = None
-        self.wec_init = None
-        self.wec_scatter = None
-        self.wf_init  = None      # <- ADD
-        self.tot_init = None      # <- ADD
-        self.wec_rects = []
-        self.wec_init_rects = []
-        self.wec_move_arrows = []
-
-
 
 
         # Beginning of the plot definition
-        self.fig, self.ax = plt.subplots(figsize=[12, 6])
+        self.fig, self.ax = plt.subplots()
         
-        # Water depth background on the wider viz grid
-        self.im = self.ax.pcolormesh(
-            X_viz, Y_viz, depth_viz,
-            cmap='Blues_r', shading='auto', vmin=-50, vmax=-20
-        )
-        self.im.set_zorder(0)
+        # Defines the water depth map
+        plt.pcolormesh(lon_grid_fine, 
+                    lat_grid_fine, 
+                    interpolated_elevation, 
+                    cmap='Blues_r', 
+                    shading='auto', 
+                    vmin=-50, 
+                    vmax=-20)
 
-
-        self.fig.colorbar(self.im, ax=self.ax, label="Water Depth (m)")
-
-
-        # # Defines the water depth map
-        # plt.pcolormesh(lon_grid_fine, 
-        #             lat_grid_fine, 
-        #             interpolated_elevation, 
-        #             cmap='Blues_r', 
-        #             shading='auto', 
-        #             vmin=-50, 
-        #             vmax=-20)
-
-        # plt.colorbar(label="Water Depth (m)")
+        plt.colorbar(label="Water Depth (m)")
         plt.plot(boundary[:, 0], 
                  boundary[:, 1], 
                  label='Boundary', 
                  c='black', 
                  linestyle = '--')
-        
-        wec_b = self.options['wec_boundary']
-        wec_b_closed = np.vstack([wec_b, wec_b[0]])  # append first point to close loop
-        plt.plot(wec_b_closed[:, 0], wec_b_closed[:, 1],
-                label='WEC boundary', c='k', linestyle=':', lw=1.5)
-
-        self.fig.tight_layout(rect=[0, 0, 1, 0.86])   # a bit more top margin
-        self.fig.subplots_adjust(top=0.82)
+        plt.tight_layout()
         plt.ion()
         self.ax.scatter(x_coordinates,
                         y_coordinates, 
                         c='orange', 
                         marker = '.', 
                         s=8, 
-                        label='WT (init)')
-        
-        # --- Draw WEC initial rectangles (lime) once in setup ---
-        rect_w0, rect_h0 = 250.0, 750.0
-        for i in range(len(x_wec_init)):
-            r0 = Rectangle((x_wec_init[i] - rect_w0/2.0, y_wec_init[i] - rect_h0/2.0),
-                        rect_w0, rect_h0,
-                        facecolor='lime', edgecolor='green',
-                        linewidth=1.0, alpha=0.75, zorder=2,
-                        label='WEC (init)' if i == 0 else None)
-            self.ax.add_patch(r0)
-            self.wec_init_rects.append(r0)
-
+                        label='Initial Layout')
         self.text_box = self.ax.text(0.01, 
                                      0.99, 
                                      '', 
                                      transform=self.ax.transAxes, 
                                      verticalalignment='top', 
-                                     fontsize=8, 
+                                     fontsize=10, 
                                      bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
         self.ax.set_xlabel('X [m]')
         self.ax.set_ylabel('Y [m]')
-        # Use the wider inspection window
-        # self.ax.set_xlim(VIZ_XMIN, VIZ_XMAX)
-        # self.ax.set_ylim(VIZ_YMIN, VIZ_YMAX)
-        self.ax.set_xlim(360000, 415000)
-        self.ax.set_ylim(4.53E6, 4.560E6)
-        self.ax.set_aspect('equal', adjustable='box')
+        self.ax.set_xlim(360000, 390000)
+        self.ax.set_ylim(4.53E6, 4.56E6)
 
     def compute(self, inputs, outputs):
-        
-
         x = inputs['x']
         y = inputs['y']
+        aep = float(inputs['AEP'])
         spacing_radius = self.options['spacing_diameter'] / 2
 
         # Remove previous turbine positions (except for the initial layout)
         if self.turbine_scatter is not None:
             self.turbine_scatter.remove()
-
-        if self.wec_scatter is not None:
-            self.wec_scatter.remove()
-
-        # Remove old WEC rectangles
-        for r in getattr(self, 'wec_rects', []):
-            r.remove()
-        self.wec_rects = []
 
         if self.cableA is not None:
             for line in self.cableA:
@@ -481,16 +312,11 @@ class OffshoreSystemPlot(om.ExplicitComponent):
             circ.remove()
         self.circles.clear()
 
-        # REMOVE OLD ARROWS (ADD THIS BLOCK)
-        for a in getattr(self, 'wec_move_arrows', []):
-            a.remove()
-        self.wec_move_arrows = []
-
         self.turbine_scatter = self.ax.scatter(x,
                                                y,
                                                marker = '2', 
                                                c='black', 
-                                               label='WT (final)')
+                                               label='Current Design')
 
         # Draw new spacing circles
         for xi, yi in zip(x, y):
@@ -546,73 +372,6 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         # plt.scatter(WTcentroid[0],WTcentroid[1],label='Substation',c='red')
         self.ax.scatter(WTcentroid[0],WTcentroid[1],label='Substation',c='red')
 
-        # In OffshoreSystemPlot.compute(...)
-        wf_neg = inputs['wf_AEP'].item()   # this is still NEGATIVE (because FBWF.AEP returns -WF_AEP)
-        wec    = inputs['wec_AEP'].item()  # positive
-        wf     = -wf_neg                   # positive (actual WF AEP)
-
-        # ...then use wf, wec as before:
-        tot = wf + wec
-
-        
-
-        if self.wf_init is None and wf > 0.0:
-            self.wf_init = wf
-        if self.wec_init is None and wec > 0.0:
-            self.wec_init = wec
-
-        if self.tot_init is None and (self.wf_init is not None) and (self.wec_init is not None):
-            self.tot_init = self.wf_init + self.wec_init
-
-        wf_pct  = 0.0 if not self.wf_init  else (wf  / self.wf_init  - 1.0) * 100.0
-        wec_pct = 0.0 if not self.wec_init else (wec / self.wec_init - 1.0) * 100.0
-        tot_pct = 0.0 if not self.tot_init else (tot / self.tot_init - 1.0) * 100.0
-
-
-        # --- Draw WEC rectangles + spacing ring ---
-        xw = np.asarray(inputs['x_wec'])
-        yw = np.asarray(inputs['y_wec'])
-        rect_w = 250   # thin
-        rect_h = 750.0   # tall
-        # wec_r  = float(self.options['wec_diam']) / 2.0
-
-        for i in range(len(xw)):
-            rect = Rectangle((xw[i] - rect_w/2.0, yw[i] - rect_h/2.0),
-                            rect_w, rect_h,
-                            angle=0.0,
-                            facecolor='gold', edgecolor='orange',
-                            linewidth=1.0, alpha=1, zorder=8,
-                            label='WEC (final)' if i == 0 else None)
-            self.ax.add_patch(rect); self.wec_rects.append(rect)
-
-        # Draw arrows from initial -> final WEC positions (simple and clear)
-        x0 = np.asarray(x_wec_init)
-        y0 = np.asarray(y_wec_init)
-
-        n = len(x0)
-        for i in range(n):
-            arr = self.ax.annotate(
-                '', xy=(xw[i], yw[i]), xytext=(x0[i], y0[i]),
-                arrowprops=dict(arrowstyle='-|>', linestyle=(0, (6, 3)), lw=0.75, color='black', shrinkA=0, shrinkB=0)
-            )
-            self.wec_move_arrows.append(arr)
-
-            # ring = Circle((xw[i], yw[i]), wec_r, edgecolor='gold',
-            #             linestyle='--', facecolor='none',
-            #             linewidth=1.0, alpha=0.9,
-            #             label='WEC spacing' if i == 0 else None)
-            # self.ax.add_patch(ring); self.wec_rects.append(ring)
-
-        # --- Update textbox (WF, WEC, Total) ---
-        self.text_box.set_text(
-            f"Iter: {self.iteration}\n"
-            f"WF  AEP: {wf:.3f} GWh ({wf_pct:.2f}%)\n"
-            f"WEC AEP: {wec:.3f} GWh ({wec_pct:.2f}%)\n"
-            f"Total  : {tot:.3f} GWh ({tot_pct:.2f}%)"
-        )
-
-
-
         # colors = ['b','g','r','c','m','y','k','bg','gr','rc','cm']
         colors = ['y', '#b87333' ]
 
@@ -636,20 +395,20 @@ class OffshoreSystemPlot(om.ExplicitComponent):
                 elif i == 1:
                     self.cableB = self.ax.plot(xs,ys,'{}'.format(colors[i]),linewidth=1.2)
 
+        # Update iteration info
+        self.text_box.set_text(
+            f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
+        )
         # plt.show()
 
         plt.draw()
         plt.pause(0.001) 
-        # Clear any previous figure-level legends to avoid stacking
-        for lg in list(self.fig.legends):
-            lg.remove()
-
+        # self.ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
+        # Rebuild legend without duplicates
         handles, labels = self.ax.get_legend_handles_labels()
-        # Deduplicate by label
-        by_label = {lab: h for h, lab in zip(handles, labels) if lab}
-        self.fig.legend(by_label.values(), by_label.keys(),
-                        loc='upper center', bbox_to_anchor=(0.5, 0.995),
-                        ncol=4, fontsize=8, frameon=True)
+        by_label = dict(zip(labels, handles))  # removes duplicates based on label
+        self.ax.legend(by_label.values(), by_label.keys(),
+                    loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
 
 
         # self.plot_electrical_layout = plot_electrical_cables1(x,y,iter=1)
@@ -660,395 +419,104 @@ class OffshoreSystemPlot(om.ExplicitComponent):
         self.iteration += 1
 
 
-# class PairWiseSpacing(om.ExplicitComponent):
-#     """
-#     Pair-Wise Spacing Constraint Component
-#     """
-#     def setup(self):
-
-#         # X-Layout Coordinates
-#         self.add_input('x', np.zeros(len(x_coordinates)))
-
-#         # Y-Layout Coordinates
-#         self.add_input('y', np.zeros(len(y_coordinates)))
-        
-#         self.add_output('Spacing_Matrix', np.zeros(len(x_coordinates)*len(x_coordinates)-len(x_coordinates)))
-
-#     def setup_partials(self):
-        
-#         self.declare_partials('*', '*', method='fd')
-
-#     def compute(self, inputs, outputs):
-#         x = inputs['x']
-#         y = inputs['y']
-
-#         points = np.column_stack((x, y))  
-
-#         dist_matrix = squareform(pdist(points))
-
-#         flat_dist_matrix = dist_matrix.reshape(-1)
-#         nonzero_values = flat_dist_matrix[flat_dist_matrix != 0]
-
-#         d_min = 6*222
-
-#         if np.any(nonzero_values < d_min):
-#             print("Some values below the minimum were found.")
-#         else:
-#             print("All nonzero values are above the minimum.")
-
-#         min_spac = min(nonzero_values)/80
-
-#         print(f"Minimum Spacing is {min_spac:.2f}D")
-
-#         outputs['Spacing_Matrix'] = nonzero_values
-
-class WtSpacingConstraint(om.ExplicitComponent):
-    """Enforce d_ij >= D_min for all i<j using c = d_ij - D_min >= 0."""
-    def initialize(self):
-        self.options.declare("nd", types=int)
-        self.options.declare("D_min", types=(float, int))
-
+class PairWiseSpacing(om.ExplicitComponent):
+    """
+    Pair-Wise Spacing Constraint Component
+    """
     def setup(self):
-        nd = self.options["nd"]
-        self.pairs = [(i, j) for i in range(nd) for j in range(i+1, nd)]
-        self.add_input("x", val=np.zeros(nd))
-        self.add_input("y", val=np.zeros(nd))
-        self.add_output("c", val=np.zeros(len(self.pairs)))
-        # small FD step; SLSQP uses gradients
-        self.declare_partials(of="c", wrt=["x", "y"], method="fd", form="central", step=10.0)
+
+        # X-Layout Coordinates
+        self.add_input('x', np.zeros(len(x_coordinates)))
+
+        # Y-Layout Coordinates
+        self.add_input('y', np.zeros(len(y_coordinates)))
+        
+        self.add_output('Spacing_Matrix', np.zeros(len(x_coordinates)*len(x_coordinates)-len(x_coordinates)))
+
+    def setup_partials(self):
+        
+        self.declare_partials('*', '*', method='fd')
 
     def compute(self, inputs, outputs):
-        x = np.asarray(inputs["x"], float)
-        y = np.asarray(inputs["y"], float)
-        Dmin = float(self.options["D_min"])
-        c = outputs["c"]
-        for k, (i, j) in enumerate(self.pairs):
-            dij = np.hypot(x[i]-x[j], y[i]-y[j])  # includes zeros if overlapped
-            c[k] = dij - Dmin
+        x = inputs['x']
+        y = inputs['y']
 
+        points = np.column_stack((x, y))  
 
-class WecSpacingConstraint(om.ExplicitComponent):
-    def initialize(self):
-        self.options.declare("nd", types=int)
-        self.options.declare("D_min", types=(float, int))
+        dist_matrix = squareform(pdist(points))
 
-    def setup(self):
-        nd = self.options["nd"]
-        self.pairs = [(i, j) for i in range(nd) for j in range(i+1, nd)]
-        self.add_input("x_wec", val=np.zeros(nd))
-        self.add_input("y_wec", val=np.zeros(nd))
-        self.add_output("c_wec", val=np.zeros(len(self.pairs)))
-        self.declare_partials(of="c_wec", wrt=["x_wec", "y_wec"], method="fd", form="central", step=10.0)
+        flat_dist_matrix = dist_matrix.reshape(-1)
+        nonzero_values = flat_dist_matrix[flat_dist_matrix != 0]
 
-    def compute(self, inputs, outputs):
-        x = np.asarray(inputs["x_wec"], float)
-        y = np.asarray(inputs["y_wec"], float)
-        Dmin = float(self.options["D_min"])
-        for k, (i, j) in enumerate(self.pairs):
-            outputs["c_wec"][k] = np.hypot(x[i]-x[j], y[i]-y[j]) - Dmin
+        d_min = 6*222
 
+        if np.any(nonzero_values < d_min):
+            print("Some values below the minimum were found.")
+        else:
+            print("All nonzero values are above the minimum.")
 
+        min_spac = min(nonzero_values)/80
 
-# class PolygonBoundaryConstraint(om.ExplicitComponent):
-#     """Enforce: all points are inside a closed polygon (<= 0)."""
-#     def initialize(self):
-#         self.options.declare('boundary', types=np.ndarray)
+        print(f"Minimum Spacing is {min_spac:.2f}D")
 
-#     def setup(self):
-#         n = len(x_coordinates)  # WT count
-#         self.add_input('x', shape=n)
-#         self.add_input('y', shape=n)
-#         self.add_output('inside_polygon', shape=n)
+        outputs['Spacing_Matrix'] = nonzero_values
 
-#         self.declare_partials('*', '*', method='fd')
-
-#         b = np.asarray(self.options['boundary'])
-#         verts = np.vstack([b, b[0]])  # close
-#         codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
-#         self.polygon_path = Path(verts, codes)
-
-#     def compute(self, inputs, outputs):
-#         pts = np.column_stack((inputs['x'], inputs['y']))
-#         inside = self.polygon_path.contains_points(pts, radius=-1e-9)
-#         outputs['inside_polygon'] = (~inside).astype(float)  # want <= 0
 
 class PolygonBoundaryConstraint(om.ExplicitComponent):
-    """Enforce: negative = inside, positive = outside (value is signed distance to boundary)."""
+    """
+    Constraint to ensure turbines stay within the defined polygon boundary
+    """
+
     def initialize(self):
         self.options.declare('boundary', types=np.ndarray)
 
     def setup(self):
-        n = len(x_coordinates)
-        self.add_input('x', shape=n)
-        self.add_input('y', shape=n)
-        self.add_output('inside_polygon', shape=n)   # keep name for compatibility
+        self.add_input('x', shape=len(x_coordinates))
+        self.add_input('y', shape=len(y_coordinates))
+        self.add_output('inside_polygon', shape=len(x_coordinates))  # Boolean mask (0 if inside, 1 if outside)
+
         self.declare_partials('*', '*', method='fd')
 
-        b = np.asarray(self.options['boundary'])
-        self.boundary = b.copy()
-        # Path only used to test inside/outside; distance is computed explicitly
-        verts = np.vstack([b, b[0]])
-        codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
-        self.polygon_path = Path(verts, codes)
-
-        # Precompute edges (Ai -> Bi)
-        self._A = b
-        self._B = np.roll(b, -1, axis=0)
-        self._AB = self._B - self._A
-        self._AB2 = (self._AB[:, 0]**2 + self._AB[:, 1]**2)
-
-    def _signed_dist(self, P):
-        # inside mask (treat near-edge as inside with tiny negative radius)
-        inside = self.polygon_path.contains_points(P, radius=-1e-6)
-
-        # distance to each edge segment
-        dmin = np.full(P.shape[0], np.inf)
-        for Ai, AB, AB2 in zip(self._A, self._AB, self._AB2):
-            AP = P - Ai
-            t = np.clip((AP[:, 0]*AB[0] + AP[:, 1]*AB[1]) / AB2, 0.0, 1.0)
-            C = Ai + t[:, None]*AB
-            d2 = (P[:, 0]-C[:, 0])**2 + (P[:, 1]-C[:, 1])**2
-            d = np.sqrt(d2)
-            dmin = np.minimum(dmin, d)
-        # negative inside, positive outside
-        return np.where(inside, -dmin, dmin)
+        # Create a Path object from the boundary
+        self.polygon_path = Path(self.options['boundary'])
 
     def compute(self, inputs, outputs):
-        pts = np.column_stack((inputs['x'], inputs['y']))
-        outputs['inside_polygon'] = self._signed_dist(pts)
+        x = inputs['x']
+        y = inputs['y']
+        points = np.column_stack((x, y))
 
+        inside = self.polygon_path.contains_points(points)  # returns boolean array
+        outputs['inside_polygon'] = np.logical_not(inside).astype(float)  # constraint: all must be <= 0
 
+if __name__ == "__main__":
+    prob = om.Problem()
 
+    prob.model.add_subsystem('FBWF', 
+                            FixedBottomWindFarm(), 
+                            promotes_inputs=['x', 'y'])
 
-class WecBoundaryConstraint(om.ExplicitComponent):
-    """Same as above, but for WEC centers."""
-    def initialize(self):
-        self.options.declare('boundary', types=np.ndarray)
+    prob.model.add_subsystem('Spacing_Constraint', 
+                            PairWiseSpacing(), 
+                            promotes_inputs=['x', 'y'])
 
-    def setup(self):
-        self.add_input('x_wec', shape=nd_wec)
-        self.add_input('y_wec', shape=nd_wec)
-        self.add_output('inside_polygon', shape=nd_wec)
-        self.declare_partials('*', '*', method='fd')
+    prob.model.add_subsystem('OffshoreSystemPlot',
+                            OffshoreSystemPlot(boundary=boundary),
+                            promotes_inputs=['x', 'y']
+    )
 
-        b = np.asarray(self.options['boundary'])
-        self.boundary = b.copy()
-        verts = np.vstack([b, b[0]])
-        codes = [Path.MOVETO] + [Path.LINETO]*(len(b)-1) + [Path.CLOSEPOLY]
-        self.polygon_path = Path(verts, codes)
+    prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.AEP')
 
-        self._A = b
-        self._B = np.roll(b, -1, axis=0)
-        self._AB = self._B - self._A
-        self._AB2 = (self._AB[:, 0]**2 + self._AB[:, 1]**2)
+    prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
 
-    def _signed_dist(self, P):
-        inside = self.polygon_path.contains_points(P, radius=-1e-6)
-        dmin = np.full(P.shape[0], np.inf)
-        for Ai, AB, AB2 in zip(self._A, self._AB, self._AB2):
-            AP = P - Ai
-            t = np.clip((AP[:, 0]*AB[0] + AP[:, 1]*AB[1]) / AB2, 0.0, 1.0)
-            C = Ai + t[:, None]*AB
-            d2 = (P[:, 0]-C[:, 0])**2 + (P[:, 1]-C[:, 1])**2
-            d = np.sqrt(d2)
-            dmin = np.minimum(dmin, d)
-        return np.where(inside, -dmin, dmin)
+    prob.driver.options['optimizer'] = 'COBYLA'
 
-    def compute(self, inputs, outputs):
-        pts = np.column_stack((inputs['x_wec'], inputs['y_wec']))
-        outputs['inside_polygon'] = self._signed_dist(pts)
+    prob.model.set_input_defaults('x', x_coordinates)
+    prob.model.set_input_defaults('y', y_coordinates)
+    prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.01)
+    prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.01)
+    prob.model.add_objective('FBWF.AEP',  scaler=0.01)
+    prob.model.add_constraint('Spacing_Constraint.Spacing_Matrix', scaler=0.01)
 
+    prob.setup()
 
-
-
-# --- WEC site (wave climate) on same UTM frame as Vineyard ---
-# Bin edges (coarse is fine for step 1)
-H_edges = np.linspace(0.5, 4.0, 16)
-T_edges = np.linspace(5.0, 10.0, 16)
-D_edges = np.linspace(0.0, 90.0, 13)
-
-# WEC wavefield grid to the RIGHT of the wind farm
-xg = np.linspace(387500.0, 415000.0, 41)
-yg = np.linspace(4530000.0, 4560000.0, 41)
-# --- Simple WEC rectangular boundary (slightly smaller than the wave grid) ---
-pad = 1000.0  # shrink on each side [m]; tweak as you like
-wec_xmin = float(xg.min()) + pad
-wec_xmax = float(xg.max()) - pad
-wec_ymin = float(yg.min()) + pad 
-wec_ymax = float(yg.max()) - pad 
-
-# rectangle as a polygon (clockwise)
-wec_boundary_rect = np.array([
-    [wec_xmin, wec_ymin],
-    [wec_xmax, wec_ymin],
-    [wec_xmax, wec_ymax],
-    [wec_xmin, wec_ymax],
-])
-
-
-
-wec_site = RandomGridWaveField(H_edges, T_edges, D_edges, xg, yg, smooth_sigma=0.5)
-
-# Device (alpha can be tuned later; 5.0 usually lands ~2–3 GWh/device with your surrogate)
-wec_device = OSWECDevice()
-
-x_wec_init = np.array([
-    390000.0, 397000.0, 404000.0, 411000.0,
-    390000.0, 397000.0, 404000.0, 411000.0,
-    390000.0, 397000.0, 404000.0, 411000.0
-], dtype=float)
-
-y_wec_init = np.array([
-    4533000.0, 4533000.0, 4533000.0, 4533000.0,
-    4544000.0, 4544000.0, 4544000.0, 4544000.0,
-    4555000.0, 4555000.0, 4555000.0, 4555000.0
-], dtype=float)
-
-nd_wec = len(x_wec_init)
-
-# Instantiate, then set options explicitly
-
-wec_farm = WecFarm(site=wec_site, x=x_wec_init, y=y_wec_init, device=wec_device)
-# Create the component and pass ONLY the farm option
-wec_comp = WecFarmAepComp()
-wec_comp.options['farm'] = wec_farm
-
-prob = om.Problem()
-prob.model.add_subsystem('FBWF', 
-                         FixedBottomWindFarm(), 
-                         promotes_inputs=['x', 'y'])
-
-prob.model.add_subsystem(
-    'WT_Spacing',
-    WtSpacingConstraint(nd=len(x_coordinates), D_min=6*_diameter),
-    promotes_inputs=['x','y']
-)
-
-prob.model.add_subsystem(
-    'WF_Boundary',
-    PolygonBoundaryConstraint(boundary=boundary),
-    promotes_inputs=['x', 'y']
-)
-
-prob.model.add_subsystem('OffshoreSystemPlot',
-                         OffshoreSystemPlot(boundary=boundary, wec_boundary=wec_boundary_rect),
-                         promotes_inputs=['x', 'y', 'x_wec', 'y_wec']
-)
-
-# Add it to the problem
-prob.model.add_subsystem('WEC', wec_comp, promotes_inputs=['x_wec', 'y_wec'])
-
-
-prob.model.add_subsystem(
-    'WEC_Spacing',
-    WecSpacingConstraint(nd=nd_wec, D_min=500), # D = 800m for now
-    promotes_inputs=['x_wec','y_wec']
-)
-
-prob.model.add_subsystem(
-    'WEC_Boundary',
-    WecBoundaryConstraint(boundary=wec_boundary_rect),
-    promotes_inputs=['x_wec', 'y_wec']
-)
-
-# Combined objective: minimize wind_AEP_neg - w * wec_AEP
-prob.model.add_subsystem('obj', om.ExecComp('f = A - w*W', w=0.5), #w=0.5 is a sane starting weight so WEC moves matter. Increase if you want the optimizer to favor WEC more.
-                         promotes_outputs=['f'])
-
-
-prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.wf_AEP')
-prob.model.connect('WEC.wec_AEP_total', 'OffshoreSystemPlot.wec_AEP')
-prob.model.connect('FBWF.AEP', 'obj.A')               # A is negative wind AEP
-prob.model.connect('WEC.wec_AEP_total', 'obj.W')      # W is positive WEC AEP
-
-
-
-
-prob.model.set_input_defaults('x', x_coordinates)
-prob.model.set_input_defaults('y', y_coordinates)
-prob.model.set_input_defaults('x_wec', x_wec_init)
-prob.model.set_input_defaults('y_wec', y_wec_init)
-
-prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.0001)
-prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.0001)
-
-
-bx0, bx1 = wec_boundary_rect[:,0].min(), wec_boundary_rect[:,0].max()
-by0, by1 = wec_boundary_rect[:,1].min(), wec_boundary_rect[:,1].max()
-
-prob.model.add_design_var('x_wec', lower=bx0, upper=bx1, ref=bx1, ref0=bx0)
-prob.model.add_design_var('y_wec', lower=by0, upper=by1, ref=by1, ref0=by0)
-
-prob.model.add_objective('f', scaler=0.01)
-
-prob.model.add_constraint('WT_Spacing.c', lower=0.0)   # no extra scaler
-WT_PAD  = 300.0   # turbines must be ≥300 m from WF boundary
-# For WECs, if you want the whole 250×750 m rectangle to fit, use half-diagonal ≈ 395 m + extra:
-WEC_PAD = 450.0   # >= 450 m from WEC boundary so the whole rectangle stays inside
-prob.model.add_constraint('WF_Boundary.inside_polygon',  upper=-WT_PAD)
-prob.model.add_constraint('WEC_Boundary.inside_polygon', upper=-WEC_PAD)
-
-prob.model.add_constraint('WEC_Spacing.c_wec', lower=0.0)
-
-
-
-
-
-
-prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
-
-# prob.driver.options['optimizer'] = 'COBYLA'
-# prob.driver.options['maxiter'] = 500
-# prob.driver.options['tol']     = 1e-4
-# prob.driver.opt_settings['maxfun'] = 20000
-
-
-prob.driver.options['optimizer'] = 'SLSQP'
-prob.driver.options['maxiter']  = 50        # adjust as you like
-prob.driver.options['tol']      = 1e-6
-# SciPy SLSQP-specific knobs
-prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
-prob.driver.opt_settings['disp'] = True
-
-prob.setup()
-
-# --- Sanity check: evaluate once so WEC AEP is computed and printed ---
-# quick check that your current seed is inside the polygon
-b = boundary
-verts = np.vstack([b, b[0]])
-codes = np.ones(len(verts), dtype=np.uint8) * Path.LINETO
-codes[0]  = Path.MOVETO
-codes[-1] = Path.CLOSEPOLY
-ppath = Path(verts, codes)
-inside0 = ppath.contains_points(np.c_[x_coordinates, y_coordinates], radius=-1e-6)
-print(f"[WF_Boundary] seed inside: {inside0.sum()}/{inside0.size}")
-
-prob.run_model()
-
-# Baselines
-wec_aep_init = prob.get_val('WEC.wec_AEP_total').item()
-wf_aep_init  = -prob.get_val('FBWF.AEP').item()  # make positive
-tot_aep_init = wf_aep_init + wec_aep_init 
-
-
-
-prob.run_driver()
-
-wec_aep_opt = prob.get_val('WEC.wec_AEP_total').item()
-wf_aep_opt  = -prob.get_val('FBWF.AEP').item()
-tot_aep_opt = wf_aep_opt + wec_aep_opt
-
-wec_d  = wec_aep_opt - wec_aep_init
-wf_d   = wf_aep_opt  - wf_aep_init
-tot_d  = tot_aep_opt - tot_aep_init
-
-wec_pct = 0.0 if wec_aep_init == 0 else (wec_aep_opt / wec_aep_init - 1.0) * 100.0
-wf_pct  = 0.0 if wf_aep_init  == 0 else (wf_aep_opt  / wf_aep_init  - 1.0) * 100.0
-tot_pct = 0.0 if tot_aep_init == 0 else (tot_aep_opt / tot_aep_init - 1.0) * 100.0
-
-print("\n=== AEP Summary (GWh) ===")
-print(f"WF   : init={wf_aep_init:.3f}  opt={wf_aep_opt:.3f}  Δ={wf_d:.3f}  ({wf_pct:.2f}%)")
-print(f"WEC  : init={wec_aep_init:.3f} opt={wec_aep_opt:.3f} Δ={wec_d:.3f} ({wec_pct:.2f}%)")
-print(f"TOTAL: init={tot_aep_init:.3f} opt={tot_aep_opt:.3f} Δ={tot_d:.3f} ({tot_pct:.2f}%)")
-
-
+    prob.run_driver()

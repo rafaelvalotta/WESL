@@ -3,8 +3,7 @@ from py_wake.wind_turbines import WindTurbines
 from py_wake.flow_map import XYGrid
 import os
 import geojson
-import pyproj
-import random
+from pyproj import Transformer
 import matplotlib.pyplot as plt
 
 
@@ -22,22 +21,22 @@ def geoJson_coordinates_data(filepath):
     return geojson_data_geometry["geometry"]["coordinates"]
 
 def convert_LatLong_to_utm(lon, lat):
-    # Define the WGS84 CRS
-    wgs84 = pyproj.CRS('EPSG:4326')
-    
-    # Determine the UTM zone and hemisphere
-    utm_zone = int((lon + 180) / 6) + 1
-    hemisphere = 'N' if lat >= 0 else 'S'
-    
-    # Construct the appropriate EPSG code for UTM
-    utm_epsg_code = f'EPSG:{32600 + utm_zone if hemisphere == "N" else 32700 + utm_zone}'
-    utm = pyproj.CRS(utm_epsg_code)
-    
-    # Create a transformer and convert coordinates
-    transformer = pyproj.Transformer.from_crs(wgs84, utm, always_xy=True)
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:32619", always_xy=True)
     easting, northing = transformer.transform(lon, lat)
     return (easting, northing)
 
+def get_boundary_points(filepath):
+    # Extract the boundary coordinates from the GeoJSON file.
+    coords = geoJson_coordinates_data(filepath)
+    
+    # If the coordinates are nested (e.g., Polygon: [ [ [lon, lat], ... ] ]), use the first ring.
+    if isinstance(coords[0][0], list):
+        coords = coords[0]
+    
+    # Convert each point from (lon, lat) to UTM.
+    utm_boundary = [list(convert_LatLong_to_utm(lon, lat)) for lon, lat in coords]
+    
+    return utm_boundary
 
 
 def get_only_boundary(filepath):
