@@ -4,26 +4,97 @@ from py_wake.wind_turbines import WindTurbine
 from py_wake.wind_turbines.generic_wind_turbines import GenericWindTurbine
 from py_wake.wind_turbines.power_ct_functions import PowerCtTabular
 from py_wake.turbulence_models import STF2017TurbulenceModel, IECWeight
-from py_wake.deficit_models.gaussian import BastankhahGaussian, ZongGaussian, TurboGaussianDeficit, NiayifarGaussian, BlondelSuperGaussianDeficit2023
-from py_wake import NOJ, Fuga
-from py_wake.wind_farm_models import PropagateDownwind
-from py_wake.deficit_models import TurboNOJDeficit
+from py_wake.deficit_models.gaussian import *
+from py_wake import NOJ, Fuga, Nygaard_2022
+from py_wake.wind_farm_models import PropagateDownwind, All2AllIterative
+from py_wake.deficit_models import TurboNOJDeficit, GCLDeficit, SelfSimilarityDeficit2020
 from py_wake.superposition_models import LinearSum
 from py_wake.tests.test_files import tfp 
+from py_wake.literature import *
+from py_wake.literature.gaussian_models import *
+from py_wake.literature.noj import Jensen_1983
 
 
 
 # DEFICIT MODELS
-
-def noj_WF_model(site, windTurbines):
-    wf_model = NOJ(site, windTurbines)
-    model_name = 'NOJ'
-    return wf_model, model_name
-
-def turboNoj_WF_model(site, windTurbines):
-    wf_model = PropagateDownwind(site, windTurbines, wake_deficitModel=TurboNOJDeficit(use_effective_ws=True),
+def gcl_WF_model(site, windTurbines):
+    wf_model = PropagateDownwind(site, windTurbines, wake_deficitModel=GCLDeficit(use_effective_ws=True, use_effective_ti=True),
                                  superpositionModel=LinearSum(), turbulenceModel=STF2017TurbulenceModel()
                                  )
+    return wf_model
+
+
+def nygaard_WF_model(site, windTurbines):
+    wf_model = Nygaard_2022(site, windTurbines)
+
+    # PropagateDownwind(site, windTurbines,
+    #                 wake_deficitModel=TurboGaussianDeficit(
+    #                     use_effective_ti=False,
+    #                     use_effective_ws=False,
+    #                     groundModel=Mirror(superpositionModel=SquaredSum()),
+    #                     rotorAvgModel=GaussianOverlapAvgModel(),
+    #                     ctlim=0.96
+    #                     A=0.04
+    #                 ),
+    #                 blockage_deficitModel=None,
+    #                 rotorAvgModel=None,
+    #                 superpositionModel=SquaredSum()                                             
+    #             )
+    return wf_model
+
+def nygaard_original_model(site, windTurbines):
+    wf_model = All2AllIterative(site, windTurbines,
+                    wake_deficitModel=TurboGaussianDeficit(
+                        use_effective_ti=False,
+                        use_effective_ws=False,
+                        groundModel=Mirror(),
+                    ),
+                    blockage_deficitModel=SelfSimilarityDeficit2020(
+                        groundModel=Mirror(),
+                        superpositionModel=LinearSum()
+                    ),
+                    rotorAvgModel=GaussianOverlapAvgModel(),
+                    superpositionModel=SquaredSum()
+                                                        
+                )
+    return wf_model
+
+def nygaard_paul_revised_model(site, windTurbines):
+    wf_model = All2AllIterative(site, windTurbines,
+                    wake_deficitModel=TurboGaussianDeficit(
+                        use_effective_ti=False,
+                        use_effective_ws=False,
+                        groundModel=None,
+                        A=0.06
+                    ),
+                    blockage_deficitModel=SelfSimilarityDeficit2020(
+                        groundModel=Mirror(),
+                        superpositionModel=LinearSum()
+                    ),
+                    rotorAvgModel=GaussianOverlapAvgModel(),
+                    superpositionModel=SquaredSum()
+                                                        
+                )    
+    return wf_model
+
+def carbajo_WF_model(site, windTurbines):
+
+
+    wf_model = CarbajoFuertes_etal_2018(site, windTurbines)
+    return wf_model
+
+def noj_WF_model(site, windTurbines):
+    wf_model = Jensen_1983(site, windTurbines)
+    return wf_model
+
+def turboNoj_WF_model(site, windTurbines):
+    wf_model = PropagateDownwind(site,windTurbines=windTurbines,
+                                        rotorAvgModel=None, 
+                                        wake_deficitModel=TurboNOJDeficit(ct2a=ct2a_madsen, A=.6, cTI=[1.5, 0.8], use_effective_ws=True),
+                                        superpositionModel=SquaredSum(),
+                                        turbulenceModel=None)
+
+
     return wf_model
 
 def fuga_WF_model(site, windTurbines):
@@ -34,16 +105,17 @@ def fuga_WF_model(site, windTurbines):
 # THE GAUSSIAN WAKE DEFICIT MODELS
 
 def bastankhah_WF_model(site, windTurbines):
-    wf_model = BastankhahGaussian(site, windTurbines, use_effective_ws=True)
+    wf_model = Bastankhah_PorteAgel_2014(site, windTurbines, k=0.0324555)
     return wf_model
 
 def zong_WF_model(site, windTurbines):
-    wf_model = ZongGaussian(site, windTurbines, turbulenceModel=STF2017TurbulenceModel(), use_effective_ws=True)
+    wf_model = Zong_PorteAgel_2020(site, windTurbines)
     return wf_model
 
 def niayifar_WF_model(site, windTurbines):
-    wf_model = NiayifarGaussian(site, windTurbines, turbulenceModel=STF2017TurbulenceModel(), use_effective_ws=True)
+    wf_model = Niayifar_PorteAgel_2016(site, windTurbines)
     return wf_model
+
 def turboGaussian_WF_model(site, windTurbines):
     wf_model = PropagateDownwind(site, windTurbines, wake_deficitModel=TurboGaussianDeficit(use_effective_ws=True),
                                  superpositionModel=LinearSum(), turbulenceModel=STF2017TurbulenceModel()
@@ -51,10 +123,9 @@ def turboGaussian_WF_model(site, windTurbines):
     return wf_model
 
 def blondelSuperGaussian_WF_model(site, windTurbines):
-    wf_model = PropagateDownwind(site, windTurbines, wake_deficitModel=BlondelSuperGaussianDeficit2023(use_effective_ws=True),
-                                 superpositionModel=LinearSum(), turbulenceModel=STF2017TurbulenceModel()
-                                 )
+    wf_model = Blondel_Cathelain_2020(site, windTurbines, turbulenceModel=CrespoHernandez())
     return wf_model
+
 
 ## WIND TURBINES MODELS
 
@@ -110,6 +181,16 @@ class Haliade_X(GenericWindTurbine):
         GenericWindTurbine.__init__(self, name='Haliade-X', diameter=220, hub_height=150,
                              power_norm=13000, turbulence_intensity=0.07)
 
+class Haliade_X_12(GenericWindTurbine):
+    def __init__(self):
+        """
+        Parameters
+        ----------
+        The turbulence intensity Varies around 6-8%
+        """
+        GenericWindTurbine.__init__(self, name='Haliade-X 12', diameter=220, hub_height=150,
+                             power_norm=12000, turbulence_intensity=0.07)
+
 class Haliade_X_13(GenericWindTurbine):
     def __init__(self):
         """
@@ -160,7 +241,7 @@ class SWT_23_82(GenericWindTurbine):
         ----------
         The turbulence intensity Varies around 6-8%
         """
-        GenericWindTurbine.__init__(self, name='SWT-23-82', diameter=82.4, hub_height=100,
+        GenericWindTurbine.__init__(self, name='SWT-23-82', diameter=82.4, hub_height=69,
                              power_norm=2300, turbulence_intensity=0.07)  
         
 class SWT_23_93(GenericWindTurbine):
@@ -171,10 +252,10 @@ class SWT_23_93(GenericWindTurbine):
         The turbulence intensity Varies around 6-8%
         Hub Height Site Specific
         """
-        GenericWindTurbine.__init__(self, name='SWT-23-93', diameter=90, hub_height=100,
+        GenericWindTurbine.__init__(self, name='SWT-23-93', diameter=93, hub_height=68.5,
                              power_norm=2300, turbulence_intensity=0.07)        
 
-class SWT_36_107(GenericWindTurbine):
+class  SWT_36_107(GenericWindTurbine):
     def __init__(self):
         """
         Parameters
@@ -182,7 +263,7 @@ class SWT_36_107(GenericWindTurbine):
         The turbulence intensity Varies around 6-8%
         Hub Height Site Specific
         """
-        GenericWindTurbine.__init__(self, name='SWT-36-107', diameter=107, hub_height=80,
+        GenericWindTurbine.__init__(self, name='SWT-36-107', diameter=107, hub_height=82,
                              power_norm=3600, turbulence_intensity=0.07) 
 
 class SWT_36_120(GenericWindTurbine):
@@ -234,6 +315,8 @@ class SWT_60_154(GenericWindTurbine):
         The turbulence intensity Varies around 6-8%
         Hub Height Site Specific
         """
+
+        
         GenericWindTurbine.__init__(self, name='SWT-6.0-154', diameter=154, hub_height=110,
                              power_norm=6000, turbulence_intensity=0.07) 
 
@@ -373,6 +456,17 @@ class MHI_V164_95(GenericWindTurbine):
         """
         GenericWindTurbine.__init__(self, name='MHI V164-9.5', diameter=164, hub_height=105,
                              power_norm=9500, turbulence_intensity=0.07)
+
+class V174_95(GenericWindTurbine):
+    def __init__(self):
+        """
+        Parameters
+        ----------
+        The turbulence intensity Varies around 6-8%
+        Hub Height Site Specific
+        """
+        GenericWindTurbine.__init__(self, name='V236-15.0', diameter=174, hub_height=110,
+                             power_norm=9500, turbulence_intensity=0.07)        
 
 class V236_150(GenericWindTurbine):
     def __init__(self):
@@ -575,17 +669,17 @@ VineyardWT_y = [4554942.059508868, 4553109.896111671, 4553107.8401351785, 455320
 
 
 
-class VineyardWind1(UniformWeibullSite):
-    def __init__(self, ti=0.07, shear=None):
-        f = [6.4633, 7.6414, 6.3740, 5.9969, 4.7711, 4.5698, 
-            7.3598, 11.8051, 13.2464, 11.0975, 11.1503, 9.5244]
-        a = [10.19, 10.45, 9.47, 9.02, 9.48, 9.66, 
-            11.44, 13.27, 12.46, 11.36, 12.39, 10.45]
-        k = [2.170, 1.725, 1.713, 1.682, 1.521, 1.479,
-            1.666, 2.143, 2.385, 2.146, 2.432, 2.373]
-        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
-        self.initial_position = np.array([VineyardWT_x, VineyardWT_y]).T
-        self.name = "Vineyard Wind Farm"
+# class VineyardWind1(UniformWeibullSite):
+#     def __init__(self, ti=0.07, shear=None):
+#         f = [6.4633, 7.6414, 6.3740, 5.9969, 4.7711, 4.5698, 
+#             7.3598, 11.8051, 13.2464, 11.0975, 11.1503, 9.5244]
+#         a = [10.19, 10.45, 9.47, 9.02, 9.48, 9.66, 
+#             11.44, 13.27, 12.46, 11.36, 12.39, 10.45]
+#         k = [2.170, 1.725, 1.713, 1.682, 1.521, 1.479,
+#             1.666, 2.143, 2.385, 2.146, 2.432, 2.373]
+#         UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+#         self.initial_position = np.array([VineyardWT_x, VineyardWT_y]).T
+#         self.name = "Vineyard Wind Farm"
 
 
 ClusterWT_x = [
@@ -755,6 +849,27 @@ class SkipJack_wind(UniformWeibullSite):
         UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
         self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
         self.name = "Skip Jack Wind"
+
+class VineyardWind1(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [6.4633, 7.6414, 6.3740, 5.9969, 4.7711, 4.5698, 
+            7.3598, 11.8051, 13.2464, 11.0975, 11.1503, 9.5244]
+        a = [10.19, 10.45, 9.47, 9.02, 9.48, 9.66, 
+            11.44, 13.27, 12.46, 11.36, 12.39, 10.45]
+        k = [2.170, 1.725, 1.713, 1.682, 1.521, 1.479,
+            1.666, 2.143, 2.385, 2.146, 2.432, 2.373]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([VineyardWT_x, VineyardWT_y]).T
+        self.name = "Vineyard Wind Farm"
+
+class Revolutionwind_southforkwind(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [7.2913, 7.2204, 6.3564, 5.5052, 4.743, 4.7018, 7.7244, 11.6506, 13.331, 11.079, 10.9413, 9.4554] 
+        a = [10.37, 10.58, 9.66, 9.33, 9.68, 10.57, 11.77, 13.87, 12.79, 12.12, 12.36, 10.3] 
+        k = [2.053, 1.729, 1.635, 1.689, 1.412, 1.42, 1.529, 1.943, 2.076, 2.197, 2.295, 2.201] 
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([RevolutionSouthForkWT_x, RevolutionSouthForkWT_y]).T
+        self.name = "Revolutionwind Southforkwind"
 
 class US_wind(UniformWeibullSite):
     def __init__(self, ti=0.07, shear=None):
@@ -976,7 +1091,7 @@ class Dogger_Bank_D_E(UniformWeibullSite):
         self.name = "Dogger Bank D & E"      
 
 class Dudgeon(UniformWeibullSite):
-    def __init__(self, ti=0.07, shear=None):
+    def __init__(self, ti=0.055, shear=None):
         f = [6.5307, 4.2887, 5.2057, 6.6299, 5.612, 8.2647, 9.0571, 12.3369, 16.2943, 11.0778, 7.9457, 6.7565]
         a = [9.58, 8.71, 9.05, 9.88, 8.72, 10.53, 11.87, 13.24, 12.72, 11.81, 10.08, 9.71]
         k = [2.436, 2.404, 2.564, 2.232, 1.963, 2.588, 2.279, 2.615, 2.721, 2.365, 2.533, 2.025]
@@ -1131,14 +1246,14 @@ class Gode_wind2(UniformWeibullSite):
         self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
         self.name = "Gode wind2"
 
-class Gode_wind3(UniformWeibullSite):
+class Nordseecluster_godewind(UniformWeibullSite):
     def __init__(self, ti=0.07, shear=None):
         f = [4.1988, 4.042, 6.0884, 8.2299, 7.5672, 5.8259, 7.7614, 11.8399, 14.0766, 12.211, 10.3152, 7.8439]
         a = [8.46, 7.45, 9.37, 11.62, 11.79, 10.73, 12.24, 14.28, 13.56, 12.53, 11.26, 10.36]
         k = [1.979, 1.951, 2.018, 2.158, 2.635, 2.166, 1.998, 2.631, 2.236, 2.225, 2.213, 2.037]
         UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
         self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
-        self.name = "Gode wind3"
+        self.name = "Nordseecluster godewind"
 
 class Gode_wind4(UniformWeibullSite):
     """
@@ -1168,6 +1283,24 @@ class Gunfleet_sands(UniformWeibullSite):
         UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
         self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
         self.name = "Gunfleet sands"
+
+class Gwynt_y_mor_a(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [4.5893, 3.3544, 4.0344, 5.65, 8.6748, 7.0549, 5.3369, 12.1042, 19.1265, 13.2483, 10.9053, 5.921]
+        a = [7.69, 7.59, 8.39, 8.84, 10.14, 9.22, 9.05, 13.38, 13.82, 11.58, 9.7, 8.3]
+        k = [1.717, 1.955, 2.174, 2.283, 2.529, 2.111, 1.561, 1.896, 2.475, 2.342, 1.967, 1.744]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Gwynt y mor A"
+        
+class Gwynt_y_mor_b(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [4.706, 3.2096, 3.9679, 5.2192, 9.6935, 6.8969, 6.1593, 11.915, 16.8692, 13.5841, 11.4726, 6.3069]
+        a = [7.93, 7.28, 8.54, 8.63, 10.39, 9.62, 9.1, 13.06, 13.78, 11.7, 9.82, 8.36]
+        k = [1.799, 1.803, 2.26, 2.166, 2.557, 2.279, 1.631, 1.932, 2.592, 2.346, 1.994, 1.85]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Gwynt y mor B"
 
 class Hollandse_kust_noord(UniformWeibullSite):
     def __init__(self, ti=0.07, shear=None):
@@ -1910,15 +2043,6 @@ class Rentel(UniformWeibullSite):
         self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
         self.name = "Rentel"
 
-class Revolutionwind_southforkwind(UniformWeibullSite):
-    def __init__(self, ti=0.07, shear=None):
-        f = [7.2913, 7.2204, 6.3564, 5.5052, 4.743, 4.7018, 7.7244, 11.6506, 13.331, 11.079, 10.9413, 9.4554] 
-        a = [10.37, 10.58, 9.66, 9.33, 9.68, 10.57, 11.77, 13.87, 12.79, 12.12, 12.36, 10.3] 
-        k = [2.053, 1.729, 1.635, 1.689, 1.412, 1.42, 1.529, 1.943, 2.076, 2.197, 2.295, 2.201] 
-        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
-        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
-        self.name = "Revolutionwind Southforkwind"
-
 class Riffgat(UniformWeibullSite):
     def __init__(self, ti=0.07, shear=None):
         f = [4.055, 4.1089, 6.0668, 7.6451, 7.6815, 6.0533, 7.4568, 13.6643, 13.605, 12.4702, 9.4647, 7.7286] 
@@ -2162,4 +2286,82 @@ class Wind_energy_search_area_post_2030_8(UniformWeibullSite):
         self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
         self.name = "Wind energy search area post 2030-8"
 
+# East Asian Wind Farm Classes
+
+class Changfang_and_xidao_a(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [11.0915, 49.3277, 3.033, 1.437, 1.238, 2.3117, 11.7412, 10.7092, 3.1893, 1.6978, 1.6685, 2.5552]
+        a = [7.4, 15.7, 3.68, 1.94, 2.15, 3.02, 9.61, 8.29, 4.63, 2.8, 2.7, 3.14]
+        k = [1.377, 2.646, 1.248, 0.705, 1.377, 1.127, 2.447, 2.541, 1.689, 1.346, 1.432, 1.24]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Changfang and xidao a"
+
+class Changfang_and_xidao_b(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [11.7004, 47.8081, 3.0052, 1.3694, 1.2139, 2.3423, 11.214, 11.4801, 3.5851, 1.7643, 1.8423, 2.675]
+        a = [7.56, 15.47, 3.57, 1.87, 2.17, 2.81, 9.35, 8.85, 5.11, 3.19, 2.8, 3.31]
+        k = [1.424, 2.525, 1.178, 0.686, 1.42, 1.064, 2.275, 2.51, 1.881, 1.553, 1.529, 1.311]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Changfang and xidao b"
+
+class Greater_changhua(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [9.802, 54.6626, 3.0649, 1.1171, 0.9549, 1.4513, 8.9297, 12.4317, 2.8816, 1.2874, 1.3711, 2.0457]
+        a = [7.89, 16.16, 5.06, 2.69, 2.66, 3.25, 9.93, 8.01, 4.22, 2.57, 2.51, 3.23]
+        k = [1.436, 3.076, 1.326, 1.572, 1.529, 0.994, 2.771, 2.857, 1.561, 1.443, 1.217, 1.213]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Greater changhua"
+
+class Hai_long(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [10.0561, 53.9466, 2.5712, 1.0198, 0.8686, 1.2038, 9.6624, 12.2158, 3.1965, 1.5446, 1.536, 2.1786]
+        a = [7.76, 16.11, 4.86, 2.31, 2.17, 2.46, 10.56, 8.62, 4.76, 2.93, 2.98, 3.42]
+        k = [1.334, 2.893, 1.459, 1.291, 1.236, 0.721, 2.771, 2.932, 1.506, 1.131, 1.072, 0.928]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Hai long"
+
+class Taipower_2(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [10.5371, 50.2346, 3.2195, 1.4844, 1.3031, 2.5515, 10.8447, 10.8635, 3.3279, 1.5402, 1.6222, 2.4712]
+        a = [7.2, 16.02, 3.54, 1.97, 2.33, 3.03, 9.22, 8.57, 4.84, 2.93, 2.59, 3.06]
+        k = [1.393, 2.701, 1.326, 0.67, 1.33, 1.158, 2.166, 2.498, 1.768, 1.506, 1.428, 1.338]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Taipower 2"
+
+class Yunlin(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [15.4729, 43.0498, 2.4289, 1.255, 1.236, 3.3631, 14.1881, 8.4206, 3.2604, 1.8684, 2.1065, 3.3503]
+        a = [8.14, 13.82, 3.82, 2.27, 2.24, 5.02, 9.19, 7.04, 4.6, 3.46, 2.9, 3.04]
+        k = [1.596, 2.412, 1.639, 1.428, 1.268, 1.197, 2.752, 2.506, 1.639, 1.154, 1.096, 0.775]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Yunlin"
+
+class Zhongneng(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [12.332, 47.0489, 2.9862, 1.2931, 1.0352, 2.0644, 12.2522, 11.1179, 3.3716, 1.8505, 1.9075, 2.7406]
+        a = [7.7, 15.15, 3.7, 2.05, 2.24, 2.97, 9.9, 8.39, 4.93, 3.21, 2.85, 3.42]
+        k = [1.459, 2.537, 1.299, 0.881, 1.463, 1.076, 2.697, 2.529, 1.697, 1.541, 1.514, 1.166]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Zhongneng"
+        
         #when TBA or not given, hub height = 180
+
+
+### TESTING
+
+class moura_test_1(UniformWeibullSite):
+    def __init__(self, ti=0.07, shear=None):
+        f = [7.7421, 7.0151, 5.944, 5.3354, 4.6307, 4.414, 7.7912, 11.9474, 13.6342, 10.6653, 11.5462, 9.3343]
+        a = [10.59, 10.33, 9.38, 8.94, 10.08, 11.22, 11.73, 13.91, 13.03, 12.23, 12.17, 10.66]
+        k = [2.135, 1.701, 1.561, 1.518, 1.482, 1.475, 1.486, 1.893, 2.131, 2.229, 2.326, 2.186]
+        UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
+        self.initial_position = np.array([dummyWT_x, dummyWT_y]).T
+        self.name = "Moura Test 1"
+        

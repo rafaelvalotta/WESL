@@ -7,7 +7,15 @@ import os
 import numpy as np
 from layout_dev import grid_WTposition_generator
 import openmdao.api as om
+from py_wake.utils.gradients import autograd
+from topfarm.cost_models.py_wake_wrapper import PyWakeAEPCostModelComponent
 
+"""
+Unfortunately, autograd is not working very well with xarray, i.e. the normal xarray SimulationResult must 
+be bypassed. This mean that you can compute gradients of the AEP or WS, TI, Power and custom functions by 
+setting the argument return_simulationResult=False when running the 
+wind farm model: WindFarmModel(..., return_simulationResult=False).
+"""
 
 from matplotlib.patches import Circle
 
@@ -22,7 +30,7 @@ class AEP_Comp(om.ExplicitComponent):
         self.add_input('x', val=self.initial_x, units='m')
         self.add_input('y', val=self.initial_y, units='m')
         self.add_output('aep', val=0.0)
-        self.declare_partials('*', '*', method='fd', step=50.0)
+        self.declare_partials('aep', ['x','y'])
 
 
 
@@ -31,8 +39,19 @@ class AEP_Comp(om.ExplicitComponent):
         x_positions = inputs['x']
         y_positions = inputs['y']
 
-        # Calculate AEP explicitly via provided PyWake model
         outputs['aep'] = self.wake_model(x_positions, y_positions).aep().sum()
+        
+    def compute_partials(self, inputs, partials):   
+        # Get turbine positions from inputs
+        x_positions = inputs['x']
+        y_positions = inputs['y'] 
+        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'])(x_positions, y_positions)
+        # Ensure shapes are (1, n)
+        dAEPdx = np.atleast_2d(np.asarray(dAEPdx, dtype=float).ravel())
+        dAEPdy = np.atleast_2d(np.asarray(dAEPdy, dtype=float).ravel())
+
+        partials['aep', 'x'] = dAEPdx
+        partials['aep', 'y'] = dAEPdy
 
 class SpacingConstraintComp(om.ExplicitComponent):
     def __init__(self, n_turbines, wind_turbine):
@@ -231,7 +250,7 @@ def main():
     # plt.title(f'US East Cluster Boundary | Total Turbines: {len(wt_x)}')
     # plt.axis('equal')
     # plt.show()
-
+    # wt_x, wt_y = wt_x[:50], wt_y[:50]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
 
@@ -250,7 +269,7 @@ def main():
 
     prob.model.add_subsystem('OffshoreSystemPlot',
                              PlotComp(init_x=wt_x, init_y=wt_y, polygon=boundary,
-                                      aep0=None, spacing_diam=_diameter*6, mode="COBYLA"),
+                                      aep0=None, spacing_diam=_diameter*6, mode="SLSQP"),
                             promotes_inputs=['x', 'y'])
 
     prob.model.connect('wf_aep.aep', 'OffshoreSystemPlot.aep')
@@ -270,18 +289,18 @@ def main():
 
     prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
 
-    prob.driver.options['optimizer'] = 'COBYLA'
-    prob.driver.options['maxiter'] = 500
-    prob.driver.options['tol']     = 1e-4
-    prob.driver.opt_settings['maxfun'] = 20000
+    # prob.driver.options['optimizer'] = 'COBYLA'
+    # prob.driver.options['maxiter'] = 500
+    # prob.driver.options['tol']     = 1e-4
+    # prob.driver.opt_settings['maxfun'] = 20000
 
 
-    # prob.driver.options['optimizer'] = 'SLSQP'
-    # prob.driver.options['maxiter']  = 50        # adjust as you like
-    # prob.driver.options['tol']      = 1e-6
-    # # SciPy SLSQP-specific knobs
-    # prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
-    # prob.driver.opt_settings['disp'] = True
+    prob.driver.options['optimizer'] = 'SLSQP'
+    prob.driver.options['maxiter']  = 50        # adjust as you like
+    prob.driver.options['tol']      = 1e-6
+    # SciPy SLSQP-specific knobs
+    prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
+    prob.driver.opt_settings['disp'] = True
 
     prob.setup()
 
