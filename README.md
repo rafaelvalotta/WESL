@@ -1,9 +1,13 @@
 # WESL
-WESL (Wind Energy Systems Lab) Optimizer
+Welcome to WESL (Wind Energy Systems Lab) Optimizer. WESL is built on top of OpenMDAO to perform wind farm optimization. So far, WESL is compatible with PyWake AEP calculator for wind farm flow physics computations. 
 
 Instructions to install it:
 
 1) Download and install Anaconda in your computer to manage your Python applications. Also, choose a code editor of your preference (VSCode or similar) and install in your computer.
+
+Anaconda: https://www.anaconda.com
+
+VSCode: https://code.visualstudio.com
 
 
 2) In Anaconda, create a new Python environment. Use Python 3.11.11 or similar.
