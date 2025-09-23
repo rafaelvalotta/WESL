@@ -9,6 +9,9 @@ from layout_dev import grid_WTposition_generator
 import openmdao.api as om
 from py_wake.utils.gradients import autograd
 from topfarm.cost_models.py_wake_wrapper import PyWakeAEPCostModelComponent
+from matplotlib.patches import Circle
+from matplotlib.ticker import FuncFormatter
+from CPU_Profiler import profile
 
 """
 Unfortunately, autograd is not working very well with xarray, i.e. the normal xarray SimulationResult must 
@@ -16,8 +19,20 @@ be bypassed. This mean that you can compute gradients of the AEP or WS, TI, Powe
 setting the argument return_simulationResult=False when running the 
 wind farm model: WindFarmModel(..., return_simulationResult=False).
 """
+aep_comp_cpu_time = []
+spacing_cons_cpu_time = []
+boundary_cons_cpu_time = []
+plot_comp_cpu_time = []
 
-from matplotlib.patches import Circle
+def sci_formatter(x, pos):
+    """Format ticks with 2 decimals, switch to sci if >4 digits."""
+    if x == 0:
+        return "0.00"
+    if abs(x) >= 1e3 or abs(x) < 1e-3:   # beyond 3 decimals → scientific
+        return f"{x:.2e}"
+    else:
+        return f"{x:.2f}"
+
 
 class AEP_Comp(om.ExplicitComponent):
     def __init__(self, wfm, wt_x, wt_y):
@@ -33,15 +48,16 @@ class AEP_Comp(om.ExplicitComponent):
         self.declare_partials('aep', ['x','y'])
 
 
-
+    @profile(store=aep_comp_cpu_time, print_line=True)
     def compute(self, inputs, outputs):
         # Get turbine positions from inputs
         x_positions = inputs['x']
         y_positions = inputs['y']
 
         outputs['aep'] = self.wake_model(x_positions, y_positions).aep().sum()
-        
-    def compute_partials(self, inputs, partials):   
+
+    # @profile   
+    def compute_partials(self, inputs, partials): 
         # Get turbine positions from inputs
         x_positions = inputs['x']
         y_positions = inputs['y'] 
@@ -71,6 +87,7 @@ class SpacingConstraintComp(om.ExplicitComponent):
         # Finite difference approximation for derivatives
         self.declare_partials('*', '*', method='fd', step=10.0)
 
+    @profile(store=spacing_cons_cpu_time)
     def compute(self, inputs, outputs):
         x, y = inputs['x'], inputs['y']
         cons = []
@@ -79,6 +96,7 @@ class SpacingConstraintComp(om.ExplicitComponent):
                 distance = np.hypot(x[i] - x[j], y[i] - y[j])
                 cons.append(distance - self.min_spacing)
         outputs['spacing_cons'] = np.array(cons)
+
 
 class BoundaryConstraintComp(om.ExplicitComponent):
     def __init__(self, boundary_filepath, n_turbines):
@@ -93,6 +111,7 @@ class BoundaryConstraintComp(om.ExplicitComponent):
         self.add_output('boundary_cons', val=np.zeros(self.n_turbines))
         self.declare_partials('*', '*', method='fd', step=10.0)
 
+    @profile(store=boundary_cons_cpu_time)
     def compute(self, inputs, outputs):
         points = [Point(xy) for xy in zip(inputs['x'], inputs['y'])]
          # Positive outside polygon, negative (<= 0 feasible) inside
@@ -144,6 +163,7 @@ class PlotComp(om.ExplicitComponent):
 
         plt.ion()
 
+    @profile(store=plot_comp_cpu_time)
     def compute(self, inputs, outputs):
         x = np.asarray(inputs['x'])
         y = np.asarray(inputs['y'])
@@ -250,12 +270,13 @@ def main():
     # plt.title(f'US East Cluster Boundary | Total Turbines: {len(wt_x)}')
     # plt.axis('equal')
     # plt.show()
-    # wt_x, wt_y = wt_x[:50], wt_y[:50]  # limit for testing
+    wt_x, wt_y = wt_x[:100], wt_y[:100]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
 
     prob = om.Problem()
-
+    wfm = bastankhah_WF_model(site, windTurbine)
+    aep0 = wfm(wt_x, wt_y).aep().sum().item()  # initial AEP
     # Make sure your FBWF component accepts nd (or equivalent). If its class
     # doesn’t have an nd arg, add one there similarly to WtSpacingConstraint.
     prob.model.add_subsystem('wf_aep', AEP_Comp(bastankhah_WF_model(site, windTurbine),
@@ -269,7 +290,7 @@ def main():
 
     prob.model.add_subsystem('OffshoreSystemPlot',
                              PlotComp(init_x=wt_x, init_y=wt_y, polygon=boundary,
-                                      aep0=None, spacing_diam=_diameter*6, mode="SLSQP"),
+                                      aep0=aep0, spacing_diam=_diameter*8, mode="SLSQP"),
                             promotes_inputs=['x', 'y'])
 
     prob.model.connect('wf_aep.aep', 'OffshoreSystemPlot.aep')
@@ -281,7 +302,7 @@ def main():
     prob.model.add_design_var('x', lower=min(boundary[:,0]), upper=max(boundary[:,0]), scaler=0.0001)
     prob.model.add_design_var('y', lower=min(boundary[:,1]), upper=max(boundary[:,1]), scaler=0.0001)
 
-    prob.model.add_objective('wf_aep.aep', scaler=0.01)
+    prob.model.add_objective('wf_aep.aep', scaler=-0.01)
 
     prob.model.add_constraint('WT_Spacing.spacing_cons', lower=0.0)   # no extra scaler
     prob.model.add_constraint('WF_Boundary.boundary_cons',  upper=-100.0)
@@ -296,24 +317,29 @@ def main():
 
 
     prob.driver.options['optimizer'] = 'SLSQP'
-    prob.driver.options['maxiter']  = 50        # adjust as you like
+    prob.driver.options['maxiter']  = 5       # adjust as you like
     prob.driver.options['tol']      = 1e-6
     # SciPy SLSQP-specific knobs
     prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
     prob.driver.opt_settings['disp'] = True
+
+    #recorder = om.SqliteRecorder("optimization_US_east_cluster.sql")
+    #prob.driver.add_recorder(recorder)
 
     prob.setup()
 
     prob.run_model()
 
     # Baselines
-    wf_aep_init  = -prob.get_val('wf_aep.aep').item()  # make positive
+    wf_aep_init = prob.get_val('wf_aep.aep').item()  # make positive
 
 
 
     prob.run_driver()
+    #prob.record("after_run_driver")
 
-    wf_aep_opt  = -prob.get_val('wf_aep.aep').item()
+
+    wf_aep_opt  = prob.get_val('wf_aep.aep').item()
 
     wf_d   = wf_aep_opt  - wf_aep_init
 
@@ -321,6 +347,57 @@ def main():
 
     print("\n=== AEP Summary (GWh) ===")
     print(f"WF   : init={wf_aep_init:.3f}  opt={wf_aep_opt:.3f}  Δ={wf_d:.3f}  ({wf_pct:.2f}%)")
+    print("=========================\n")
+    print(f'AepComp.compute() CPU Time List: {aep_comp_cpu_time}')
+    print("=========================\n")
+    print(f'Spacing_cons.compute() CPU Time List: {spacing_cons_cpu_time}')
+    print("=========================\n")
+    print(f'Boundary_cons.compute() CPU Time List: {boundary_cons_cpu_time}')
+    print("=========================\n")
+    print(f'PlotComp.compute() CPU Time List: {plot_comp_cpu_time}')
+
+    plt.ioff()
+    fig, axs = plt.subplots(2, 2, figsize=(10, 6))
+    axes = axs.flatten()
+
+    for ax in axes:
+        ax.set(xlabel='Iteration')
+        ax.yaxis.set_major_formatter(FuncFormatter(sci_formatter))
+
+    # Subplots with titles instead of legends
+    axes[0].plot(aep_comp_cpu_time, 'r')
+    axes[0].set_title(f"AEP Comp | mean: {np.mean(aep_comp_cpu_time):.3f} s")
+    axes[0].set_ylabel('CPU Time (s)')
+
+    axes[1].plot(np.array(spacing_cons_cpu_time) * 1000, 'gold')
+    axes[1].set_title(f"Spacing Cons | mean: {np.mean(np.array(spacing_cons_cpu_time)*1000):.3f} ms")
+    axes[1].set_ylabel('CPU Time (ms)')
+
+    axes[2].plot(np.array(boundary_cons_cpu_time) * 1000, 'g')
+    axes[2].set_title(f"Boundary Cons | mean: {np.mean(np.array(boundary_cons_cpu_time)*1000):.3f} ms")
+    axes[2].set_ylabel('CPU Time (ms)')
+
+
+    axes[3].plot(plot_comp_cpu_time, 'k')
+    axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu_time):.3f} s")
+    axes[3].set_ylabel('CPU Time (s)')
+
+    # Padding between plots
+    fig.tight_layout(pad=3.0, rect=[0, 0.03, 1, 0.95])
+
+    # Overall title
+    fig.suptitle('Computational Resource Profiling: <CPU Time>', fontsize=16)
+
+    plt.show()
+
+
+
+    prob.cleanup()
+    aep_comp_cpu_time.clear() 
+    spacing_cons_cpu_time.clear()
+    boundary_cons_cpu_time.clear()
+    plot_comp_cpu_time.clear()
+
 
 
 if __name__ == "__main__":
