@@ -8,7 +8,6 @@ import numpy as np
 from layout_dev import grid_WTposition_generator
 import openmdao.api as om
 from py_wake.utils.gradients import autograd
-from topfarm.cost_models.py_wake_wrapper import PyWakeAEPCostModelComponent
 from matplotlib.patches import Circle
 from matplotlib.ticker import FuncFormatter
 from CPU_Profiler import profile
@@ -23,6 +22,7 @@ aep_comp_cpu_time = []
 spacing_cons_cpu_time = []
 boundary_cons_cpu_time = []
 plot_comp_cpu_time = []
+grad_cpu_time = []
 
 def sci_formatter(x, pos):
     """Format ticks with 2 decimals, switch to sci if >4 digits."""
@@ -56,7 +56,7 @@ class AEP_Comp(om.ExplicitComponent):
 
         outputs['aep'] = self.wake_model(x_positions, y_positions).aep().sum()
 
-    # @profile   
+    @profile(store=grad_cpu_time, print_line=True)   
     def compute_partials(self, inputs, partials): 
         # Get turbine positions from inputs
         x_positions = inputs['x']
@@ -172,9 +172,9 @@ class PlotComp(om.ExplicitComponent):
         if self._fig is None:
             self._fig, self._ax = plt.subplots(figsize=(10, 8))
             # boundary
-            self._ax.plot(self._poly[:, 0], self._poly[:, 1], '--k', lw=1.5, label='Boundary', zorder=0)
+            self._ax.plot(self._poly[:, 0], self._poly[:, 1], '--k', lw=2, label='Boundary', zorder=0)
             # initial positions
-            self._ax.scatter(self._init_x, self._init_y, c='blue', marker='o', s=5, label='Initial')
+            self._ax.scatter(self._init_x, self._init_y, c='blue', marker='o', s=1.5, label='Initial')
             self._ax.set_xlabel('Easting (m)')
             self._ax.set_ylabel('Northing (m)')
             # limits from polygon
@@ -199,7 +199,7 @@ class PlotComp(om.ExplicitComponent):
         self._rings.clear()
 
         # draw current
-        self._scatter_curr = self._ax.scatter(x, y, c='red', marker='2', s=6, label='Current')
+        self._scatter_curr = self._ax.scatter(x, y, c='red', marker='2', s=15, label='Current')
 
         # displacement lines
         for x0, y0, xi, yi in zip(self._init_x, self._init_y, x, y):
@@ -209,7 +209,7 @@ class PlotComp(om.ExplicitComponent):
         # optional spacing rings
         if self._spacing_r is not None:
             for xi, yi in zip(x, y):
-                ring = Circle((xi, yi), self._spacing_r, ec='gray', fc='none', ls='--', lw=0.8)
+                ring = Circle((xi, yi), self._spacing_r, ec='k', fc='none', ls='--', lw=1.5)
                 self._ax.add_patch(ring)
                 self._rings.append(ring)
 
@@ -270,7 +270,7 @@ def main():
     # plt.title(f'US East Cluster Boundary | Total Turbines: {len(wt_x)}')
     # plt.axis('equal')
     # plt.show()
-    wt_x, wt_y = wt_x[:100], wt_y[:100]  # limit for testing
+    wt_x, wt_y = wt_x[:150], wt_y[:150]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
 
@@ -357,7 +357,7 @@ def main():
     print(f'PlotComp.compute() CPU Time List: {plot_comp_cpu_time}')
 
     plt.ioff()
-    fig, axs = plt.subplots(2, 2, figsize=(10, 6))
+    fig, axs = plt.subplots(2, 3, figsize=(14, 7))
     axes = axs.flatten()
 
     for ax in axes:
@@ -382,6 +382,10 @@ def main():
     axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu_time):.3f} s")
     axes[3].set_ylabel('CPU Time (s)')
 
+    axes[4].plot(grad_cpu_time, 'blue')
+    axes[4].set_title(f"AEP Comp Gradients | mean: {np.mean(grad_cpu_time):.3f} s")
+    axes[4].set_ylabel('CPU Time (s)')
+
     # Padding between plots
     fig.tight_layout(pad=3.0, rect=[0, 0.03, 1, 0.95])
 
@@ -397,6 +401,7 @@ def main():
     spacing_cons_cpu_time.clear()
     boundary_cons_cpu_time.clear()
     plot_comp_cpu_time.clear()
+    grad_cpu_time.clear()
 
 
 
