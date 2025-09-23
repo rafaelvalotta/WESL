@@ -1,6 +1,6 @@
 # WESL
 
-![System Diagram](images/wesl_logo.png)
+![System Diagram](images/wesl_logo.jpg)
 
 Welcome to WESL (Wind Energy Systems Lab) Optimizer. WESL is built on top of OpenMDAO to perform wind farm optimization, as well as integration with marine energy technologies such as wave and tidal energy. So far, WESL is compatible with DTU PyWake AEP calculator for wind farm flow physics computations. Additionally, WESL performs electrical cables and collection system optimization using an implementation based on Mauricio de Souza (DTU) MSc thesis supervised by Juan-Andres Perez Rua. 
 
