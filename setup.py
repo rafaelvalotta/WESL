@@ -14,7 +14,7 @@ setup(
         'scipy',
         'pyproj',
         'openmdao',
-        'pywake'
+        'py_wake'
     ],
     author='Rafael Valotta Rodrigues',
     author_email='r.valottarodrigues@umb.edu',
