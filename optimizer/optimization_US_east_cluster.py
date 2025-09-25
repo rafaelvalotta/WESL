@@ -7,10 +7,12 @@ import os
 import numpy as np
 from layout_dev import grid_WTposition_generator
 import openmdao.api as om
-from py_wake.utils.gradients import autograd
+from py_wake.utils.gradients import autograd, cs
 from matplotlib.patches import Circle
 from matplotlib.ticker import FuncFormatter
 from CPU_Profiler import profile
+# import multiprocessing as _mp
+
 
 """
 Unfortunately, autograd is not working very well with xarray, i.e. the normal xarray SimulationResult must 
@@ -71,12 +73,8 @@ class AEP_Comp(om.ExplicitComponent):
         # Get turbine positions from inputs
         x_positions = inputs['x']
         y_positions = inputs['y'] 
-        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'])(x_positions, 
-                                                                                                    y_positions,
-                                                                                                    n_cpu=self.n_cpu,
-                                                                                                    wd_chunks=self.wd_chunks,
-                                                                                                    ws_chunks=self.ws_chunks,
-                                                                                                    )
+        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'], n_cpu=self.n_cpu, x=x_positions, y=y_positions) 
+                                                                                                    
         # Ensure shapes are (1, n)
         dAEPdx = np.atleast_2d(np.asarray(dAEPdx, dtype=float).ravel())
         dAEPdy = np.atleast_2d(np.asarray(dAEPdy, dtype=float).ravel())
