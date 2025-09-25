@@ -20,11 +20,11 @@ wind farm model: WindFarmModel(..., return_simulationResult=False).
 """
 
 
-aep_comp_cpu_time = []
-spacing_cons_cpu_time = []
-boundary_cons_cpu_time = []
-plot_comp_cpu_time = []
-grad_cpu_time = []
+aep_comp_cpu = {"cpu_time": []}
+spacing_cons_cpu = []
+boundary_cons_cpu = []
+# plot_comp_cpu_time = []
+grad_cpu = []
 
 def sci_formatter(x, pos):
     """Format ticks with 2 decimals, switch to sci if >4 digits."""
@@ -50,7 +50,7 @@ class AEP_Comp(om.ExplicitComponent):
         self.declare_partials('aep', ['x','y'])
 
 
-    @profile(store=aep_comp_cpu_time, print_line=True)
+    @profile(store=aep_comp_cpu, print_line=True)
     def compute(self, inputs, outputs):
         # Get turbine positions from inputs
         x_positions = inputs['x']
@@ -58,7 +58,7 @@ class AEP_Comp(om.ExplicitComponent):
 
         outputs['aep'] = self.wake_model(x_positions, y_positions).aep().sum()
 
-    @profile(store=grad_cpu_time, print_line=True)   
+    @profile(store=grad_cpu, print_line=True)   
     def compute_partials(self, inputs, partials): 
         # Get turbine positions from inputs
         x_positions = inputs['x']
@@ -89,7 +89,7 @@ class SpacingConstraintComp(om.ExplicitComponent):
         # Finite difference approximation for derivatives
         self.declare_partials('*', '*', method='fd', step=10.0)
 
-    @profile(store=spacing_cons_cpu_time)
+    @profile(store=spacing_cons_cpu)
     def compute(self, inputs, outputs):
         x, y = inputs['x'], inputs['y']
         cons = []
@@ -113,7 +113,7 @@ class BoundaryConstraintComp(om.ExplicitComponent):
         self.add_output('boundary_cons', val=np.zeros(self.n_turbines))
         self.declare_partials('*', '*', method='fd', step=10.0)
 
-    @profile(store=boundary_cons_cpu_time)
+    @profile(store=boundary_cons_cpu)
     def compute(self, inputs, outputs):
         points = [Point(xy) for xy in zip(inputs['x'], inputs['y'])]
          # Positive outside polygon, negative (<= 0 feasible) inside
@@ -165,7 +165,7 @@ class PlotComp(om.ExplicitComponent):
 
         plt.ion()
 
-    @profile(store=plot_comp_cpu_time)
+    # @profile(store=plot_comp_cpu)
     def compute(self, inputs, outputs):
         x = np.asarray(inputs['x'])
         y = np.asarray(inputs['y'])
@@ -273,7 +273,7 @@ def main():
     # plt.axis('equal')
     # plt.show()
     # exit(0)
-    wt_x, wt_y = wt_x[:250], wt_y[:250]  # limit for testing
+    wt_x, wt_y = wt_x[:50], wt_y[:50]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
 
@@ -350,44 +350,47 @@ def main():
 
     print("\n=== AEP Summary (GWh) ===")
     print(f"WF   : init={wf_aep_init:.3f}  opt={wf_aep_opt:.3f}  Δ={wf_d:.3f}  ({wf_pct:.2f}%)")
-    print("=========================\n")
-    print(f'AepComp.compute() CPU Time List: {aep_comp_cpu_time}')
-    print("=========================\n")
-    print(f'Spacing_cons.compute() CPU Time List: {spacing_cons_cpu_time}')
-    print("=========================\n")
-    print(f'Boundary_cons.compute() CPU Time List: {boundary_cons_cpu_time}')
-    print("=========================\n")
-    print(f'PlotComp.compute() CPU Time List: {plot_comp_cpu_time}')
+    # print("=========================\n")
+    # print(f'AepComp.compute() CPU Time List: {aep_comp_cpu}')
+    # print("=========================\n")
+    # print(f'Spacing_cons.compute() CPU Time List: {spacing_cons_cpu}')
+    # print("=========================\n")
+    # print(f'Boundary_cons.compute() CPU Time List: {boundary_cons_cpu}')
+    # print("=========================\n")
+    # print(f'PlotComp.compute() CPU Time List: {plot_comp_cpu}')
 
     plt.ioff()
-    fig, axs = plt.subplots(2, 3, figsize=(14, 7))
+    fig, axs = plt.subplots(2, 1, figsize=(12, 8))
     axes = axs.flatten()
 
     for ax in axes:
-        ax.set(xlabel='Iteration')
         ax.yaxis.set_major_formatter(FuncFormatter(sci_formatter))
+        ax.grid(True, which='both', linestyle='--', linewidth=0.5)
+        ax.tick_params(axis='both', which='major', labelsize=10)
 
     # Subplots with titles instead of legends
-    axes[0].plot(aep_comp_cpu_time, 'r')
-    axes[0].set_title(f"AEP Comp | mean: {np.mean(aep_comp_cpu_time):.3f} s")
+    axes[0].plot(aep_comp_cpu['cpu_time'], 'r', label='AEP Comp')
+    axes[0].plot(grad_cpu, 'blue', label='AEP Grad')
+    axes[0].set_title(f"AEP_Comp: compute() ( mean: {np.mean(aep_comp_cpu['cpu_time']):.3f} s) & compute_partials() (mean: {np.mean(grad_cpu):.3f} s)")
     axes[0].set_ylabel('CPU Time (s)')
+    axes[0].set_xlabel('Design Evaluations')
+    axes[0].legend(loc='best', fontsize=10) 
 
-    axes[1].plot(np.array(spacing_cons_cpu_time) * 1000, 'gold')
-    axes[1].set_title(f"Spacing Cons | mean: {np.mean(np.array(spacing_cons_cpu_time)*1000):.3f} ms")
+
+    axes[1].plot(np.array(spacing_cons_cpu) * 1000, 'gold', label='Spacing Cons')
+    axes[1].plot(np.array(boundary_cons_cpu) * 1000, 'g', label='Boundary Cons')
+    axes[1].set_title(f"Spacing Cons (mean: {np.mean(np.array(spacing_cons_cpu)*1000):.3f} ms) | Boundary Cons (mean: {np.mean(np.array(boundary_cons_cpu)*1000):.3f} ms)")  
     axes[1].set_ylabel('CPU Time (ms)')
+    axes[1].set_xlabel('Constraint Evaluations')
+    axes[1].legend(loc='best', fontsize=10)
 
-    axes[2].plot(np.array(boundary_cons_cpu_time) * 1000, 'g')
-    axes[2].set_title(f"Boundary Cons | mean: {np.mean(np.array(boundary_cons_cpu_time)*1000):.3f} ms")
-    axes[2].set_ylabel('CPU Time (ms)')
+   
 
 
-    axes[3].plot(plot_comp_cpu_time, 'k')
-    axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu_time):.3f} s")
-    axes[3].set_ylabel('CPU Time (s)')
+    # axes[3].plot(plot_comp_cpu, 'k')
+    # axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu):.3f} s")
+    # axes[3].set_ylabel('CPU Time (s)')
 
-    axes[4].plot(grad_cpu_time, 'blue')
-    axes[4].set_title(f"AEP Comp Gradients | mean: {np.mean(grad_cpu_time):.3f} s")
-    axes[4].set_ylabel('CPU Time (s)')
 
     # Padding between plots
     fig.tight_layout(pad=3.0, rect=[0, 0.03, 1, 0.95])
@@ -400,11 +403,11 @@ def main():
 
 
     prob.cleanup()
-    aep_comp_cpu_time.clear() 
-    spacing_cons_cpu_time.clear()
-    boundary_cons_cpu_time.clear()
-    plot_comp_cpu_time.clear()
-    grad_cpu_time.clear()
+    aep_comp_cpu.clear() 
+    spacing_cons_cpu.clear()
+    boundary_cons_cpu.clear()
+    # plot_comp_cpu.clear()
+    grad_cpu.clear()
 
 
 

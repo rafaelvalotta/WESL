@@ -110,8 +110,7 @@ def profile(_func=None, *, store=None, print_line=False):
     'store' accepted forms:
       - None: just print
       - any object with .append -> append (name, seconds)
-      - dict {"buf": np.ndarray, "i": {"i": int}} -> write to buf[i], then i += 1
-        (you can also pass "i": {"i": 0} once and reuse)
+      - dict 
     """
     def _decorator(func):
         name = _full_name(func)
@@ -129,20 +128,8 @@ def profile(_func=None, *, store=None, print_line=False):
                     store.append(dt)
 
                 # 2) Preallocated NumPy buffer
-                elif isinstance(store, dict) and "buf" in store and "i" in store:
-                    buf = store["buf"]
-                    iref = store["i"]  # expecting a mutable dict like {"i": 0}
-                    i = iref["i"]
-                    if not isinstance(buf, np.ndarray):
-                        raise TypeError("store['buf'] must be a numpy.ndarray")
-                    if i >= buf.size:
-                        # grow (amortized), or raise—your call
-                        new = np.empty(max(2*buf.size, 1), dtype=buf.dtype)
-                        new[:buf.size] = buf
-                        store["buf"] = buf = new
-                    buf[i] = dt
-                    iref["i"] = i + 1
-
+                elif isinstance(store, dict):
+                    store["cpu_time"].append(dt)
                 # 3) Nothing stored
                 if print_line:
                     print(f"[PROFILE] {name} took {dt:.5f} sec (CPU)")
