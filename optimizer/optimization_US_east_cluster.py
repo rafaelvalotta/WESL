@@ -18,6 +18,8 @@ be bypassed. This mean that you can compute gradients of the AEP or WS, TI, Powe
 setting the argument return_simulationResult=False when running the 
 wind farm model: WindFarmModel(..., return_simulationResult=False).
 """
+
+
 aep_comp_cpu_time = []
 spacing_cons_cpu_time = []
 boundary_cons_cpu_time = []
@@ -270,7 +272,8 @@ def main():
     # plt.title(f'US East Cluster Boundary | Total Turbines: {len(wt_x)}')
     # plt.axis('equal')
     # plt.show()
-    wt_x, wt_y = wt_x[:150], wt_y[:150]  # limit for testing
+    # exit(0)
+    wt_x, wt_y = wt_x[:250], wt_y[:250]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
 
@@ -317,7 +320,7 @@ def main():
 
 
     prob.driver.options['optimizer'] = 'SLSQP'
-    prob.driver.options['maxiter']  = 5       # adjust as you like
+    prob.driver.options['maxiter']  = 10       # adjust as you like
     prob.driver.options['tol']      = 1e-6
     # SciPy SLSQP-specific knobs
     prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
