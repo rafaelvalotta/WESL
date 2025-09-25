@@ -1,3 +1,7 @@
+# WESL imports
+from utils.path_tools import get_data_path
+
+
 # WESL Optimizer Dependencies
 import numpy as np
 import xarray as xr
@@ -20,10 +24,8 @@ from py_wake.wind_turbines.generic_wind_turbines import GenericWindTurbine
 from interarray.interface import heuristic_wrapper
 from interarray.farmrepo import g,g1
 
-
 # Open the NetCDF water depth dataset
-current_dir = os.getcwd() # grabs current directory
-ds = xr.open_dataset(current_dir+'/optimizer/test2.nc')
+ds = xr.open_dataset(get_data_path("test2.nc"))
 
 # Extract elevation, longitude, and latitude
 elevation = ds.elevation
