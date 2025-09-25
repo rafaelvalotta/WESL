@@ -21,10 +21,10 @@ wind farm model: WindFarmModel(..., return_simulationResult=False).
 
 
 aep_comp_cpu = {"cpu_time": []}
-spacing_cons_cpu = []
-boundary_cons_cpu = []
+spacing_cons_cpu = {"cpu_time": []}
+boundary_cons_cpu = {"cpu_time": []}
 # plot_comp_cpu_time = []
-grad_cpu = []
+grad_cpu = {"cpu_time": []}
 
 def sci_formatter(x, pos):
     """Format ticks with 2 decimals, switch to sci if >4 digits."""
@@ -37,11 +37,14 @@ def sci_formatter(x, pos):
 
 
 class AEP_Comp(om.ExplicitComponent):
-    def __init__(self, wfm, wt_x, wt_y):
+    def __init__(self, wfm, wt_x, wt_y, n_cpu=1, wd_chunks=None, ws_chunks=None):
         super().__init__()
         self.wake_model = wfm
         self.initial_x = np.array(wt_x)
         self.initial_y = np.array(wt_y)
+        self.n_cpu = n_cpu
+        self.wd_chunks = wd_chunks  
+        self.ws_chunks = ws_chunks  
 
     def setup(self):
         self.add_input('x', val=self.initial_x, units='m')
@@ -56,14 +59,24 @@ class AEP_Comp(om.ExplicitComponent):
         x_positions = inputs['x']
         y_positions = inputs['y']
 
-        outputs['aep'] = self.wake_model(x_positions, y_positions).aep().sum()
+        outputs['aep'] = self.wake_model(x_positions, 
+                                         y_positions, 
+                                         n_cpu=self.n_cpu, 
+                                         wd_chunks=self.wd_chunks, 
+                                         ws_chunks=self.ws_chunks,
+                                         ).aep().sum()
 
     @profile(store=grad_cpu, print_line=True)   
     def compute_partials(self, inputs, partials): 
         # Get turbine positions from inputs
         x_positions = inputs['x']
         y_positions = inputs['y'] 
-        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'])(x_positions, y_positions)
+        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'])(x_positions, 
+                                                                                                    y_positions,
+                                                                                                    n_cpu=self.n_cpu,
+                                                                                                    wd_chunks=self.wd_chunks,
+                                                                                                    ws_chunks=self.ws_chunks,
+                                                                                                    )
         # Ensure shapes are (1, n)
         dAEPdx = np.atleast_2d(np.asarray(dAEPdx, dtype=float).ravel())
         dAEPdy = np.atleast_2d(np.asarray(dAEPdy, dtype=float).ravel())
@@ -273,17 +286,18 @@ def main():
     # plt.axis('equal')
     # plt.show()
     # exit(0)
-    wt_x, wt_y = wt_x[:50], wt_y[:50]  # limit for testing
+    wt_x, wt_y = wt_x[:250], wt_y[:250]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
-
+    n_cpu = 80  # adjust as you like
     prob = om.Problem()
     wfm = bastankhah_WF_model(site, windTurbine)
-    aep0 = wfm(wt_x, wt_y).aep().sum().item()  # initial AEP
+    aep0 = wfm(wt_x, wt_y, n_cpu=n_cpu).aep().sum().item()  # initial AEP
+
     # Make sure your FBWF component accepts nd (or equivalent). If its class
     # doesn’t have an nd arg, add one there similarly to WtSpacingConstraint.
     prob.model.add_subsystem('wf_aep', AEP_Comp(bastankhah_WF_model(site, windTurbine),
-                                             wt_x, wt_y), promotes_inputs=['x', 'y']) 
+                                             wt_x, wt_y, n_cpu=n_cpu), promotes_inputs=['x', 'y']) 
 
     prob.model.add_subsystem( 'WT_Spacing', SpacingConstraintComp(n_wt, windTurbine),
                              promotes_inputs=['x','y'] ) 
