@@ -384,22 +384,19 @@ def main():
 
     # Subplots with titles instead of legends
     axes[0].plot(aep_comp_cpu['cpu_time'], 'r', label='AEP Comp')
-    axes[0].plot(grad_cpu, 'blue', label='AEP Grad')
-    axes[0].set_title(f"AEP_Comp: compute() ( mean: {np.mean(aep_comp_cpu['cpu_time']):.3f} s) & compute_partials() (mean: {np.mean(grad_cpu):.3f} s)")
+    axes[0].plot(grad_cpu['cpu_time'], 'blue', label='AEP Grad')
+    axes[0].set_title(f"AEP_Comp: compute() ( mean: {np.mean(aep_comp_cpu['cpu_time']):.3f} s) & compute_partials() (mean: {np.mean(grad_cpu['cpu_time']):.3f} s)")
     axes[0].set_ylabel('CPU Time (s)')
     axes[0].set_xlabel('Design Evaluations')
     axes[0].legend(loc='best', fontsize=10) 
 
 
-    axes[1].plot(np.array(spacing_cons_cpu) * 1000, 'gold', label='Spacing Cons')
-    axes[1].plot(np.array(boundary_cons_cpu) * 1000, 'g', label='Boundary Cons')
-    axes[1].set_title(f"Spacing Cons (mean: {np.mean(np.array(spacing_cons_cpu)*1000):.3f} ms) | Boundary Cons (mean: {np.mean(np.array(boundary_cons_cpu)*1000):.3f} ms)")  
+    axes[1].plot(np.array(spacing_cons_cpu['cpu_time']) * 1000, 'gold', label='Spacing Cons')
+    axes[1].plot(np.array(boundary_cons_cpu['cpu_time']) * 1000, 'g', label='Boundary Cons')
+    axes[1].set_title(f"Spacing Cons (mean: {np.mean(np.array(spacing_cons_cpu['cpu_time'])*1000):.3f} ms) | Boundary Cons (mean: {np.mean(np.array(boundary_cons_cpu['cpu_time'])*1000):.3f} ms)")  
     axes[1].set_ylabel('CPU Time (ms)')
     axes[1].set_xlabel('Constraint Evaluations')
     axes[1].legend(loc='best', fontsize=10)
-
-   
-
 
     # axes[3].plot(plot_comp_cpu, 'k')
     # axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu):.3f} s")
