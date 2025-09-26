@@ -87,7 +87,7 @@ class SpacingConstraintComp(om.ExplicitComponent):
         super().__init__()
         self.n_turbines = n_turbines
         self.min_spacing = 8 * wind_turbine.diameter()  # Minimum distance = 8 × rotor diameter
-
+    
     def setup(self):
         # Inputs: turbine coordinates
         self.add_input('x', val=np.zeros(self.n_turbines), units='m')
@@ -100,7 +100,7 @@ class SpacingConstraintComp(om.ExplicitComponent):
         # Finite difference approximation for derivatives
         self.declare_partials('*', '*', method='fd', step=10.0)
 
-    @profile(store=spacing_cons_cpu)
+    @profile(store=spacing_cons_cpu, print_line=True)
     def compute(self, inputs, outputs):
         x, y = inputs['x'], inputs['y']
         cons = []
@@ -124,7 +124,7 @@ class BoundaryConstraintComp(om.ExplicitComponent):
         self.add_output('boundary_cons', val=np.zeros(self.n_turbines))
         self.declare_partials('*', '*', method='fd', step=10.0)
 
-    @profile(store=boundary_cons_cpu)
+    @profile(store=boundary_cons_cpu, print_line=True)
     def compute(self, inputs, outputs):
         points = [Point(xy) for xy in zip(inputs['x'], inputs['y'])]
          # Positive outside polygon, negative (<= 0 feasible) inside
@@ -176,7 +176,7 @@ class PlotComp(om.ExplicitComponent):
 
         plt.ion()
 
-    # @profile(store=plot_comp_cpu)
+    @profile(print_line=True)
     def compute(self, inputs, outputs):
         x = np.asarray(inputs['x'])
         y = np.asarray(inputs['y'])
@@ -284,10 +284,10 @@ def main():
     # plt.axis('equal')
     # plt.show()
     # exit(0)
-    wt_x, wt_y = wt_x[:250], wt_y[:250]  # limit for testing
+    # wt_x, wt_y = wt_x[:250], wt_y[:250]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
-    n_cpu = 80  # adjust as you like
+    n_cpu = None  # adjust as you like
     prob = om.Problem()
     wfm = bastankhah_WF_model(site, windTurbine)
     aep0 = wfm(wt_x, wt_y, n_cpu=n_cpu).aep().sum().item()  # initial AEP

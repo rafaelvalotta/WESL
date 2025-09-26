@@ -1,6 +1,8 @@
 import time
 from functools import wraps
 import numpy as np
+import os as _os
+import psutil as _psutil
 
 """
 Profiling ideas:
@@ -13,12 +15,6 @@ Python heap allocations (only Python objects): tracemalloc
 Peak memory: highest RSS during a block — resource (Unix) or periodic sampling with psutil
 
 CPU load % and per-core usage: psutil
-
-Threads / GIL pressure: number of threads — psutil
-
-I/O (read/write bytes, counts): psutil
-
-Disk and network throughput (system level): psutil
 """
 
 def _full_name(func):
@@ -101,16 +97,12 @@ def profile(_func=None, *, store=None, print_line=False):
       @profile(store=my_list)
       def f(...): ...
 
-      # Preallocated numpy buffer:
-      buf = np.empty(10000, dtype=float)
-      idx = {"i": 0}  # mutable index
-      @profile(store={"buf": buf, "i": idx})
-      def f(...): ...
-
     'store' accepted forms:
       - None: just print
       - any object with .append -> append (name, seconds)
-      - dict 
+      If 'store' is a dict, we will also record:
+        - 'rss'   : Resident Set Size (MB) after the call
+        - 'vms'   : Virtual Memory Size (MB) after the call (if psutil available)
     """
     def _decorator(func):
         name = _full_name(func)
@@ -123,16 +115,40 @@ def profile(_func=None, *, store=None, print_line=False):
             finally:
                 dt = time.process_time() - t0
 
+                # --- memory snapshot (done AFTER call) ---
+                # psutil is optional; fall back gracefully if not available
+                rss = None
+                vms = None
+                try:
+                    _p = _psutil.Process(_os.getpid())
+                    _mi = _p.memory_info()  # rss, vms always present
+                    rss = _mi.rss / (1024.0 * 1024.0)
+                    vms= _mi.vms / (1024.0 * 1024.0)
+                except Exception:
+                    pass
+
                 # 1) Python list (or anything with append)
                 if store is not None and hasattr(store, "append"):
                     store.append(dt)
 
                 # 2) Preallocated NumPy buffer
                 elif isinstance(store, dict):
+                    store.setdefault("cpu_time", [])
+                    store.setdefault("rss", [])
+                    store.setdefault("vms", [])
+
                     store["cpu_time"].append(dt)
+                    store["rss"].append(rss)
+                    store["vms"].append(vms)
+
                 # 3) Nothing stored
                 if print_line:
-                    print(f"[PROFILE] {name} took {dt:.5f} sec (CPU)")
+                    mem_txt = ""
+                    if rss is not None:
+                        mem_txt += f" | RSS: {rss:.2f} MB"
+                    if vms is not None:
+                        mem_txt += f" | VMS: {vms:.2f} MB"
+                    print(f"[PROFILE] {name} took {dt:.5f} sec (CPU){mem_txt}")
 
         return wrapper
 
