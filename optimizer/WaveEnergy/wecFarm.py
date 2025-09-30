@@ -1,8 +1,23 @@
 # wec_farm.py
 import numpy as np
 import xarray as xr
-from WaveEnergy.waveField import RandomGridWaveField, UniformWaveField
-from WaveEnergy.wec_device import OSWECDevice
+import pathlib
+import sys
+try:
+    THIS_FILE = pathlib.Path(__file__).resolve()
+except NameError:
+    # e.g. interactive/IPython fallback
+    THIS_FILE = pathlib.Path.cwd()
+
+PROJECT_ROOT = THIS_FILE.parents[0]            # .../optimizer
+PKG_ROOT     = THIS_FILE.parent                # .../optimizer/WaveEnergy (where this file lives)
+
+# ensure project root is importable (for interarray/WaveEnergy local imports)
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from waveField import RandomGridWaveField, UniformWaveField
+from wec_device import OSWECDevice
 
 class WecFarm():
     """

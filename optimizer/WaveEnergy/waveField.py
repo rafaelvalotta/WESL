@@ -2,12 +2,10 @@
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
-try:
-    from .utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
-except ImportError:
-    # Fallback if someone runs this file directly (not recommended)
-    from WaveEnergy.utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
+import sys
 
+
+from utils.wave_utils import def_bins, direction_marginal, plot_wave_rose
 from scipy.ndimage import gaussian_filter
 
 
