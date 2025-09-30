@@ -61,6 +61,15 @@ class AEP_Comp(om.ExplicitComponent):
         x_positions = inputs['x']
         y_positions = inputs['y']
 
+        # s = self.wake_model(x_positions, 
+        #                                  y_positions, 
+        #                                  n_cpu=self.n_cpu, 
+        #                                  wd_chunks=self.wd_chunks, 
+        #                                  ws_chunks=self.ws_chunks,
+        #                                  )
+        # print(s)
+        # exit(0)
+
         outputs['aep'] = self.wake_model(x_positions, 
                                          y_positions, 
                                          n_cpu=self.n_cpu, 
@@ -284,7 +293,7 @@ def main():
     # plt.axis('equal')
     # plt.show()
     # exit(0)
-    # wt_x, wt_y = wt_x[:250], wt_y[:250]  # limit for testing
+    wt_x, wt_y = wt_x[:150], wt_y[:150]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
     n_cpu = None  # adjust as you like
