@@ -384,9 +384,9 @@ if __name__ == "__main__":
 
     # Direction distributions:
     # global (site-level)
-    dir_glob = site.direction_distribution(aggregate="global").values
-    plot_wave_rose(D_edges, dir_glob, title="Global wave direction distribution")
+    # dir_glob = site.direction_distribution(aggregate="global").values
+    # plot_wave_rose(D_edges, dir_glob, title="Global wave direction distribution")
 
-    # per device
-    dir_per = site.direction_distribution(x_dev, y_dev, aggregate="per_wec").values
-    plot_wave_rose(D_edges, dir_per[0], title="Wave direction distribution — WEC 0")
+    # # per device
+    # dir_per = site.direction_distribution(x_dev, y_dev, aggregate="per_wec").values
+    # plot_wave_rose(D_edges, dir_per[0], title="Wave direction distribution — WEC 0")

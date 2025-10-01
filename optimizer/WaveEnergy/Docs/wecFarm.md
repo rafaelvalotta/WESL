@@ -14,7 +14,7 @@
 - **OSWECDevice (Device)**  
   Supplies **peak power** on the `(H,T,D)` grid via a surrogate trained on WEC‑Sim:  
   `Power_kW(H,T,D)` (kW).  
-  A scalar **alpha** maps peak to mean power:  
+  A scalar **alpha** maps peak to mean power (a temporary feature that must be changed when a new model is implemented):  
   `MeanPower_kW(H,T,D) ≈ alpha × Power_kW(H,T,D)`.
 
 - **WecFarm (Farm)**  

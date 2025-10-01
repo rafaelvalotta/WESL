@@ -296,7 +296,7 @@ def main():
     wt_x, wt_y = wt_x[:150], wt_y[:150]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
-    n_cpu = None  # adjust as you like
+    n_cpu = 1  # adjust as you like
     prob = om.Problem()
     wfm = bastankhah_WF_model(site, windTurbine)
     aep0 = wfm(wt_x, wt_y, n_cpu=n_cpu).aep().sum().item()  # initial AEP
