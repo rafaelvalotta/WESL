@@ -6,3 +6,5 @@
 /optimizer/WaveEnergy/optimize_wec_loc_out
 __pycache__
 /.vscode
+/optimizer/*_out
+/optimizer/*.pyc
