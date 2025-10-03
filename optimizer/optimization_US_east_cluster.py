@@ -22,11 +22,11 @@ wind farm model: WindFarmModel(..., return_simulationResult=False).
 """
 
 
-aep_comp_cpu = {"cpu_time": []}
-spacing_cons_cpu = {"cpu_time": []}
-boundary_cons_cpu = {"cpu_time": []}
+aep_comp_cpu = {"cpu_time": [], "rss": [], "vms": []}
+spacing_cons_cpu = {"cpu_time": [], "rss": [], "vms": []}
+boundary_cons_cpu = {"cpu_time": [], "rss": [], "vms": []}
 # plot_comp_cpu_time = []
-grad_cpu = {"cpu_time": []}
+grad_cpu = {"cpu_time": [], "rss": [], "vms": []}
 
 def sci_formatter(x, pos):
     """Format ticks with 2 decimals, switch to sci if >4 digits."""
@@ -39,7 +39,7 @@ def sci_formatter(x, pos):
 
 
 class AEP_Comp(om.ExplicitComponent):
-    def __init__(self, wfm, wt_x, wt_y, n_cpu=1, wd_chunks=None, ws_chunks=None):
+    def __init__(self, wfm, wt_x, wt_y, n_cpu=1, wd_chunks=None, ws_chunks=1):
         super().__init__()
         self.wake_model = wfm
         self.initial_x = np.array(wt_x)
@@ -82,7 +82,11 @@ class AEP_Comp(om.ExplicitComponent):
         # Get turbine positions from inputs
         x_positions = inputs['x']
         y_positions = inputs['y'] 
-        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'], n_cpu=self.n_cpu, x=x_positions, y=y_positions) 
+        dAEPdx, dAEPdy = self.wake_model.aep_gradients(gradient_method=autograd, wrt_arg=['x','y'], n_cpu=self.n_cpu, 
+                                                       wd_chunks=self.wd_chunks,
+                                                       ws_chunks=self.ws_chunks,
+                                                        x=x_positions, 
+                                                        y=y_positions) 
                                                                                                     
         # Ensure shapes are (1, n)
         dAEPdx = np.atleast_2d(np.asarray(dAEPdx, dtype=float).ravel())
@@ -293,7 +297,7 @@ def main():
     # plt.axis('equal')
     # plt.show()
     # exit(0)
-    wt_x, wt_y = wt_x[:150], wt_y[:150]  # limit for testing
+    wt_x, wt_y = wt_x[:400], wt_y[:400]  # limit for testing
     n_wt = len(wt_x)
     _diameter = windTurbine.diameter()
     n_cpu = 1  # adjust as you like
@@ -312,12 +316,12 @@ def main():
     prob.model.add_subsystem( 'WF_Boundary', BoundaryConstraintComp(usCluster_filepath, n_wt),
                              promotes_inputs=['x', 'y'] )
 
-    prob.model.add_subsystem('OffshoreSystemPlot',
-                             PlotComp(init_x=wt_x, init_y=wt_y, polygon=boundary,
-                                      aep0=aep0, spacing_diam=_diameter*8, mode="SLSQP"),
-                            promotes_inputs=['x', 'y'])
+    # prob.model.add_subsystem('OffshoreSystemPlot',
+    #                          PlotComp(init_x=wt_x, init_y=wt_y, polygon=boundary,
+    #                                   aep0=aep0, spacing_diam=_diameter*8, mode="SLSQP"),
+    #                         promotes_inputs=['x', 'y'])
 
-    prob.model.connect('wf_aep.aep', 'OffshoreSystemPlot.aep')
+    # prob.model.connect('wf_aep.aep', 'OffshoreSystemPlot.aep')
 
 
     prob.model.set_input_defaults('x', wt_x)
@@ -342,9 +346,9 @@ def main():
 
     prob.driver.options['optimizer'] = 'SLSQP'
     prob.driver.options['maxiter']  = 10       # adjust as you like
-    prob.driver.options['tol']      = 1e-6
+    prob.driver.options['tol']      = 1e-5
     # SciPy SLSQP-specific knobs
-    prob.driver.opt_settings['ftol'] = 1e-9      # tighter stop on objective change
+    prob.driver.opt_settings['ftol'] = 1e-6      # tighter stop on objective change
     prob.driver.opt_settings['disp'] = True
 
     #recorder = om.SqliteRecorder("optimization_US_east_cluster.sql")
@@ -381,6 +385,8 @@ def main():
     # print(f'PlotComp.compute() CPU Time List: {plot_comp_cpu}')
 
     plt.ioff()
+
+    # PLOT OF CPU TIME
     fig, axs = plt.subplots(2, 1, figsize=(12, 8))
     axes = axs.flatten()
 
@@ -414,7 +420,80 @@ def main():
     fig.tight_layout(pad=3.0, rect=[0, 0.03, 1, 0.95])
 
     # Overall title
-    fig.suptitle('Computational Resource Profiling: <CPU Time>', fontsize=16)
+    fig.suptitle(f'Computational Resource Profiling: <CPU Time> | n_cpu: {n_cpu}', fontsize=16)
+
+
+
+    # PLOT OF RSS MEM
+    fig, axs = plt.subplots(2, 1, figsize=(12, 8))
+    axes = axs.flatten()
+
+    for ax in axes:
+        ax.grid(True, which='both', linestyle='--', linewidth=0.5)
+        ax.tick_params(axis='both', which='major', labelsize=10)
+
+    # Subplots with titles instead of legends
+    axes[0].plot(aep_comp_cpu['rss'], 'r', label='AEP Comp')
+    axes[0].plot(grad_cpu['rss'], 'blue', label='AEP Grad')
+    axes[0].set_title(f"AEP_Comp: compute() ( mean: {np.mean(aep_comp_cpu['rss']):.3f} MB) & compute_partials() (mean: {np.mean(grad_cpu['rss']):.3f} MB)")
+    axes[0].set_ylabel('RSS MEM (MB)')
+    axes[0].set_xlabel('Design Evaluations')
+    axes[0].legend(loc='best', fontsize=10) 
+
+
+    axes[1].plot(np.array(spacing_cons_cpu['rss']), 'gold', label='Spacing Cons')
+    axes[1].plot(np.array(boundary_cons_cpu['rss']), 'g', label='Boundary Cons')
+    axes[1].set_title(f"Spacing Cons (mean: {np.mean(np.array(spacing_cons_cpu['rss'])):.3f} MB) | Boundary Cons (mean: {np.mean(np.array(boundary_cons_cpu['rss'])):.3f} MB)")  
+    axes[1].set_ylabel('RSS MEM (MB)')
+    axes[1].set_xlabel('Constraint Evaluations')
+    axes[1].legend(loc='best', fontsize=10)
+
+    # axes[3].plot(plot_comp_cpu, 'k')
+    # axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu):.3f} s")
+    # axes[3].set_ylabel('CPU Time (s)')
+
+
+    # Padding between plots
+    fig.tight_layout(pad=3.0, rect=[0, 0.03, 1, 0.95])
+
+    # Overall title
+    fig.suptitle(f'Computational Resource Profiling: <RSS MEM> | n_cpu: {n_cpu}', fontsize=16)
+
+
+    # PLOT OF VMS MEM
+    fig, axs = plt.subplots(2, 1, figsize=(12, 8))
+    axes = axs.flatten()
+
+    for ax in axes:
+        ax.grid(True, which='both', linestyle='--', linewidth=0.5)
+        ax.tick_params(axis='both', which='major', labelsize=10)
+
+    # Subplots with titles instead of legends
+    axes[0].plot(aep_comp_cpu['vms'], 'r', label='AEP Comp')
+    axes[0].plot(grad_cpu['vms'], 'blue', label='AEP Grad')
+    axes[0].set_title(f"AEP_Comp: compute() ( mean: {np.mean(aep_comp_cpu['vms']):.3f} MB) & compute_partials() (mean: {np.mean(grad_cpu['vms']):.3f} MB)")
+    axes[0].set_ylabel('VMS MEM (MB)')
+    axes[0].set_xlabel('Design Evaluations')
+    axes[0].legend(loc='best', fontsize=10) 
+
+
+    axes[1].plot(np.array(spacing_cons_cpu['vms']), 'gold', label='Spacing Cons')
+    axes[1].plot(np.array(boundary_cons_cpu['vms']), 'g', label='Boundary Cons')
+    axes[1].set_title(f"Spacing Cons (mean: {np.mean(np.array(spacing_cons_cpu['vms'])):.3f} MB) | Boundary Cons (mean: {np.mean(np.array(boundary_cons_cpu['vms'])):.3f} MB)")  
+    axes[1].set_ylabel('VMS MEM (MB)')
+    axes[1].set_xlabel('Constraint Evaluations')
+    axes[1].legend(loc='best', fontsize=10)
+
+    # axes[3].plot(plot_comp_cpu, 'k')
+    # axes[3].set_title(f"Plot Comp | mean: {np.mean(plot_comp_cpu):.3f} s")
+    # axes[3].set_ylabel('CPU Time (s)')
+
+
+    # Padding between plots
+    fig.tight_layout(pad=3.0, rect=[0, 0.03, 1, 0.95])
+
+    # Overall title
+    fig.suptitle(f'Computational Resource Profiling: <VMS MEM> | n_cpu: {n_cpu}', fontsize=16)
 
     plt.show()
 

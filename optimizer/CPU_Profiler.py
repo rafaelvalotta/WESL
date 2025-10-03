@@ -10,10 +10,6 @@ Wall time (latency): time.perf_counter()
 
 Process memory (RSS / resident set): how much RAM the process holds — psutil
 
-Python heap allocations (only Python objects): tracemalloc
-
-Peak memory: highest RSS during a block — resource (Unix) or periodic sampling with psutil
-
 CPU load % and per-core usage: psutil
 """
 
@@ -102,7 +98,7 @@ def profile(_func=None, *, store=None, print_line=False):
       - any object with .append -> append (name, seconds)
       If 'store' is a dict, we will also record:
         - 'rss'   : Resident Set Size (MB) after the call
-        - 'vms'   : Virtual Memory Size (MB) after the call (if psutil available)
+        - 'vms'   : Virtual Memory Size (MB) after the call
     """
     def _decorator(func):
         name = _full_name(func)
@@ -148,7 +144,7 @@ def profile(_func=None, *, store=None, print_line=False):
                         mem_txt += f" | RSS: {rss:.2f} MB"
                     if vms is not None:
                         mem_txt += f" | VMS: {vms:.2f} MB"
-                    print(f"[PROFILE] {name} took {dt:.5f} sec (CPU){mem_txt}")
+                    print(f"[PROFILE] {name} -> CPU Time {dt:.5f} s {mem_txt}")
 
         return wrapper
 
