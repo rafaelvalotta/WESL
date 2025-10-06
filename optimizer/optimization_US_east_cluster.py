@@ -10,7 +10,7 @@ import openmdao.api as om
 from py_wake.utils.gradients import autograd, cs
 from matplotlib.patches import Circle
 from matplotlib.ticker import FuncFormatter
-from CPU_Profiler import profile
+from optimizer.CResourceProfiler import profile
 # import multiprocessing as _mp
 
 

@@ -1,0 +1,12 @@
+[PROFILE] __main__.BoundaryConstraintComp.compute() -> CPU Time 0.00481 s  | RSS: 1002.67 MB | VMS: 407508.64 MB
+Singular matrix E in LSQ subproblem    (Exit mode 5)
+            Current function value: -253.09914877799787
+            Iterations: 3
+            Function evaluations: 3
+            Gradient evaluations: 3
+Optimization FAILED.
+Singular matrix E in LSQ subproblem
+-----------------------------------
+
+=== AEP Summary (GWh) ===
+WF   : init=25230.846  opt=25309.915  Δ=79.069  (0.31%)

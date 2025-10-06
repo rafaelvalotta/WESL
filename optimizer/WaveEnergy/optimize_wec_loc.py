@@ -15,9 +15,9 @@ if __name__ == "__main__" and __package__ is None:
 # ------------------------------------------------------------------------------
 
 # Then use package imports consistently
-from WaveEnergy.waveField import RandomGridWaveField, UniformWaveField
-from WaveEnergy.wec_device import OSWECDevice
-from WaveEnergy.wecFarm import WecFarm
+from waveField import RandomGridWaveField, UniformWaveField
+from wec_device import OSWECDevice
+from wecFarm import WecFarm
 
 # ------------------------
 # Helpers
@@ -288,6 +288,9 @@ if __name__ == "__main__":
             plt.legend()
 
     ax.set_title(f"Layout optimization — AEP gain: {gain_pct:.2f}%")
-    ax.set_xlabel("x [m]"); ax.set_ylabel("y [m]")
-    ax.set_aspect('equal', 'box'); ax.grid(True, alpha=0.25)
-    plt.tight_layout(); plt.show()
+    ax.set_xlabel("x [m]")
+    ax.set_ylabel("y [m]")
+    ax.set_aspect('equal', 'box')
+    ax.grid(True, alpha=0.25)
+    plt.tight_layout()
+    plt.show()

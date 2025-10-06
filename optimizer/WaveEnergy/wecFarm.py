@@ -23,11 +23,13 @@ class WecFarm():
     """
     Minimal farm using one device model for all WECs.
     AEP is returned per device in GWh/year.
+
+    site: XR-backed wavefield with ds['H','T','D'] and local_seastate(kind='hours'|'prob')
+    x,y : device coordinates (same length)
+    device: object with .power_grid(Hc,Tc,Dc)->(nH,nT,nD) kW and .alpha
+
     """
     def __init__(self, site, x, y, device, name=None):
-        # site: XR-backed wavefield with ds['H','T','D'] and local_seastate(kind='hours'|'prob')
-        # x,y : device coordinates (same length)
-        # device: object with .power_grid(Hc,Tc,Dc)->(nH,nT,nD) kW and .alpha
         self.site = site
         self.x = np.asarray(x, float)
         self.y = np.asarray(y, float)
@@ -79,6 +81,8 @@ class WecFarm():
         expP = (Prob * P).sum(dim=('H', 'T', 'D')).values                         # -> (wec,)
         return expP
 
+
+    # Just an helper function with the suggested alpha. To be removed later!!!
     def suggest_alpha(self, target_AEP_GWh=None, target_mean_kW=None):
         """
         Suggest scalar alpha so that mean power matches target.
