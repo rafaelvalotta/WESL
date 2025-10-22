@@ -4,6 +4,7 @@ from shapely.geometry import Polygon, Point
 from windFarms_windTurbines import *
 import random
 from scipy.spatial import KDTree
+from boundary_dev import convert_LatLong_to_utm, geoJson_coordinates_data
 
 
 def compute_number_of_turbines(area=267, rated_power=13, capacity_density=3):
@@ -153,5 +154,23 @@ def random_WTposition_generator(n_wt, boundary_points, windTurbine, spacing=10):
 
     return wt_x, wt_y
 
-## Optimization Layout Below
+## Function below to extract turbine positions from sea impact geojson file.
+def SeaImpactTurbineLayout(filepath, save_layout = False, filename = "layout"):
+    geojson_filepath = filepath
+    position_Lat_long = geoJson_coordinates_data(geojson_filepath)
+    wt_x = []
+    wt_y = []
+
+    for i in range(len(position_Lat_long)):
+        turbine_pos = convert_LatLong_to_utm(position_Lat_long[i][0], position_Lat_long[i][1])
+        wt_x.append(turbine_pos[0])
+        wt_y.append(turbine_pos[1])
+
+    if save_layout == True:
+        numpy_filename = filename + ".npy"
+        a = [wt_x, wt_y]
+        layout = np.array(a)
+        np.save(numpy_filename, layout)
+
+    return wt_x, wt_y
 
