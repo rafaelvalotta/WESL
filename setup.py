@@ -14,7 +14,12 @@ setup(
         'scipy',
         'pyproj',
         'openmdao',
-        'py_wake'
+        'py_wake', 
+        'utm',
+        'openpyxl',
+        'geopandas',
+        'shapely',
+        'geojson'
     ],
     author='Rafael Valotta Rodrigues',
     author_email='r.valottarodrigues@umb.edu',
