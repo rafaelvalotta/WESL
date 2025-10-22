@@ -54,7 +54,8 @@ from utils.plot import get_water_depth_map
 min_lon, max_lon, min_lat, max_lat = -71.8, -70.2, 40.7, 41.4
 
 # Getting longitude and latitude resolution, and interpolated elevation
-water_depth_map_params = get_water_depth_map(water_depth_data="test2A.nc",
+# water_depth_map_params = get_water_depth_map(water_depth_data="test2A.nc",
+water_depth_map_params = get_water_depth_map(water_depth_data="test3.nc",
                                              min_lon = min_lon,
                                              max_lon = max_lon,
                                              min_lat = min_lat,
