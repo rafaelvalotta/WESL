@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name='WESL',
     version='0.1.0',
-    packages=find_packages(),
+    # packages=find_packages(),
+    packages=find_packages(include=["wesl", "wesl.*"]),
     install_requires=[
         'numpy',
         'matplotlib',
