@@ -1,6 +1,6 @@
 # WESL imports
-from utils.boundary_layout import plot_bound, farm_to_get_boundary_and_layout
-from offshore_wind_farms.all_wind_farms import wind_farms_europe
+from wesl.utils.boundary_layout import plot_bound, farm_to_get_boundary_and_layout
+from wesl.offshore_wind_farms.all_wind_farms import wind_farms_europe
 import pickle as pkl
 
 # Other dependencies

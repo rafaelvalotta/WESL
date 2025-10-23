@@ -34,9 +34,9 @@
 
 
 # WESL imports
-from offshore_wind_farms.revolution_wind import x_revwind, y_revwind, boundary_revwind, SG_110_200_DD, Revolutionwind_southforkwind
-from optimizer.constraints.wind_farm_constraints import BoundaryConstraint, PairWiseSpacing
-from optimizer.offshore_system.wind_system import FixedBottomWindFarm, OffshoreSystemPlot
+from wesl.offshore_wind_farms.revolution_wind import x_revwind, y_revwind, boundary_revwind, SG_110_200_DD, Revolutionwind_southforkwind
+from wesl.optimizer.constraints.wind_farm_constraints import BoundaryConstraint, PairWiseSpacing
+from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm, OffshoreSystemPlot
 
 # WESL optimizer external dependencies
 import numpy as np
@@ -47,7 +47,7 @@ from IPython.display import display
 
 # AEP Calculator: PyWake Dependencies
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
-from utils.plot import get_water_depth_map
+from wesl.utils.plot import get_water_depth_map
 
 ##########################################################################################
 # Box encompassing Revolution Wind

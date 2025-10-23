@@ -3,11 +3,11 @@ import openmdao.api as om
 import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
-from optimizer.interarray.farmrepo import g1
+from wesl.optimizer.interarray.farmrepo import g1
 
 # Heuristic Wrapper Valotta Rodrigues Perez 2024 (Mauricio Souza DTU thesis 2022)
-from optimizer.interarray.interface import heuristic_wrapper
-from optimizer.interarray.farmrepo import g1
+from wesl.optimizer.interarray.interface import heuristic_wrapper
+from wesl.optimizer.interarray.farmrepo import g1
 
 from py_wake.utils.gradients import autograd
 

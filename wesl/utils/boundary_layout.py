@@ -8,7 +8,7 @@ import geojson                                                  # Library with f
 import sys                                                      # Access to variables and functions used by the Python interpreter
 import pickle 
 # from offshore_wind_farms.vineyard_wind import x_vineyard, y_vineyard, boundary_vineyard, SG_14222, VineyardWind
-from offshore_wind_farms.all_wind_farms import wind_farms_europe
+from wesl.offshore_wind_farms.all_wind_farms import wind_farms_europe
 
 
 def plot_farm_layout(farm):
@@ -121,7 +121,7 @@ def geoJson_coordinates_data(farm_name, continent):
         filepath = os.path.join(base_dir,europe)
     
     elif continent == 'usa':
-        usa = 'boundaries_usa'
+        usa = 'wesl/boundaries_usa'
         filepath = os.path.join(base_dir,usa)
 
     filepath1 = os.path.join(filepath, farm_name)

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import openmdao.api as om
 import xarray as xr
-from utils.path_tools import get_data_path
+from wesl.utils.path_tools import get_data_path
 from pyproj import Transformer
 from scipy.interpolate import griddata
 
