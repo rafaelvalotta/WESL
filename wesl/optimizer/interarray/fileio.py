@@ -8,8 +8,8 @@ import utm
 import networkx as nx
 from openpyxl import load_workbook
 import scipy.io
-from interarray.interarraylib import make_graph_metrics, NodeTagger
-from interarray.geometric import rotate
+from wesl.optimizer.interarray.interarraylib import make_graph_metrics, NodeTagger
+from wesl.optimizer.interarray.geometric import rotate
 
 
 F = NodeTagger()

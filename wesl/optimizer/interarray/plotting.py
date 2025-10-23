@@ -8,7 +8,7 @@ from collections import defaultdict
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
-from interarray.interarraylib import cost, calcload, make_graph_metrics, NodeStr
+from wesl.optimizer.interarray.interarraylib import cost, calcload, make_graph_metrics, NodeStr
 from matplotlib import animation
 import numpy as np
 # from numpngw import AnimatedPNGWriter

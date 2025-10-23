@@ -4,7 +4,7 @@
 import numpy as np
 import networkx as nx
 from scipy.spatial import ConvexHull
-from interarray.interarraylib import make_graph_metrics, NodeTagger
+from wesl.optimizer.interarray.interarraylib import make_graph_metrics, NodeTagger
 
 
 F = NodeTagger()

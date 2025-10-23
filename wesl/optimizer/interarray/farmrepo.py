@@ -3,8 +3,8 @@
 
 import numpy as np
 from collections import namedtuple
-from interarray.fileio import file2graph,file2graph_topfarm
-from interarray.synthetic import synthfarm2graph, equidistant
+from wesl.optimizer.interarray.fileio import file2graph,file2graph_topfarm
+from wesl.optimizer.interarray.synthetic import synthfarm2graph, equidistant
 from pathlib import Path
 
 

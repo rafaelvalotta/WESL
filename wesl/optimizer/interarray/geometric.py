@@ -11,7 +11,7 @@ import numpy as np
 import networkx as nx
 from scipy.spatial import Delaunay
 from scipy.spatial.distance import cdist
-from interarray.interarraylib import NodeTagger, NodeStr
+from wesl.optimizer.interarray.interarraylib import NodeTagger, NodeStr
 
 F = NodeTagger()
 

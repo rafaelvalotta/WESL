@@ -33,6 +33,9 @@
 #############################################################################
 
 
+import matplotlib.pyplot as plt
+plt.ion()   # interactive mode on
+
 # WESL imports
 from wesl.offshore_wind_farms.revolution_wind import x_revwind, y_revwind, boundary_revwind, SG_110_200_DD, Revolutionwind_southforkwind
 from wesl.optimizer.constraints.wind_farm_constraints import BoundaryConstraint, PairWiseSpacing
@@ -41,7 +44,7 @@ from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm, Offs
 # WESL optimizer external dependencies
 import numpy as np
 import matplotlib.pyplot as plt
-plt.ioff()
+# plt.ioff()
 import openmdao.api as om
 from IPython.display import display
 

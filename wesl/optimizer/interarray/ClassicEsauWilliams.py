@@ -5,10 +5,10 @@ from collections import namedtuple
 import operator
 import time
 import numpy as np
-from interarray.geometric import (delaunay, apply_edge_exemptions,
+from wesl.optimizer.interarray.geometric import (delaunay, apply_edge_exemptions,
                                   is_same_side, full_graph, angle)
-from interarray.interarraylib import new_graph_like, NodeTagger
-from interarray.priorityqueue import PriorityQueue
+from wesl.optimizer.interarray.interarraylib import new_graph_like, NodeTagger
+from wesl.optimizer.interarray.priorityqueue import PriorityQueue
 
 
 F = NodeTagger()

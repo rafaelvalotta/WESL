@@ -5,8 +5,8 @@ import numpy as np
 import networkx as nx
 from functools import partial
 
-from interarray.heuristics import CPEW, OBEW, ClassicEW
-from interarray.interarraylib import calcload, F, make_graph_metrics
+from wesl.optimizer.interarray.heuristics import CPEW, OBEW, ClassicEW
+from wesl.optimizer.interarray.interarraylib import calcload, F, make_graph_metrics
 
 heuristics = {
     'CPEW': CPEW,

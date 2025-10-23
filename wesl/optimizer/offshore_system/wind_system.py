@@ -11,6 +11,7 @@ from wesl.optimizer.interarray.farmrepo import g1
 
 from py_wake.utils.gradients import autograd
 
+plt.ion()  
 
 class FixedBottomWindFarm(om.ExplicitComponent):
 

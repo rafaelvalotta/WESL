@@ -36,6 +36,11 @@
 # 3. get a new test2.nc (water depth map) that includes lat/long for RevWind
 #############################################################################
 
+# import matplotlib
+# print(matplotlib.get_backend())
+
+import matplotlib.pyplot as plt
+plt.ion()   # interactive mode on
 
 # WESL imports
 from offshore_wind_farms.vineyard_wind import x_vineyard, y_vineyard, boundary_vineyard, SG_14222, VineyardWind

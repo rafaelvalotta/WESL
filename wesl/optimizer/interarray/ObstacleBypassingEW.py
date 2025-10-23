@@ -9,12 +9,12 @@ import numpy as np
 import networkx as nx
 from scipy.spatial.distance import cdist
 # from heapq import heappush, heappop
-from interarray.geometric import (delaunay, apply_edge_exemptions,
+from wesl.optimizer.interarray.geometric import (delaunay, apply_edge_exemptions,
                                   edge_crossings, is_crossing, full_graph,
                                   angle,
                                   is_same_side, is_bunch_split_by_corner)
-from interarray.interarraylib import new_graph_like, NodeTagger, NodeStr, Alerter
-from interarray.priorityqueue import PriorityQueue
+from wesl.optimizer.interarray.interarraylib import new_graph_like, NodeTagger, NodeStr, Alerter
+from wesl.optimizer.interarray.priorityqueue import PriorityQueue
 # from interarray.plotting import LayoutPlotter
 # from matplotlib import animation
 
