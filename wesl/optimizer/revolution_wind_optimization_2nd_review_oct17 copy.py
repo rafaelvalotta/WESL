@@ -39,7 +39,9 @@ import matplotlib.pyplot as plt
 # WESL imports
 from wesl.offshore_wind_farms.revolution_wind import x_revwind, y_revwind, boundary_revwind, SG_110_200_DD, Revolutionwind_southforkwind
 from wesl.optimizer.constraints.wind_farm_constraints import BoundaryConstraint, PairWiseSpacing
-from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm, OffshoreSystemPlot
+# from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm, OffshoreSystemPlot
+from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm
+
 
 # WESL optimizer external dependencies
 import numpy as np
