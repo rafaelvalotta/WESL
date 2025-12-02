@@ -153,15 +153,12 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         y = inputs['y']
         boundary =  self.options.declare('boundary')
         # aep_init = -self.options["aep_init"]
+        # aep_init = -self.options["sim_res"](inputs["layout_coordinates"][0], inputs["layout_coordinates"][1]).aep().sum() 
 
         # aep = inputs['AEP'].item()
         aep = outputs['AEP'].item()
-
+        # aep_init = aep_init.item()
         spacing_radius = self.options['spacing_diameter'] / 2
-
-
-
-
 
 
         if self.turbine_scatter is not None:
@@ -283,6 +280,14 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         self.ax.legend(by_label.values(), by_label.keys(),
                     loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
 
+        # self.text_box.set_text(
+        #     f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
+        # )
+
+        # self.text_box.set_text(
+        #     f"Iteration: \nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
+        # )
+
 
         # self.plot_electrical_layout = plot_electrical_cables1(x,y,iter=1)
 
@@ -290,8 +295,6 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         self.fig.canvas.flush_events()
 
         self.iteration += 1
-
-
 
 
 
