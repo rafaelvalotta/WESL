@@ -1,52 +1,14 @@
 #############################################################################
-# Roadmap WESLAB
-
-# Top-priority
-# 1. AEPWaveOffshoreSystem - Rafael review Antonio's branch first
-# 2. Re-train wave energy system (Rafael check the literature first)
-# 3. FloatingWindOffshoreSystem - OC3, OC4, OC5, OC6, OC7
-# 4. ElectricalInfrastructure - Rafael remodel the OffshoreSystemPlot component
-# 5. Implement a wave energy economic cost model (check literature)
-# 6. Develop (or adapt, see literature) Risk Model (stress test? check it, SLOAN proposal material)
-# 7. Monte-Carlo simulation to populate surroundings for the large MA cluster
-# 8. Run optimizations in the GPU. Thread parallelization
-# 9. GUI interface for WESLab optimizer
-
-
-# Medium priority
-# 1. Util to plot xdsm matrix - Rafael
-# 2. NCG driver - Bruno?
-# 3. Memory and computational expenses tracker/plotter
-# 3. Smart-start (rename) for joint-farm optimization - Assign
-# 4. Util to provide WindIO format 
-# 5. util to FLORIS
-# 6. util to FOXES
-# 7. util to ARD
-# 8. util for thread parallelization
-# 9. util for GPU parallelization
-
-# Low priority
-# 1. util to WISDEM
-# 2. util to 
-# 3. 
-
-#############################################################################
-
-
 import matplotlib.pyplot as plt
-# plt.ion()   # interactive mode on
 
 # WESL imports
 from wesl.offshore_wind_farms.revolution_wind import x_revwind, y_revwind, boundary_revwind, SG_110_200_DD, Revolutionwind_southforkwind
 from wesl.optimizer.constraints.wind_farm_constraints import BoundaryConstraint, PairWiseSpacing
-# from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm, OffshoreSystemPlot
 from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm
 
 
 # WESL optimizer external dependencies
 import numpy as np
-import matplotlib.pyplot as plt
-# plt.ioff()
 import openmdao.api as om
 from IPython.display import display
 
@@ -59,7 +21,6 @@ from wesl.utils.plot import get_water_depth_map
 min_lon, max_lon, min_lat, max_lat = -71.8, -70.2, 40.7, 41.4
 
 # Getting longitude and latitude resolution, and interpolated elevation
-# water_depth_map_params = get_water_depth_map(water_depth_data="test2A.nc",
 water_depth_map_params = get_water_depth_map(water_depth_data="test3.nc",
                                              min_lon = min_lon,
                                              max_lon = max_lon,
