@@ -1,0 +1,31 @@
+Metadata-Version: 2.4
+Name: WESL
+Version: 0.1.0
+Summary: Optimizer for offshore systems.
+Home-page: https://github.com/rafaelvalotta/WESL
+Author: Rafael Valotta Rodrigues
+Author-email: r.valottarodrigues@umb.edu
+Classifier: Programming Language :: Python :: 3.11.11
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: scipy
+Requires-Dist: numpy
+Requires-Dist: xarray
+Requires-Dist: matplotlib
+Requires-Dist: scipy
+Requires-Dist: pyproj
+Requires-Dist: openmdao
+Requires-Dist: py_wake
+Requires-Dist: utm
+Requires-Dist: openpyxl
+Requires-Dist: geopandas
+Requires-Dist: shapely
+Requires-Dist: geojson
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
