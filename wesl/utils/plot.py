@@ -13,7 +13,10 @@ from pyproj import Transformer
 
 # changed version to work for Rev Wind
 def get_water_depth_map(water_depth_data, min_lon, max_lon, min_lat, max_lat):
-    ds = xr.open_dataset(get_data_path(water_depth_data))
+    # ds = xr.open_dataset(get_data_path(water_depth_data))
+    ds = xr.open_dataset(get_data_path(water_depth_data), engine="netcdf4")
+# , engine="netcdf4"
+# xr.open_dataset("test3.nc", engine="netcdf4")
 
     # Subset dataset by bounding box
     subset_ds = ds.sel(lon=slice(min_lon, max_lon), lat=slice(min_lat, max_lat))
