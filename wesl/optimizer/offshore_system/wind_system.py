@@ -60,6 +60,7 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         self.options.declare("lat_grid_fine",  types=np.ndarray)
         self.options.declare("interpolated_elevation", types=np.ndarray)
         self.options.declare("aep_init", types=xr.DataArray)
+        self.options.declare("plot_lim", types = np.ndarray)
 
 
 
@@ -67,12 +68,19 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         # Setting layout coordinates as inputs       
         self.add_input('x', np.zeros(len(self.options["layout_coordinates"][0])))  # X-Layout Coordinates
         self.add_input('y', np.zeros(len(self.options["layout_coordinates"][1])))  # Y-Layout Coordinates
-               
+        # self.add_input('aep_init')
+        # self.add_input('x_init', np.zeros(len(self.options["layout_coordinates"][0])))  # Y-Layout Coordinates               
+        # self.add_input('y_init', np.zeros(len(self.options["layout_coordinates"][1])))  # Y-Layout Coordinates
+
+        # self.add_input('x_init')  # Y-Layout Coordinates               
+        # self.add_input('y_init')  # Y-Layout Coordinates
+
         # Setting AEP as output
         self.add_output('AEP', val=0.0)
 
         # n_turbines = len(self.options['layout_coordinates'])
         n_turbines = len(self.options["layout_coordinates"][0])
+        xl, xu, yl, yu = self.options["plot_lim"]
 
     # Declare partial sizes explicitly
         self.declare_partials('AEP', 'x', rows=np.zeros(n_turbines, int), cols=np.arange(n_turbines))
@@ -133,13 +141,21 @@ class FixedBottomWindFarm(om.ExplicitComponent):
                                     verticalalignment='top', 
                                     fontsize=10, 
                                     bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
+
+        # self.text_box.set_text(f"Iteration: {self.iteration}\nAEP Improvement: {-aep} %")
+        # self.text_box.set_text(f"AEP Improvement: {-aep} %")
+
+
         self.ax.set_xlabel('X [m]')
         self.ax.set_ylabel('Y [m]')
         # self.ax.set_xlim(360000, 390000)
         # self.ax.set_ylim(4.53E6, 4.56E6)
 
-        self.ax.set_xlim(300000, 350000)
-        self.ax.set_ylim(4.54E6, 4.58E6)
+        # self.ax.set_xlim(300000, 350000)
+        # self.ax.set_ylim(4.54E6, 4.58E6)
+        self.ax.set_xlim(xl, xu)
+        self.ax.set_ylim(yl, yu)
+
         print('done')
 
         
@@ -157,7 +173,13 @@ class FixedBottomWindFarm(om.ExplicitComponent):
 
         # aep = inputs['AEP'].item()
         aep = outputs['AEP'].item()
-        # aep_init = aep_init.item()
+
+        x_coordinates = self.options["layout_coordinates"][0]
+        y_coordinates = self.options["layout_coordinates"][1]
+
+        aep_init = -self.options["sim_res"](x_coordinates, y_coordinates).aep().sum() 
+        
+        aep_init = aep_init.item()
         spacing_radius = self.options['spacing_diameter'] / 2
 
 
@@ -284,10 +306,13 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         #     f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
         # )
 
+        self.text_box.set_text(
+            f"AEP Improvement: {((aep / aep_init) - 1) * 100:.3f} %"
+        )
+
         # self.text_box.set_text(
         #     f"Iteration: \nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
         # )
-
 
         # self.plot_electrical_layout = plot_electrical_cables1(x,y,iter=1)
 
