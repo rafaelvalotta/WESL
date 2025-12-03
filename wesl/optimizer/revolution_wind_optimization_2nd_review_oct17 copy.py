@@ -45,6 +45,19 @@ aep_init = sim_res(x_coordinates, y_coordinates).aep().sum() # AEP initial layou
 prob = om.Problem()
 
 # Adding subsystems and connections between them
+# prob.model.add_subsystem('FBWF', 
+#                          FixedBottomWindFarm(layout_coordinates = np.array([x_coordinates,
+#                                                                             y_coordinates]),
+#                                              sim_res = Bastankhah_PorteAgel_2014(site, 
+#                                                                                  wind_turbines, 
+#                                                                                  k=0.0324555), 
+#                                             boundary = boundary, 
+#                                             # layout_coordinates = np.array([x_coordinates,y_coordinates]),
+#                                             lon_grid_fine = water_depth_map_params[0],
+#                                             lat_grid_fine = water_depth_map_params[1],
+#                                             interpolated_elevation = water_depth_map_params[2]),
+#                          promotes_inputs=['x', 'y'])
+
 prob.model.add_subsystem('FBWF', 
                          FixedBottomWindFarm(layout_coordinates = np.array([x_coordinates,
                                                                             y_coordinates]),
@@ -55,7 +68,10 @@ prob.model.add_subsystem('FBWF',
                                             # layout_coordinates = np.array([x_coordinates,y_coordinates]),
                                             lon_grid_fine = water_depth_map_params[0],
                                             lat_grid_fine = water_depth_map_params[1],
-                                            interpolated_elevation = water_depth_map_params[2]),
+                                            interpolated_elevation = water_depth_map_params[2],
+                                            plot_lim = np.array([300000, 350000, 4.54E6, 4.58E6]),
+                                            aep_init = aep_init,
+                                            ),
                          promotes_inputs=['x', 'y'])
 
 prob.model.add_subsystem('Spacing_Constraint', 
@@ -69,18 +85,6 @@ prob.model.add_subsystem('Boundary_Constraint',
                                             number_of_turbines = 80),
                          promotes_inputs=['x','y']
 )
-
-# prob.model.add_subsystem('OffshoreSystemPlot',
-#                          OffshoreSystemPlot(boundary = boundary, 
-#                                             layout_coordinates = np.array([x_coordinates,y_coordinates]),
-#                                             lon_grid_fine = water_depth_map_params[0],
-#                                             lat_grid_fine = water_depth_map_params[1],
-#                                             interpolated_elevation = water_depth_map_params[2],
-#                                             aep_init = -sim_res(x_coordinates, y_coordinates).aep().sum()),
-#                          promotes_inputs=['x', 'y']
-# )
-
-# prob.model.connect('FBWF.AEP', 'OffshoreSystemPlot.AEP')
 
 # Driver setup
 prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)

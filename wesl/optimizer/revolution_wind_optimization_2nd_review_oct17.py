@@ -74,7 +74,10 @@ prob.model.add_subsystem('OffshoreSystemPlot',
                                             lon_grid_fine = water_depth_map_params[0],
                                             lat_grid_fine = water_depth_map_params[1],
                                             interpolated_elevation = water_depth_map_params[2],
-                                            aep_init = -sim_res(x_coordinates, y_coordinates).aep().sum()),
+                                            # aep_init = -sim_res(x_coordinates, y_coordinates).aep().sum()),
+                                            aep_init = -sim_res(x_coordinates, y_coordinates).aep().sum(),
+                                            ),
+
                          promotes_inputs=['x', 'y']
 )
 
