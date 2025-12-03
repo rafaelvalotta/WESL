@@ -1,6 +1,6 @@
 # WESL imports
-from utils.boundary_layout import plot_bound, farm_to_get_boundary_and_layout
-from offshore_wind_farms.all_wind_farms import wind_farms_europe
+from wesl.utils.boundary_layout import plot_bound, farm_to_get_boundary_and_layout
+from wesl.offshore_wind_farms.all_wind_farms import wind_farms_europe
 import pickle as pkl
 
 # Other dependencies
@@ -31,7 +31,7 @@ farm_to_get = { 'VineyardWind1': wind_farms_europe['VineyardWind1'] }
 
 vars = farm_to_get_boundary_and_layout(farm_to_get)
 
-plot_bound(vars[0], vars[1])
+# plot_bound(vars[0], vars[1])
 
 with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
     boundary_vineyard = np.array(pkl.load(f))

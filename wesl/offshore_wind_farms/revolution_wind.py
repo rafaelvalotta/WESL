@@ -44,5 +44,7 @@ with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
 with open(list(farm_to_get.keys())[0]+'_layout.pkl', 'rb') as f:
     x_revwind, y_revwind = np.array(pkl.load(f))
 
+print('done')
+
 
 
