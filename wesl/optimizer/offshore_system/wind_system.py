@@ -302,13 +302,13 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         self.ax.legend(by_label.values(), by_label.keys(),
                     loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
 
-        # self.text_box.set_text(
-        #     f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
-        # )
-
         self.text_box.set_text(
-            f"AEP Improvement: {((aep / aep_init) - 1) * 100:.3f} %"
+            f"Iteration: {self.iteration}\nAEP Improvement: {((aep / aep_init) - 1) * 100:.3f} %"
         )
+
+        # self.text_box.set_text(
+        #     f"AEP Improvement: {((aep / aep_init) - 1) * 100:.3f} %"
+        # )
 
         # self.text_box.set_text(
         #     f"Iteration: \nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
