@@ -7,6 +7,7 @@ import pickle as pkl
 import numpy as np
 from py_wake.site._site import UniformWeibullSite
 from py_wake.wind_turbines.generic_wind_turbines import GenericWindTurbine
+import os
 
 class SG_110_200_DD(GenericWindTurbine):
     def __init__(self):
@@ -35,16 +36,36 @@ farm_to_get = {'Revolutionwind_southforkwind': wind_farms_europe['Revolutionwind
 
 vars = farm_to_get_boundary_and_layout(farm_to_get)
 
-# plot_bound(vars[0], vars[1])
+bound_path = os.path.dirname(os.path.abspath(__file__))+"/"+list(farm_to_get.keys())[0]+'_boundary.pkl'
 
-with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
+layout_path = os.path.dirname(os.path.abspath(__file__))+"/"+list(farm_to_get.keys())[0]+'_layout.pkl'
+
+# with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
+#     boundary_vineyard = np.array(pkl.load(f))
+
+# # with open('utm_layout_vw_oct25th.pkl', 'rb') as f:
+# with open(list(farm_to_get.keys())[0]+'_layout.pkl', 'rb') as f:
+#     x_vineyard, y_vineyard = np.array(pkl.load(f))
+
+
+with open(bound_path, 'rb') as f:
     boundary_revwind = np.array(pkl.load(f))
 
 # with open('utm_layout_vw_oct25th.pkl', 'rb') as f:
-with open(list(farm_to_get.keys())[0]+'_layout.pkl', 'rb') as f:
+with open(layout_path, 'rb') as f:
     x_revwind, y_revwind = np.array(pkl.load(f))
 
-print('done')
+
+# plot_bound(vars[0], vars[1])
+
+# with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
+#     boundary_revwind = np.array(pkl.load(f))
+
+# # with open('utm_layout_vw_oct25th.pkl', 'rb') as f:
+# with open(list(farm_to_get.keys())[0]+'_layout.pkl', 'rb') as f:
+#     x_revwind, y_revwind = np.array(pkl.load(f))
+
+# print('done')
 
 
 
