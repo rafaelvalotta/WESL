@@ -20,7 +20,8 @@ setup(
         'openpyxl',
         'geopandas',
         'shapely',
-        'geojson'
+        'geojson',
+        'IPython',
     ],
     author='Rafael Valotta Rodrigues',
     author_email='r.valottarodrigues@umb.edu',
