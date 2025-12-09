@@ -34,10 +34,16 @@ vars = farm_to_get_boundary_and_layout(farm_to_get)
 # plot_bound(vars[0], vars[1])
 
 
+print(os.path.abspath(__file__))
+
 
 bound_path = os.path.dirname(os.path.abspath(__file__))+"/"+list(farm_to_get.keys())[0]+'_boundary.pkl'
 
+# print(bound_path)
+
+
 layout_path = os.path.dirname(os.path.abspath(__file__))+"/"+list(farm_to_get.keys())[0]+'_layout.pkl'
+print(layout_path)
 
 # with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
 #     boundary_vineyard = np.array(pkl.load(f))

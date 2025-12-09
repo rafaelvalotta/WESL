@@ -318,7 +318,7 @@ class FixedBottomWindFarm(om.ExplicitComponent):
 
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
-
+        # plt.show()
         self.iteration += 1
 
 

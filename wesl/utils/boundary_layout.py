@@ -10,6 +10,11 @@ import pickle
 # from offshore_wind_farms.vineyard_wind import x_vineyard, y_vineyard, boundary_vineyard, SG_14222, VineyardWind
 from wesl.offshore_wind_farms.all_wind_farms import wind_farms_europe
 
+import wesl
+from pathlib import Path
+
+
+
 
 def plot_farm_layout(farm):
     """
@@ -113,8 +118,21 @@ def geoJson_coordinates_data(farm_name, continent):
 
     # current_directory = os.path.dirname(sys.argv[0])
     # base_dir = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.getcwd()
 
+    test =  str(Path(wesl.__file__).resolve().parent)
+
+    filepath3 = test + '/boundaries_usa/' + farm_name
+    print('filepath3:', filepath3)
+
+
+    print('test:', test)
+    
+    base_dir = os.getcwd()
+    
+    print('base_dir:',base_dir)
+
+
+    print('base_dir is:',base_dir)
 
     if continent == 'europe':
         europe = 'boundaries_europe/europe'
@@ -124,13 +142,35 @@ def geoJson_coordinates_data(farm_name, continent):
         usa = 'wesl/boundaries_usa'
         filepath = os.path.join(base_dir,usa)
 
+    PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+    # print(PACKAGE_ROOT)
+
     filepath1 = os.path.join(filepath, farm_name)
 
-    with open(filepath1, 'r') as file:
+    filepath2 = os.path.join(base_dir, farm_name)
+
+    print('filepath2:',filepath2)
+    print('filepath1:',filepath1)
+    print('filepath:',filepath)
+
+    # filepath1: /Users/rafaelvalottarodrigues/Documents/Software/Test_repo_Dec3rd/WESL/wesl/optimizer/wesl/boundaries_usa/vineyardwind.geojson
+
+    # with open(filepath1, 'r') as file:
+    #     print('filepath1:',filepath1)
+
+    #     geojson_data = geojson.load(file)
+
+    # filepath3 = test + '/boundaries_usa/' + farm_name
+    # print(filepath3)
+    with open(filepath3, 'r') as file:
+        print('filepath1:',filepath1)
+
         geojson_data = geojson.load(file)
+
 
     return geojson_data
 
+# Path(wesl.__file__).resolve().parent
 
 def get_lat_long(filepath):
     """
