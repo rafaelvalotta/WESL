@@ -5,6 +5,7 @@ from heapq import heappush, heappop
 import itertools
 
 
+# Code was a collaboration with Juan-Andres Peres Rua (DTU), who supervised Mauricio Alencar (DTU)
 class PriorityQueue(list):
 
     def __init__(self):

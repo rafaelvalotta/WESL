@@ -253,15 +253,6 @@ def plot_bound(farm_names, list_farms):
 def farm_to_get_boundary_and_layout(farm_name):
 
     geojson_data, farm_names = [],[]
-
-    # for i in wind_farms_europe:
-    #     farm_names.append(geoJson_coordinates_data(wind_farms_europe[i], 'usa'))
-
-
-    # list_wind_farms_europe = []
-
-    # for k in range(len(wind_farms_europe)):
-    #     list_wind_farms_europe.append(list(wind_farms_europe.items())[k][0])
     
     for i in farm_name:
         farm_names.append(geoJson_coordinates_data(farm_name[i], 'usa'))

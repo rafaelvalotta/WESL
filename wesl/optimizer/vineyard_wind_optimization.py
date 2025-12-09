@@ -99,7 +99,7 @@ prob.model.add_objective('FBWF.AEP',  scaler=0.01)
 
 # Setting constraints
 prob.model.add_constraint('Spacing_Constraint.spacing_violation', scaler=0.01)
-prob.model.add_constraint('Boundary_Constraint.boundary_cons', upper=0.0) # Feasibility condition: <= 0 ?
+prob.model.add_constraint('Boundary_Constraint.boundary_cons', upper=0.0) 
 
 # Setup the problem with all the constraints, design variables, and objective
 prob.setup()
