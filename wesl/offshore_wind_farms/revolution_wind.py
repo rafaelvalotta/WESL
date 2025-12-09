@@ -30,8 +30,6 @@ class Revolutionwind_southforkwind(UniformWeibullSite):
         # self.initial_position = np.array([xinit, yinit]).T
         self.name = "Revolutionwind Southforkwind"
 
-# farm_to_get = { 'VineyardWind1': wind_farms_europe['VineyardWind1'] }
-
 farm_to_get = {'Revolutionwind_southforkwind': wind_farms_europe['Revolutionwind_southforkwind'] } # fix: not farms_europe
 
 vars = farm_to_get_boundary_and_layout(farm_to_get)
@@ -43,32 +41,11 @@ print(bound_path)
 layout_path = os.path.dirname(os.path.abspath(__file__))+"/"+list(farm_to_get.keys())[0]+'_layout.pkl'
 print(layout_path)
 
-# with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
-#     boundary_vineyard = np.array(pkl.load(f))
-
-# # with open('utm_layout_vw_oct25th.pkl', 'rb') as f:
-# with open(list(farm_to_get.keys())[0]+'_layout.pkl', 'rb') as f:
-#     x_vineyard, y_vineyard = np.array(pkl.load(f))
-
-
 with open(bound_path, 'rb') as f:
     boundary_revwind = np.array(pkl.load(f))
 
-# with open('utm_layout_vw_oct25th.pkl', 'rb') as f:
 with open(layout_path, 'rb') as f:
     x_revwind, y_revwind = np.array(pkl.load(f))
-
-
-# plot_bound(vars[0], vars[1])
-
-# with open(list(farm_to_get.keys())[0]+'_boundary.pkl', 'rb') as f:
-#     boundary_revwind = np.array(pkl.load(f))
-
-# # with open('utm_layout_vw_oct25th.pkl', 'rb') as f:
-# with open(list(farm_to_get.keys())[0]+'_layout.pkl', 'rb') as f:
-#     x_revwind, y_revwind = np.array(pkl.load(f))
-
-# print('done')
 
 
 
