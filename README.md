@@ -35,3 +35,16 @@ cd WESL
 6) The last step is:
 
 pip install -e .
+
+
+In case you use WESL, please cite it properly:
+
+@article{
+    wesl2026,
+    title={WESL: Wind Energy Systems Lab},
+    author={Rafael Valotta Rodrigues, Bruno d Boer, Raphael Santore, Donny Le, Gabriel Negrelli, Antonio Moura},
+    url="https://github.com/rafaelvalotta/WESL",
+    publisher={University of Massachusetts Boston},
+    year={2026},
+    month={1}
+}
