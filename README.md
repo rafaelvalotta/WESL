@@ -39,7 +39,11 @@ pip install -e .
 
 In case you use WESL, please cite it properly:
 
+Rafael Valotta Rodrigues, Bruno d Boer, Raphael Santore, Rafael Gross, Donny Le, Gabriel Negrelli, Antonio Moura. (2026, January).
+WESL: Wind Energy Systems Lab. University of Massachusetts Boston.
+
 @article{
+
     wesl2026,
     
     title={WESL: Wind Energy Systems Lab},
