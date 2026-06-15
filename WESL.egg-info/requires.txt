@@ -13,3 +13,4 @@ openpyxl
 geopandas
 shapely
 geojson
+IPython

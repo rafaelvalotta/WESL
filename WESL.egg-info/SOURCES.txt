@@ -13,10 +13,8 @@ wesl/offshore_wind_farms/all_wind_farms.py
 wesl/offshore_wind_farms/revolution_wind.py
 wesl/offshore_wind_farms/vineyard_wind.py
 wesl/optimizer/__init__.py
-wesl/optimizer/optimization_tutorial.py
-wesl/optimizer/revolution_wind_optimization_2nd_review_oct17 copy.py
-wesl/optimizer/revolution_wind_optimization_2nd_review_oct17.py
-wesl/optimizer/vineyard_wind_optimization_2nd_review_oct17_SLSQP.py
+wesl/optimizer/revolution_wind_optimization.py
+wesl/optimizer/vineyard_wind_optimization.py
 wesl/optimizer/windFarms_windTurbines.py
 wesl/optimizer/interarray/ClassicEsauWilliams.py
 wesl/optimizer/interarray/CrossingPreventingEW.py
