@@ -568,8 +568,8 @@ class SGD(Driver):
                 for key, val in result.items():
                     print(f"{key}: {val}")
 
-        if hasattr(self, 'recorder') and self.recorder is not None:
-            self.recorder.close()
+        # if hasattr(self, 'recorder') and self.recorder is not None:
+        #     self.recorder.close()
 
         return self.fail
 
