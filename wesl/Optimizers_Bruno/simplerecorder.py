@@ -60,6 +60,9 @@ class SimpleRecorder:
                 viol
             ])
 
+    def close(self):
+        pass
+
 ####Class optimized for less memory usage (just aep )
 # class SimpleRecorder:
 #     def __init__(self, prob, out_path,

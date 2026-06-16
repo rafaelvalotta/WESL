@@ -62,7 +62,7 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
     OUT_DIR = Path(__file__).parent / "Results"   
     OUT_DIR.mkdir(exist_ok=True, parents=True)
     seed = 1
-    log_path = OUT_DIR / f"run_seed_{seed}_scaler.csv"
+    log_path = OUT_DIR / f"WESL_run_seed_{seed}.csv"
 
 
     recorder = SimpleRecorder(
@@ -176,7 +176,7 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         m.connect('objective', 'plot.objective') # Objective (Stochastic when sampled) and penalized to show
 
     # ------------- Driver -------------
-    prob.driver = NCG(maxiter=30)
+    prob.driver = SGD(maxiter=20)
     prob.driver.options['learning_rate'] = params['diameter'] / 5.0
     prob.driver.options['gamma_min'] = 0.2 * (params['diameter'] / 5.0)
     prob.driver.options['lower'] = 1e-6
@@ -186,7 +186,7 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
     # prob.driver.options["beta1"] = 0.1
     # prob.driver.options["beta2"] = 0.2
 
-    # prob.driver.recorder = recorder #(activate to generate csv files)
+    prob.driver.recorder = recorder #(activate to generate csv files)
 
 
     m.add_design_var('x',
@@ -205,11 +205,11 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
 
 def main(csv_filename="default.csv"):
     K = 50 # standard value
-    enable_plot = True
+    enable_plot = False
     plot_every = 1
     here = Path(__file__).parent
     icon_path = here / "wt_icon.png" # make sure this file exists in the same directory
-    seed = 10
+    seed = 1
     csv_filename = f"100turb_3600m_kdt_{seed}.csv" # choose a layout from Designs Folder (or you can generate your own randomly)
     prob = build_problem(K=K, enable_plot=enable_plot, plot_every=plot_every, icon_path=icon_path, csv_filename=csv_filename)
 
