@@ -17,7 +17,7 @@ from plotnew import PlotComp
 
 from Drivers import NCG, SGD
 
-def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_filename="default.csv"):
+def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_filename="default.csv", driver=0):
     """
     Build the OpenMDAO Problem for NCG/CoBA with DTU-style penalty scaling.
 
@@ -63,6 +63,16 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
     OUT_DIR.mkdir(exist_ok=True, parents=True)
     seed = 1
     log_path = OUT_DIR / f"WESL_{n_turbines}wt_seed_{seed}.csv"
+
+    # Map integers/booleans to driver classes
+    if isinstance(driver, bool):
+        driver = int(driver)
+    driver_map = {0: SGD, 1: NCG}
+    try:
+        DriverClass = driver_map[driver]
+    except KeyError:
+        raise ValueError("driver must be 0/1 or False/True (0->SGD, 1->NCG)")
+    
 
 
     recorder = SimpleRecorder(
@@ -176,7 +186,7 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         m.connect('objective', 'plot.objective') # Objective (Stochastic when sampled) and penalized to show
 
     # ------------- Driver -------------
-    prob.driver = SGD(maxiter=20)
+    prob.driver = DriverClass(maxiter=20)
     prob.driver.options['learning_rate'] = params['diameter'] / 5.0
     prob.driver.options['gamma_min'] = 0.2 * (params['diameter'] / 5.0)
     prob.driver.options['lower'] = 1e-6
@@ -211,7 +221,9 @@ def main(csv_filename="default.csv"):
     icon_path = here / "wt_icon.png" # make sure this file exists in the same directory
     seed = 1
     csv_filename = f"100turb_3600m_kdt_{seed}.csv" # choose a layout from Designs Folder (or you can generate your own randomly)
-    prob = build_problem(K=K, enable_plot=enable_plot, plot_every=plot_every, icon_path=icon_path, csv_filename=csv_filename)
+    # Choose driver: 0 -> SGD, 1 -> NCG.
+    driver = 0  
+    prob = build_problem(K=K, enable_plot=enable_plot, plot_every=plot_every, icon_path=icon_path, csv_filename=csv_filename, driver=driver)
 
     prob.setup()
     prob.run_driver()
