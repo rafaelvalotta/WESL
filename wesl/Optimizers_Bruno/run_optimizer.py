@@ -62,7 +62,7 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
     OUT_DIR = Path(__file__).parent / "Results"   
     OUT_DIR.mkdir(exist_ok=True, parents=True)
     seed = 1
-    log_path = OUT_DIR / f"WESL_run_seed_{seed}.csv"
+    log_path = OUT_DIR / f"WESL_{n_turbines}wt_seed_{seed}.csv"
 
 
     recorder = SimpleRecorder(
