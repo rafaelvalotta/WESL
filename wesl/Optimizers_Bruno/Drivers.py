@@ -256,14 +256,12 @@ class NCG(Driver):
         if self.options['disp']:
             if self.fail and t >= self.maxiter:
                 print("OptimizeWarning: Maximum number of iterations exceeded.")
-                print(f"Current stochastic function value f_t: {fk:.6f}")
                 print(f"Iterations: {t}")
                 print(f"Function evaluations: {self.iter_count}")
                 print(f"Gradient evaluations: {self.iter_count}")
                 print("Optimization FAILED.")
             else:
                 print("Optimization SUCCESSFUL.")
-                print(f"Current stochastic function value f_t: {fk:.6f}")
                 print(f"Iterations: {t}")
                 print(f"Function evaluations: {self.iter_count}")
                 print(f"Gradient evaluations: {self.iter_count}")
@@ -550,7 +548,6 @@ class SGD(Driver):
         if self.options['disp']:
             if self.fail and t >= self.maxiter:
                 print("OptimizeWarning: Maximum number of iterations exceeded.")
-                print(f"Current stochastic function value f_t: {fk:.6f}")
                 print(f"Gradient infinity norm: {grad_norm:.6e}")
                 print(f"Iterations: {t}")
                 print(f"Function evaluations: {self.iter_count}")
@@ -558,7 +555,6 @@ class SGD(Driver):
                 print("Optimization FAILED.")
             else:
                 print("Optimization SUCCESSFUL.")
-                print(f"Current stochastic function value f_t: {fk:.6f}")
                 print(f"Gradient infinity norm: {grad_norm:.6e}")
                 print(f"Iterations: {t}")
                 print(f"Function evaluations: {self.iter_count}")

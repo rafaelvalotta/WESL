@@ -252,7 +252,10 @@ class PlotComp(om.ExplicitComponent):
         )
 
         self.ax.set_title('Turbine Layout Optimization')
-        plt.draw()
+        # plt.draw()
+        if self.fig is not None:
+            self.fig.canvas.draw_idle()  #modification for notebook
+            self.fig.canvas.flush_events()
         plt.pause(0.001)
 
     def __del__(self):
