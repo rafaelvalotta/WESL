@@ -17,22 +17,8 @@ from plotnew import PlotComp
 
 from Drivers import NCG, SGD
 
-def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_filename="default.csv", driver=0):
-    """
-    Build the OpenMDAO Problem for NCG/CoBA with DTU-style penalty scaling.
-
-    Parameters
-    ----------
-    K : int
-        Number of Monte Carlo wind samples per AEP/gradient evaluation.
-    enable_plot : bool
-        If True, add PlotComp to visualize layout/AEP during optimization.
-    plot_every : int
-        Plot every 'plot_every' iterations.
-    icon_path : str or None
-        Path to an icon image for the PlotComp (must be in the same folder).
-    """
-    params = get_setup_params(csv_filename)  # site, turbine, wfm, x_init, y_init, boundary_vertices, etc. [file:24]
+def build_problem(K=50, enable_plot=True, plot_every=1, csv_filename="default.csv", seed=1, driver=0, maxiter=0):
+    params = get_setup_params(csv_filename)
 
     site = params['site']
     turbine = params['turbine']
@@ -40,29 +26,18 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
     x_init = params['x_init']
     y_init = params['y_init']
     boundary_vertices = params['boundary_vertices']
-    min_spacing_d = params['min_spacing_d']  
+    min_spacing_d = params['min_spacing_d']
     n_turbines = params['n_turbines']
-    D = params['diameter']                    # rotor diameter in meters
-#
+    D = params['diameter']
 
     min_spacing_m = min_spacing_d * D
 
-    # ---- Compute initial deterministic AEP for plot (outside OpenMDAO) ----
     try:
         aep0 = float(wfm(x_init, y_init).aep().sum())
         print(f"Initial AEP: {aep0:.3f} GWh")
     except Exception as e:
         print(f"Initial AEP error: {e}")
         aep0 = None
-
-
-    prob = om.Problem()
-    m = prob.model
-
-    OUT_DIR = Path(__file__).parent / "Results"   
-    OUT_DIR.mkdir(exist_ok=True, parents=True)
-    seed = 1
-    log_path = OUT_DIR / f"WESL_{n_turbines}wt_seed_{seed}.csv"
 
     # Map integers/booleans to driver classes
     if isinstance(driver, bool):
@@ -72,7 +47,21 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         DriverClass = driver_map[driver]
     except KeyError:
         raise ValueError("driver must be 0/1 or False/True (0->SGD, 1->NCG)")
-    
+
+    use_stochastic_aep = (driver == 0)
+    driver_aep_name = 'aep' if use_stochastic_aep else 'aep_comp_deterministic.aep'
+  
+
+    # prob = om.Problem()
+    prob = om.Problem(model=om.Group(), reports=False)
+    m = prob.model
+
+    driver_folder_name = DriverClass.__name__.lower()
+    BASE_DIR = Path.cwd().parents[0]
+    RESULTS_DIR = BASE_DIR / "Results" / driver_folder_name
+    RESULTS_DIR.mkdir(exist_ok=True, parents=True)
+
+    log_path = RESULTS_DIR / f"WESL_{n_turbines}wt_seed_{seed}.csv"
 
 
     recorder = SimpleRecorder(
@@ -81,34 +70,28 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         x_name='x',
         y_name='y',
         aep_name='aep_comp_deterministic.aep',
-        obj_name='objective',    
+        obj_name='objective',
         iter_name='opt_iter',
         viol_name='rms_viol'
     )
     recorder.start()
 
-
-    # ------------- IndepVarComp: design variables  -----------------------
     indeps = m.add_subsystem('indeps', om.IndepVarComp(), promotes=['*'])
-
-    # Design variables in meters
     indeps.add_output('x', val=x_init, units='m')
     indeps.add_output('y', val=y_init, units='m')
     indeps.add_output('opt_iter', val=0.0)
 
-    # ------------- AEP component (stochastic, with K samples) -------------
-
-    aep_comp = AEPCompStochastic(       
+    aep_comp = AEPCompStochastic(
         wake_model=wfm,
         site=site,
         wt_x=x_init,
         wt_y=y_init,
-        aep_ref=1.0,      
+        aep_ref=1.0,
         recorder=None,
         n_cpu=1,
         K=K,
     )
-    # ------------- AEP component deterministic (Plot and Recorder)-------------
+
     m.add_subsystem(
         'aep_comp_deterministic',
         AEPComp(
@@ -116,10 +99,11 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
             wt_x=x_init,
             wt_y=y_init,
             aep_ref=1.0,
-            n_cpu=1,   
+            n_cpu=1,
         ),
         promotes_inputs=['x', 'y']
     )
+
     m.add_subsystem(
         'aep_comp',
         aep_comp,
@@ -127,7 +111,6 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         promotes_outputs=['aep'],
     )
 
-    # ------------- Constraint components: spacing + boundary -------------
     spacing_comp = SpacingConstraintComp(
         n_turbines=n_turbines,
         min_spacing=min_spacing_m,
@@ -151,7 +134,6 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         promotes_outputs=['boundary_cons'],
     )
 
-    # ------------- Aggregator: g_vector = [spacing_cons, boundary_cons] -------------
     agg_comp = ConstraintAggregator(n_turbines=n_turbines)
     m.add_subsystem(
         'constraint_agg',
@@ -160,74 +142,80 @@ def build_problem(K=50, enable_plot=True, plot_every=1, icon_path=None, csv_file
         promotes_outputs=['g_vector'],
     )
 
-    # ------------- Penalty objective: -AEP + sum(g_plus^2) -------------
     penalty_comp = PenaltyObjectiveComp(n_constraints=agg_comp.m_total)
     m.add_subsystem(
         'penalty_comp',
         penalty_comp,
-        promotes_inputs=['aep', 'g_vector'],
+        promotes_inputs=['g_vector'],
         promotes_outputs=['objective', 'penalty'],
     )
+    m.connect(driver_aep_name, 'penalty_comp.aep')
+
     nc = agg_comp.m_total
-    m.add_subsystem('rms_viol', FinalRMSViol(nconstraints=nc), 
-                    promotes_outputs=['rms_viol'])  # ← promotes no add_subsystem!
+    m.add_subsystem(
+        'rms_viol',
+        FinalRMSViol(nconstraints=nc),
+        promotes_outputs=['rms_viol']
+    )
     m.connect('g_vector', 'rms_viol.g_vector')
-    # ------------- Optional plotting component -------------
+
     if enable_plot:
         m.add_subsystem(
             'plot',
             PlotComp(init_x=x_init, init_y=y_init, polygon_vertices=boundary_vertices,
                     aep0=aep0, spacing_meters=min_spacing_m,
-                    enabled=True, plot_every=int(plot_every), icon_path=icon_path),
+                    enabled=True, plot_every=int(plot_every)),
             promotes=['x', 'y'],
         )
         m.connect('opt_iter', 'plot.iter')
         m.connect('aep_comp_deterministic.aep', 'plot.aep') # AEP deterministic to show
         m.connect('objective', 'plot.objective') # Objective (Stochastic when sampled) and penalized to show
 
-    # ------------- Driver -------------
-    prob.driver = DriverClass(maxiter=20)
+
+    prob.driver = DriverClass(maxiter=maxiter)
     prob.driver.options['learning_rate'] = params['diameter'] / 5.0
     prob.driver.options['gamma_min'] = 0.2 * (params['diameter'] / 5.0)
     prob.driver.options['lower'] = 1e-6
     prob.driver.options['upper'] = 1e-1
     prob.driver.options['tol'] = 1e-6
     prob.driver.options['disp'] = True
-    # prob.driver.options["beta1"] = 0.1
-    # prob.driver.options["beta2"] = 0.2
-
     prob.driver.recorder = recorder #(activate to generate csv files)
 
+    m.add_design_var(
+        'x',
+        lower=boundary_vertices[:, 0].min(),
+        upper=boundary_vertices[:, 0].max()
+    )
+    m.add_design_var(
+        'y',
+        lower=boundary_vertices[:, 1].min(),
+        upper=boundary_vertices[:, 1].max()
+    )
 
-    m.add_design_var('x',
-                     lower=boundary_vertices[:, 0].min(),
-                     upper=boundary_vertices[:, 0].max())
-    m.add_design_var('y',
-                     lower=boundary_vertices[:, 1].min(),
-                     upper=boundary_vertices[:, 1].max())
+    m.add_objective(driver_aep_name, scaler=-1.0)
+    m.add_constraint('penalty', lower=0.0, scaler=1.0)
 
-    D = params['diameter']
-    m.add_objective('aep', scaler = -1.0)
-    m.add_constraint('penalty', lower=0.0, scaler=1.0) #Adding a constraint just to avoid openMDAO crash
-
-    return prob
+    return prob, recorder, log_path
 
 
-def main(csv_filename="default.csv"):
-    K = 50 # standard value
-    enable_plot = False
+def main(csv_filename="default.csv", K=50, seed=1, driver=0, maxiter=0):
+    csv_filename = f"100turb_3600m_kdt_{seed}.csv"
+    enable_plot = True
     plot_every = 1
-    here = Path(__file__).parent
-    icon_path = here / "wt_icon.png" # make sure this file exists in the same directory
-    seed = 1
-    csv_filename = f"100turb_3600m_kdt_{seed}.csv" # choose a layout from Designs Folder (or you can generate your own randomly)
-    # Choose driver: 0 -> SGD, 1 -> NCG.
-    driver = 0  
-    prob = build_problem(K=K, enable_plot=enable_plot, plot_every=plot_every, icon_path=icon_path, csv_filename=csv_filename, driver=driver)
+    prob, recorder, log_path = build_problem(
+        K=K,
+        enable_plot=enable_plot,
+        plot_every=plot_every,
+        csv_filename=csv_filename,
+        seed=seed,
+        driver=driver,
+        maxiter=maxiter
+    )
 
     prob.setup()
     prob.run_driver()
 
+    return prob, recorder, log_path
 
-if __name__ == "__main__":
-    main()
+
+prob, recorder, log_path = main(seed=2, K=50, driver=0, maxiter=20)
