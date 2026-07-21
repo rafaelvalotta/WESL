@@ -22,6 +22,7 @@ Requires-Dist: openpyxl
 Requires-Dist: geopandas
 Requires-Dist: shapely
 Requires-Dist: geojson
+Requires-Dist: IPython
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier

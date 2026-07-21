@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 # WESL imports
 from wesl.offshore_wind_farms.vineyard_wind import x_vineyard, y_vineyard, boundary_vineyard, SG_14222, VineyardWind
 from wesl.optimizer.constraints.wind_farm_constraints import BoundaryConstraint, PairWiseSpacing
-from wesl.optimizer.offshore_system.wind_system import FixedBottomWindFarm
+from wesl.optimizer.offshore_system.wind_system import FloatingBottomWindFarm
 
 # WESL optimizer external dependencies
 import numpy as np
@@ -14,6 +14,7 @@ from IPython.display import display
 # AEP Calculator: PyWake Dependencies
 from py_wake.literature.gaussian_models import Bastankhah_PorteAgel_2014
 from wesl.utils.plot import get_water_depth_map
+from py_wake.literature.cumulative_sum import nrel5mw
 
 ##########################################################################################
 ##########################################################################################
@@ -33,10 +34,11 @@ x_coordinates, y_coordinates = x_vineyard, y_vineyard
 
 ##########################################################################################
 # AEP computations: Low-order wake model, wind turbine, and site from PyWake
-wind_turbines = SG_14222()                              # wind turbine object
+wind_turbines = nrel5mw()                              # wind turbine object
 site = VineyardWind()                                   # Uniform Weibull object
 
-
+x_coordinates = x_coordinates[:5]
+y_coordinates = y_coordinates[:5]
 
 sim_res = Bastankhah_PorteAgel_2014(site,               # Wind farm model        
                                     wind_turbines, 
@@ -47,7 +49,7 @@ aep_init = sim_res(x_coordinates, y_coordinates).aep().sum() # AEP initial layou
 prob = om.Problem()
 
 prob.model.add_subsystem('FBWF', 
-                         FixedBottomWindFarm(layout_coordinates = np.array([x_coordinates,
+                         FloatingBottomWindFarm(layout_coordinates = np.array([x_coordinates,
                                                                             y_coordinates]),
                                              sim_res = Bastankhah_PorteAgel_2014(site, 
                                                                                  wind_turbines, 
@@ -62,20 +64,20 @@ prob.model.add_subsystem('FBWF',
                          promotes_inputs=['x', 'y'])
 
 prob.model.add_subsystem('Spacing_Constraint', 
-                         PairWiseSpacing(n_turbines = 63, 
-                                         min_spacing = 5*wind_turbines.diameter()), 
+                         PairWiseSpacing(n_turbines = 5, 
+                                         min_spacing = 3*wind_turbines.diameter()), 
                          promotes_inputs=['x', 'y'])
 
 prob.model.add_subsystem('Boundary_Constraint',
                          BoundaryConstraint(polygon_vertices = boundary,
-                                            number_of_turbines = 63),
+                                            number_of_turbines = 5),
                          promotes_inputs=['x','y']
 )
 
 # Driver setup
 prob.driver = om.ScipyOptimizeDriver(tol = 1e-9)
-# prob.driver.options['optimizer'] = 'COBYLA'
-prob.driver.options['optimizer'] = 'SLSQP'
+prob.driver.options['optimizer'] = 'COBYLA'
+# prob.driver.options['optimizer'] = 'SLSQP'
 prob.driver.options['maxiter'] = 100
 prob.driver.options['disp'] = False
 
@@ -109,6 +111,3 @@ prob.run_driver()
 
 # Plotting the farm/cables/substantion layout and water depth
 display(prob.model.OffshoreSystemPlot.fig)
-
-
-
