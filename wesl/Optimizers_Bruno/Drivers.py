@@ -388,10 +388,10 @@ class SGD(Driver):
         self.options.declare('tol', default=1e-6,
                              desc='Tolerance on gradient infinity norm')
 
-        self.options.declare('reset_moments', default=False,
-                             desc='If True, reset Adam moments periodically') # I explored the possibility to reset betas, but it didn't lead to significant improvements.
-        self.options.declare('reset_period', default=100,
-                             desc='Period for resetting Adam moments')
+        # self.options.declare('reset_moments', default=False,
+        #                      desc='If True, reset Adam moments periodically') # I explored the possibility to reset betas, but it didn't lead to significant improvements.
+        # self.options.declare('reset_period', default=100,
+        #                      desc='Period for resetting Adam moments')
 
     def _setup_driver(self, problem):
         super()._setup_driver(problem)

@@ -43,3 +43,28 @@ with open(layout_path, 'rb') as f:
 
 
 
+##SCRIPT BRUNO TO GET VINEYARD DATA
+
+boundary_vineyard = np.array(boundary_vineyard)
+x_vineyard = np.array(x_vineyard)
+y_vineyard = np.array(y_vineyard)
+
+bx = [f"{float(v):.3f}" for v in boundary_vineyard[:, 0]]
+by = [f"{float(v):.3f}" for v in boundary_vineyard[:, 1]]
+lx = [f"{float(v):.3f}" for v in x_vineyard]
+ly = [f"{float(v):.3f}" for v in y_vineyard]
+
+print("\n# --- site_us.yaml / boundaries ---")
+print("vineyard:")
+print("  polygons:")
+print(f"    x: [{', '.join(bx)}]")
+print(f"    y: [{', '.join(by)}]")
+print("  crs: +proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+
+print("\n# --- wind_farm_us.yaml / layout ---")
+print("- name: Vineyard Wind")
+print("  layouts:")
+print("  - coordinates:")
+print(f"      x: [{', '.join(lx)}]")
+print(f"      y: [{', '.join(ly)}]")
+print("      crs: +proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")

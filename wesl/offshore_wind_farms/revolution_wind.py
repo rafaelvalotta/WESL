@@ -49,3 +49,26 @@ with open(layout_path, 'rb') as f:
 
 
 
+boundary_revwind = np.array(boundary_revwind)
+x_revwind = np.array(x_revwind)
+y_revwind = np.array(y_revwind)
+
+bx = [f"{float(v):.3f}" for v in boundary_revwind[:, 0]]
+by = [f"{float(v):.3f}" for v in boundary_revwind[:, 1]]
+lx = [f"{float(v):.3f}" for v in x_revwind]
+ly = [f"{float(v):.3f}" for v in y_revwind]
+
+print("\n# --- site_us.yaml / boundaries ---")
+print("Revolutionwind Southforkwind:")
+print("  polygons:")
+print(f"    x: [{', '.join(bx)}]")
+print(f"    y: [{', '.join(by)}]")
+print("  crs: +proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")
+
+print("\n# --- wind_farm_us.yaml / layout ---")
+print("- name: Revolutionwind Southforkwind")
+print("  layouts:")
+print("  - coordinates:")
+print(f"      x: [{', '.join(lx)}]")
+print(f"      y: [{', '.join(ly)}]")
+print("      crs: +proj=utm +zone=19 +datum=WGS84 +units=m +no_defs")

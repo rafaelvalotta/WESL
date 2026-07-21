@@ -38,7 +38,7 @@ def plot_farm_layout(farm):
     # directory1 = os.path.dirname(os.path.abspath(__file__))
 
     # filepath = os.path.join(directory,'turbine_layouts')
-    directory = os.path.join(filepath,'turbine_layouts')
+    directory = os.path.join(filepath,'wesl/turbine_layouts')
 
 
     # Split the file name and extension

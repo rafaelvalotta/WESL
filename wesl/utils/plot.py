@@ -18,6 +18,7 @@ def get_water_depth_map(water_depth_data, min_lon, max_lon, min_lat, max_lat):
 # , engine="netcdf4"
 # xr.open_dataset("test3.nc", engine="netcdf4")
 
+
     # Subset dataset by bounding box
     subset_ds = ds.sel(lon=slice(min_lon, max_lon), lat=slice(min_lat, max_lat))
     elevation = subset_ds.elevation.values
@@ -42,7 +43,8 @@ def get_water_depth_map(water_depth_data, min_lon, max_lon, min_lat, max_lat):
     values = elevation.ravel()
     interpolated_elevation = griddata(points, values, (x_grid_fine, y_grid_fine), method='cubic')
 
-    return x_grid_fine, y_grid_fine, interpolated_elevation
+    return x_grid_fine, y_grid_fine, interpolated_elevation, path_to_find
+
 
 
 

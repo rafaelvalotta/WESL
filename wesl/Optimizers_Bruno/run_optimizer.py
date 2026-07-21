@@ -179,7 +179,7 @@ def build_problem(K=50, enable_plot=True, plot_every=1, csv_filename="default.cs
     prob.driver.options['upper'] = 1e-1
     prob.driver.options['tol'] = 1e-6
     prob.driver.options['disp'] = True
-    prob.driver.recorder = recorder #(activate to generate csv files)
+    # prob.driver.recorder = recorder #(activate to generate csv files)
 
     m.add_design_var(
         'x',

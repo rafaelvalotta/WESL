@@ -1,0 +1,7 @@
+name: Vineyard Wind + Revolution Wind
+site: !include site_us.yaml
+wind_farm: !include wind_farm_us.yaml
+attributes:
+  flow_model:
+    name: pywake
+  analysis: !include analysis.yaml

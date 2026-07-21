@@ -1,0 +1,23 @@
+# import cdsapi
+
+# client = cdsapi.Client()
+
+# client.retrieve(
+#     "reanalysis-era5-single-levels",
+#     {
+#         "product_type": ["reanalysis"],
+#         "variable": ["100m_u_component_of_wind", "100m_v_component_of_wind"],
+#         "year": ["2020"],
+#         "month": ["01"],
+#         "day": ["01"],
+#         "time": ["00:00"],
+#         "area": [41.25, -70.97, 40.65, -70.37],
+#         "data_format": "netcdf",
+#     },
+#     "teste_um_dia.nc",
+# )
+# print("Download de teste concluído.")
+import xarray as xr
+
+ds = xr.open_dataset("teste_um_dia.nc")
+print(ds)

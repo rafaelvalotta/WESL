@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import openmdao, windIO, py_wake\")",
+      "Bash(conda env *)",
+      "Bash(pyenv versions *)",
+      "Bash(command -v python3)",
+      "Bash(command -v python)",
+      "Bash(pip3 show *)",
+      "Bash(/opt/anaconda3/envs/Wind_2200/bin/python Make_Convergence_Video.py)",
+      "Bash(/opt/anaconda3/envs/Wind_2200/bin/python -c ' *)",
+      "Bash(/opt/anaconda3/envs/Wind_2200/bin/python -m py_compile Components/plotting.py)",
+      "Bash(/opt/anaconda3/envs/Wind_2200/bin/python -u deterministic_phase.py)",
+      "Bash(/opt/anaconda3/envs/Wind_2200/bin/python -u plot_wind_climate_comparison.py)",
+      "Bash(/opt/anaconda3/envs/Wind_2200/bin/jupyter nbconvert *)"
+    ]
+  }
+}
