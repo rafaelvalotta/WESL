@@ -1,0 +1,212 @@
+# -*- coding: utf-8 -*-
+"""
+First created on Sep 17 2021
+Updated on Feb 17 2023 with mainly format cleaning.
+@author: Ju Feng
+"""
+
+import numpy as np
+from scipy.interpolate import RegularGridInterpolator
+import csv
+
+
+class FOWT(object):
+    """
+
+    NREL 5MW 6-Dof Lookup table
+
+    320 m anchor depth
+
+    """
+    def __init__(self, tot_mass, hub_height, msl_to_bottom, msl_to_CB,
+                 msl_to_CM, rated_power, D_rotor,
+                 water_density=997, gravity_acceleration=9.8, static_Ct=0.1,
+                 air_density=1.225):
+        self.tot_mass = tot_mass
+        self.hub_height = hub_height
+        self.msl_to_bottom = msl_to_bottom   # Total draft of the floater
+        self.msl_to_CB = msl_to_CB
+        self.msl_to_CM = msl_to_CM
+        self.rated_power = rated_power
+        self.D_rotor = D_rotor
+        self.water_density = water_density
+        self.gravity_acceleration = gravity_acceleration
+
+        self.rotor_area = np.pi*(self.D_rotor/2)**2
+        self.G = self.tot_mass * self.gravity_acceleration
+        self.static_Ct = static_Ct
+        self.air_density = air_density
+
+
+    def get_power(self, ws, tilt_in_deg=None, alpha=1.8):
+        if tilt_in_deg is None:
+            return self.get_power_direct(ws)
+        else:
+            cos_gamma = np.cos(np.deg2rad(tilt_in_deg))
+            return self.get_power_direct(ws) * cos_gamma**alpha
+
+
+    def get_thrust(self, ws, tilt_in_deg=None, beta=2):
+        Ct = self.get_Ct(ws)
+        if tilt_in_deg is None:
+            return 0.5 * self.air_density *self.rotor_area * Ct * ws**2
+        else:
+            cos_gamma = np.cos(np.deg2rad(tilt_in_deg))
+            return 0.5 * self.air_density *self.rotor_area * Ct * ws**2 *(
+            cos_gamma**beta)
+
+
+
+class FOWT_Spar(FOWT):
+    """ FOWT with spar-type floater, assuming station keeping is done
+    by three mooring lines configured symmetricaly, i.e., the mooring
+    lines are of same length, the water depth is uniform and the
+    projections of adjacent moorinng lines are seperated by 120 degree.
+
+    Some terminology:
+        msl: mean sea level
+        CB: center of buoyancy
+        CM: center of mass
+        fairlead: the point mooring lines connected to the floater
+    """
+    def __init__(self, tot_mass, hub_height, msl_to_bottom, msl_to_CB,
+                 msl_to_CM, rated_power, D_rotor,
+                 msl_to_fairlead, mooring_line_length, radius_to_anchor,
+                 sea_depth, msl_to_taper_top, msl_to_taper_bottom,
+                 platform_top_to_msl, D_taper_top, D_taper_bottom,
+                 D_platform_top, water_density=997, gravity_acceleration=9.8, 
+                 static_Ct=0.1, air_density=1.225,
+                 movement_interp_funcs_flag=False,
+                 solve_for_movement_by_interp=False):
+        super().__init__(tot_mass, hub_height, msl_to_bottom, msl_to_CB,
+                         msl_to_CM, rated_power, D_rotor,
+                         water_density=water_density,
+                         gravity_acceleration=gravity_acceleration,
+                         static_Ct=static_Ct,
+                         air_density=air_density)
+
+        self.msl_to_fairlead = msl_to_fairlead
+        self.mooring_line_length = mooring_line_length
+        self.radius_to_anchor = radius_to_anchor
+        self.sea_depth = sea_depth 
+        self.msl_to_taper_top = msl_to_taper_top
+        self.msl_to_taper_bottom = msl_to_taper_bottom
+        self.platform_top_to_msl = platform_top_to_msl
+        self.D_taper_top = D_taper_top
+        self.D_taper_bottom = D_taper_bottom
+        self.D_platform_top = D_platform_top
+
+        self.platform_top_to_taper_top = (self.platform_top_to_msl + 
+                                          self.msl_to_taper_top)
+
+        self.z_merged_change_range = np.linspace(-self.msl_to_taper_top,
+            self.platform_top_to_msl, 500)
+
+        self.movement_interp_funcs_flag = movement_interp_funcs_flag
+        if self.movement_interp_funcs_flag:
+            self.build_movement_interp_funcs()
+
+        self.solve_for_movement_by_interp = solve_for_movement_by_interp
+        self.lookup_table = []
+        with open("wave_0.csv", "r", newline="", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            for row in reader:
+                self.lookup_table.append(row)
+
+
+
+
+    def solve_static_movement(self, wind_speed, wind_direction, wave_height=1, wave_direction=0):
+        """
+        Function to compute steady state movement of FOWT under given thrust
+        force with a given inflow wind direction. It can accept array inputs
+        if self.solve_for_movement_by_interp is True, and interpolating
+        function has been built.
+
+        Parameters
+        ----------
+        thrust_force : float or array [N]
+            Thrust force at rotor center 
+        theta_wd_in_deg : float or array [deg]
+            Inflow wind direction.
+        alpha_in_deg : float or array [deg]
+            Configuration angle of mooring lines,i.e., angle between the first 
+            mooring line (defined as first encountered one when rotating from
+            x positive axis anti-clockwise) with the x positive direction.
+
+        Returns
+        -------
+
+        openfast 0 wind direction is (1,0) on the xy plane
+        rotated 90 degrees counterclockwise from pywake
+
+        x_r_change : float or array [m]
+            Movement in x direction of rotor center.
+        y_r_change : float or array [m]
+            Movement in y direction of rotor center.
+        z_r_change : float or array [m]
+            Movement in z direction of rotor center.
+        gamma_in_deg : float or array [deg]
+            Pitch angle of platform in degree.
+        """
+        sector = (wind_direction + 90) // 90
+        wind_direction = np.deg2rad((wind_direction)%120)
+        position = []
+        angles = []
+
+        wind_speed = np.float64(wind_speed)
+        while(type(wind_speed)==np.ndarray):
+            wind_speed = wind_speed[0]
+        wind_speed = np.round(wind_speed)
+        wind_speed = max(4, wind_speed)
+        env_conditions = [0, int(wave_height), int(min(24,wind_speed))]
+
+        for row in self.lookup_table:
+            row_conditions = [int(item) for item in row[0:3]]
+            if row_conditions == env_conditions:
+                position = row[3:6]
+                angles = row[6:]
+                break
+                # print(row[:3], env_conditions)
+        position = [float(item) for item in position]
+        angles = [float(item) for item in angles]
+
+        multiplier = [0, 0]        
+
+        if sector == 1:
+            multiplier[0] = -1
+            multiplier[1] = -1
+        elif sector == 2:
+            multiplier[0] = 1
+            multiplier[1] = -1
+        elif sector == 3:
+            multiplier[0] = 1
+            multiplier[1] = 1
+        elif sector == 4:
+            multiplier[0] = -1
+            multiplier[1] = 0
+
+        
+
+        return position[1]*multiplier[0], position[0]*multiplier[1], position[2], angles[0]
+
+
+    def solve_static_movement_interp(self, thrust_force, theta_wd_in_deg, 
+                                     alpha_in_deg=0):
+        theta_in_deg = np.mod(270 - theta_wd_in_deg - alpha_in_deg, 360)
+        return 0
+
+
+    def solve_static_movement_direct(self, thrust_force, theta_wd_in_deg, 
+                                     alpha_in_deg=0):
+        theta_in_deg = 270 - theta_wd_in_deg - alpha_in_deg
+
+        x_o_change, y_o_change, z_o_change, gamma = (
+            self.solve_for_movement_direct(thrust_force, theta_in_deg))
+
+        x_r_change, y_r_change, z_r_change = self.o_motion_to_r_motion(
+            x_o_change, y_o_change, z_o_change, gamma, theta_in_deg,
+            alpha_in_deg)
+        
+        return x_r_change, y_r_change, z_r_change, np.rad2deg(gamma)
