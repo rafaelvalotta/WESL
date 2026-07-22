@@ -126,6 +126,7 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
                 zr_prev = np.copy(zr_new)
                 gamma_prev = np.copy(gamma_new)
 
+    print(len(fowt_x), len(fowt_y), len(hub_height_wt), len(gamma_wt))
     return fowt_x, fowt_y, hub_height_wt, gamma_wt
 
 
@@ -888,7 +889,9 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
             data.append([wd, ws[ws_index],  fowt_x_base, fowt_y_base, tilt_base, hub_height_base, index_matrix, sim_result])
 
         data = tuple(data)
-        print(data[0])
+
+        print(len(data))
+
         with multiprocessing.Pool(processes=self.num_cores) as pool:
             results = pool.starmap(displacement_solver, data)
         results = np.transpose(results, (1, 2, 3, 0))

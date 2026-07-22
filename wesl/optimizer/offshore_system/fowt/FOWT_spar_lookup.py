@@ -84,8 +84,13 @@ class FOWT_Spar(object):
         wind_direction = np.fmod((wind_direction - 90), 360)
         wind_direction = np.fmod((wind_direction + 360), 360)
 
+        # this exists because sometimes wind_speed looks like [[windspeed]] due to code elsewhere. Should be fixed eventually
+        while(type(wind_speed)==np.ndarray):
+            wind_speed = wind_speed[0]
+
+
         # convert wind_speed into value within lookup table
-        # due to wind speed thrust curve, values over ~24 make infinitesimally small changes in displacement 
+        # due to wind speed thrust curve, values over ~22 make infinitesimally small changes in displacement 
         wind_speed = max(wind_speed, 4)
         wind_speed = min(wind_speed, 22)
         wind_speed = wind_speed
@@ -95,21 +100,23 @@ class FOWT_Spar(object):
         wave_height = max(wave_height, 1)
         wave_height = wave_height
 
-        # current limits of lookup table
 
 
 
         coordinates = (wind_direction, wave_direction, wave_height, wind_speed)
-
+        print(coordinates)
         row = self.interpolator(coordinates)
-
-
 
         position = row[4:7]
         angles = row[7:]
 
         position = np.array(position, dtype=float)
         angles = np.array(angles, dtype=float)
+
+        if(len(position) == 0):
+            print(position)
+            print(coordinates)
+            print(row)
 
         x_r_change = -position[0]
         y_r_change = -position[1]
