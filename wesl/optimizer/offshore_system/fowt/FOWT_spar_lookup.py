@@ -16,13 +16,13 @@ class FOWT_Spar(object):
         self.space = np.array([])
 
         wind_directions = 19
-        wave_directions = 6
+        wave_directions = 7
         wind_speeds = 10
         wave_heights = 4
 
         # add better resolution later
         self.wind_directions_grid = np.linspace(0,360,wind_directions, endpoint=True)
-        self.wave_directions_grid = np.linspace(0,360,wave_directions, endpoint=False)
+        self.wave_directions_grid = np.linspace(0,360,wave_directions, endpoint=True)
         self.wind_speed_grid = np.linspace(4,22,wind_speeds)
         self.wave_height_grid = np.arange(1,8, 2)
         header = []
@@ -30,12 +30,43 @@ class FOWT_Spar(object):
         # print(self.wind_directions_grid,self.wave_directions_grid,self.wind_speed_grid,self.wave_height_grid)
 
         path = Path(__file__).parent
-        with open(f"{path}/wave_wind_dirs_fixed2.csv", "r", newline="", encoding="utf-8") as f:
+        with open(f"{path}/wave_wind_dirs_fixed.csv", "r", newline="", encoding="utf-8") as f:
             reader = csv.reader(f)
             header = next(reader)
             for row in reader:
                 row = [float(value) for value in row]
                 csv_file.append(row)
+
+        # new_csv = []
+        # winds = []
+        # waves = []
+
+
+        # for row in csv_file:
+        #     if (row[0]==0):
+        #         winds.append([row[0]+360] + row[1:])
+        #     if waves and waves[0][0] != row[0]:
+        #         if waves[0][0] == 0:
+        #             for wave_row in waves:
+        #                 winds.append([wave_row[0]+360] + wave_row[1:])    
+        #         for wave_row in waves:
+        #             new_csv.append(wave_row)
+        #         waves = []
+        #     if(row[1] == 0):
+        #         waves.append([row[0]] + [row[1]+360] + row[2:])
+        #     new_csv.append(row)
+
+        
+        # for wave_row in waves:
+        #     new_csv.append(wave_row)
+        # waves = []
+        # for wind_row in winds:
+        #     new_csv.append(wind_row)
+
+        # with open(f"{path}/wave_wind_dirs_fixed.csv", "w", newline="", encoding="utf-8") as f:
+        #     writer = csv.writer(f)
+        #     writer.writerow(header)
+        #     writer.writerows(new_csv)
 
         self.space = np.array(csv_file)
         self.lookup_table = csv_file
@@ -83,9 +114,10 @@ class FOWT_Spar(object):
         
         wind_direction = np.fmod((wind_direction - 90), 360)
         wind_direction = np.fmod((wind_direction + 360), 360)
-
+        # print(wind_speed)
         # this exists because sometimes wind_speed looks like [[windspeed]] due to code elsewhere. Should be fixed eventually
-        while(type(wind_speed)==np.ndarray):
+        while(type(wind_speed)==np.ndarray and wind_speed.shape):
+            # print(wind_speed)
             wind_speed = wind_speed[0]
 
 
@@ -104,7 +136,6 @@ class FOWT_Spar(object):
 
 
         coordinates = (wind_direction, wave_direction, wave_height, wind_speed)
-        print(coordinates)
         row = self.interpolator(coordinates)
 
         position = row[4:7]
@@ -113,10 +144,6 @@ class FOWT_Spar(object):
         position = np.array(position, dtype=float)
         angles = np.array(angles, dtype=float)
 
-        if(len(position) == 0):
-            print(position)
-            print(coordinates)
-            print(row)
 
         x_r_change = -position[0]
         y_r_change = -position[1]
@@ -131,11 +158,39 @@ class FOWT_Spar(object):
 #https://www.sciencedirect.com/science/article/pii/S0378383907000452
 #https://cdip.ucsd.edu/m/products/rose/?stn=160p1
 class wave_site():
-    def __init__(self, ):
-        pass
-        #use real data in the future
-    
+    def __init__(self, f, a, k):
+        if (len(f) != len(a) or len(f) != len(k)):
+            raise ValueError("weibull parameters for waves are not equal")
+        self.f = f
+        self.a = a
+        self.k = k
+        self.weibull = []
+        # for i in range(len(self.f)):
+        #     self.weibull.append(weibull_min(c=self.k[i], scale = a))
+
+    def probabilities(self, buckets):
+
+        # probability matrix of the form [directions, wave_height]
+
+        probabilities = []
+        for i in range(len(self.f)):
+            cdf_values = weibull_min.cdf(buckets, c=self.k[i], scale = self.a[i])
+            bucket_prob = np.diff(cdf_values)
+            probabilities.append(bucket_prob*self.f[i])
+        return np.array(probabilities)
+
+
 
 if __name__ == "__main__":
     fowt = FOWT_Spar()
     print(fowt.solve_static_movement(wind_direction=356,wind_speed=4, wave_direction = 0, wave_height = 0))
+
+
+    wave_f = [8.37, 6.83, 5.38, 4.77, 4.10, 4.80,
+        8.22, 13.29, 11.22, 10.14, 11.72, 11.16]
+    wave_a = [3.267, 3.267, 3.267, 3.267, 3.267, 3.267, 3.267, 3.267, 3.267, 3.267, 3.267, 3.267]
+    wave_k = [4, 4 ,4 ,4 ,4 ,4 ,4 ,4 ,4 ,4 ,4 ,4]
+
+    test_wave_site = wave_site(f=wave_f / np.sum(wave_f),a=wave_a,k=wave_k)
+    print(np.sum(np.array(test_wave_site.probabilities([0,1,2,3,4,5,6,7]))))
+    # print(sum())

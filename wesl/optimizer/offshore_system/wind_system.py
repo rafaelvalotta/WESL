@@ -27,7 +27,7 @@ path = os.getcwd()
 
 # Currently, the lookup table for the FOWT onyl exists for nrel5MW
 
-from wesl.optimizer.offshore_system.fowt.FOWT_spar_lookup import FOWT_Spar
+from wesl.optimizer.offshore_system.fowt.FOWT_spar_lookup import FOWT_Spar, wave_site
 from py_wake.literature.cumulative_sum import nrel5mw
 
 # Generic Unidirectional Site for FOWT modeling
@@ -40,16 +40,45 @@ class My_site_Uniform(UniformSite):
         UniformSite.__init__(self, ti=ti, shear=PowerShear(h_ref=h_ref, alpha=alpha),
                                     interp_method='linear')
 
-def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_base, index_matrix, sim_result):
+def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_base, index_matrix, sim_result, current_wave_site, wave_directions, wave_heights):
+    """
+    Finds the displacement for all wind direction, wave height/direction for a given wind speed
+
+    Parameters:
+    ----------------------------------------------------------------------------------
+    Variable                      Description
+    wd                   (np.array)                    Wind directions to solve for
+    ws                   (np.float)                    Wind speed to solve for
+    fowt_x_base          (np.array)                    Undisplaced FOWT x positions
+    fowt_y_base          (np.array)                    Undisplaced FOWT y positions
+    fowt_tilt_base       (np.array)                    Undisplaced FOWT tilt angle
+    hub_height_base      (np.array)                    Undisplaced FOWT hub height
+    index_matrix         (np.array)                    Order in which to correctly evaluate displacements
+    sim_result           (xarray)                      Pywake wind conditions
+    current_wave_site    (FOWT_spar_lookup.wave_site)  Custom Height Direction Weibull Curves (Temporary, proof of concept)
+    wave_directions      (np.array)                    Wave directions to solve for
+    wave_heights         (np.array)                    Wave heights to solve for
+    ----------------------------------------------------------------------------------
+
+    Usage:
+    ----------------------------------------------------------------------------------
+    Helper function to make floating wind farm compute faster
+    Note: update this whole function for readability and modularity
+          should be split into 3-4 functions...
+    """
+
     FOWT_Spar_def = FOWT_Spar()
     my_fowt = nrel5mw()
     wf_model_Uniform = Bastankhah_PorteAgel_2014(My_site_Uniform(), my_fowt, k=0.025)
     threshold_x, threshold_y, threshold_z, threshold_gamma = 0.5, 0.5, 0.05, 0.5 # [m], [m], [m], [deg]
 
-    fowt_x = np.zeros((len(fowt_x_base),len(wd)))
-    fowt_y = np.zeros((len(fowt_x_base),len(wd)))
-    hub_height_wt = np.zeros((len(fowt_x_base),len(wd)))
-    gamma_wt = np.zeros((len(fowt_x_base),len(wd)))
+    #use range of wave heights in lookup table
+    wave_probabilities = current_wave_site.probabilities([0]+wave_heights)
+
+    fowt_x = np.zeros((len(fowt_x_base),len(wd),len(wave_directions),len(wave_heights),))
+    fowt_y = np.zeros((len(fowt_x_base),len(wd),len(wave_directions),len(wave_heights),))
+    hub_height_wt = np.zeros((len(fowt_x_base),len(wd),len(wave_directions),len(wave_heights),))
+    gamma_wt = np.zeros((len(fowt_x_base),len(wd),len(wave_directions),len(wave_heights),))
 
     for wd_index in range(len(wd)):
         fowt_x_temp = np.copy(fowt_x_base)
@@ -68,7 +97,6 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
         elif 270 <= wd[wd_index] < 315: index = index_matrix[6,:]
         elif 315 <= wd[wd_index] < 360: index = index_matrix[7,:]
         elif wd[wd_index] == 360: index = index_matrix[0,:]
-
         for wt_index in index:
             WS_eff_WT_new = sim_result.WS_eff.sel(wt=wt_index,wd=wd[wd_index],ws=ws).values
             
@@ -80,58 +108,86 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
             zr_prev     = np.copy(zr_new)
             gamma_prev  = np.copy(gamma_new)
 
+            xr_max = 0
+
             # Iterative loop until convergence
-            itt = 1
-            while True:
-                itt += 1
-                while(isinstance(xr_prev, np.ndarray) and xr_prev.shape != ()):
-                    xr_prev = xr_prev[0]
-                    yr_prev = yr_prev[0]
-                    zr_prev = zr_prev[0]
-                    gamma_prev = gamma_prev[0]
+            # similar positions are aggregated for perfomance
 
-                #Define the updated provisional WF site and turbine position
-                fowt_x_temp[wt_index] = fowt_x_base[wt_index] + xr_prev
-                fowt_y_temp[wt_index] = fowt_y_base[wt_index] + yr_prev
-                hub_height_temp[wt_index] = hub_height_base[wt_index] + zr_prev
-                tilt_temp[wt_index] = tilt_base[wt_index] + gamma_prev
-                
-                #Recalculate the new WS_eff and thrust for the provisional position
-                WS_eff_WT_new = wf_model_Uniform(fowt_x_temp, fowt_y_temp, h=hub_height_temp, tilt=tilt_temp, wd=wd[wd_index], ws=[ws]).WS_eff.sel(wt=wt_index).values
-                #Get the updated rotor centre displacement
-                xr_new, yr_new, zr_new, gamma_new = FOWT_Spar_def.solve_static_movement(WS_eff_WT_new, wd[wd_index], )
+            for wave_dir_index in range(len(wave_directions)):
+                # index to aggregate probabilities
+                wave_dir_sum_index = 0
+                for wave_height_index in range(len(wave_heights)):
+                    # index to aggregate probabilities
+                    wave_height_sum_index = 0
+                    itt = 1
+                    recalculate_wind = False
 
-                #Check cocnvergence
-                diff_xr     = abs(xr_prev - xr_new)
-                diff_yr     = abs(yr_prev - yr_new)
-                diff_zr     = abs(zr_prev - zr_new)
-                diff_gamma  = abs(gamma_prev - gamma_new)
-                if itt>6 or ((diff_xr<threshold_x).all() and (diff_yr<threshold_y).all() and (diff_zr<threshold_z).all() and (diff_gamma<threshold_gamma).all()):
+                    if wave_probabilities[wave_dir_index, wave_height_index] == 0:
+                        continue
 
+                    while True:
+                        itt += 1
+                        while(isinstance(xr_prev, np.ndarray) and xr_prev.shape != ()):
+                            xr_prev = xr_prev[0]
+                            yr_prev = yr_prev[0]
+                            zr_prev = zr_prev[0]
+                            gamma_prev = gamma_prev[0]
 
-                    while(isinstance(xr_new, np.ndarray) and xr_new.shape != ()):
-                        xr_new = xr_new[0]
-                        yr_new = yr_new[0]
-                        zr_new = zr_new[0]
-                        gamma_new = gamma_new[0]
-                    
-                    fowt_x[wt_index,wd_index] = fowt_x_base[wt_index] + xr_new
-                    fowt_y[wt_index,wd_index] = fowt_y_base[wt_index] + yr_new
-                    hub_height_wt[wt_index,wd_index] = hub_height_base[wt_index] + zr_new
-                    gamma_wt[wt_index,wd_index]  = tilt_base[wt_index] + gamma_new
-                    break
+                        #Define the updated provisional WF site and turbine position
+                        fowt_x_temp[wt_index] = fowt_x_base[wt_index] + xr_prev
+                        fowt_y_temp[wt_index] = fowt_y_base[wt_index] + yr_prev
+                        hub_height_temp[wt_index] = hub_height_base[wt_index] + zr_prev
+                        tilt_temp[wt_index] = tilt_base[wt_index] + gamma_prev
+                        
+                        #Recalculate the new WS_eff and thrust for the provisional position
+                        if recalculate_wind:
+                            WS_eff_WT_new = wf_model_Uniform(fowt_x_temp, fowt_y_temp, h=hub_height_temp, tilt=tilt_temp, wd=wd[wd_index], ws=[ws]).WS_eff.sel(wt=wt_index).values
+                            recalculate_wind = False
+
+                        #Get the updated rotor centre displacement
+                        xr_new, yr_new, zr_new, gamma_new = FOWT_Spar_def.solve_static_movement(WS_eff_WT_new, wd[wd_index], wave_direction=wave_directions[wave_dir_index], wave_height=wave_heights[wave_height_index])
+
+                        #Check convergence
+                        diff_xr     = abs(xr_prev - xr_new)
+                        diff_yr     = abs(yr_prev - yr_new)
+                        diff_zr     = abs(zr_prev - zr_new)
+                        diff_gamma  = abs(gamma_prev - gamma_new)
+                        if itt>4 or ((diff_xr<threshold_x).all() and (diff_yr<threshold_y).all() and (diff_zr<threshold_z).all() and (diff_gamma<threshold_gamma).all()):
+                            # print(fowt_x[wt_index,:,:,:].sum(), wd_index)
+
+                            wave_x_diff  = abs(fowt_x[wt_index, wd_index, wave_dir_sum_index, wave_height_sum_index]   - fowt_x_base[wt_index] - xr_new )
+                            wave_y_diff  = abs(fowt_y[wt_index, wd_index, wave_height_sum_index, wave_height_sum_index] - fowt_y_base[wt_index] - yr_new )
+                            wave_z_diff  = abs(hub_height_wt[wt_index, wd_index, wave_height_sum_index, wave_height_sum_index] - hub_height_base[wt_index] - zr_new)
+                            wave_gamma_diff = abs(gamma_wt[wt_index, wd_index, wave_height_sum_index, wave_height_sum_index]   - tilt_base[wt_index] - gamma_new)
+
+                            threshold_gamma = 0.005
+                        
+                            # this will agregate very similar positions even if they have different wave directions and heights for performance when evaluating AEP
+
+                            if(((wave_x_diff<threshold_x).all() and (wave_y_diff<threshold_y).all() and (wave_z_diff<threshold_z).all() and (wave_gamma_diff<threshold_gamma).all())):
+                                wave_probabilities[wave_dir_sum_index, wave_height_sum_index] += wave_probabilities[wave_dir_index, wave_height_index]
+                                wave_probabilities[wave_dir_index, wave_height_index] = 0
+
+                            else:
+                                fowt_x[wt_index, wd_index, wave_dir_index, wave_height_index]        = fowt_x_base[wt_index] + xr_new
+                                fowt_y[wt_index, wd_index, wave_dir_index, wave_height_index]        = fowt_y_base[wt_index] + yr_new
+                                hub_height_wt[wt_index, wd_index, wave_dir_index, wave_height_index] = hub_height_base[wt_index] + zr_new
+                                gamma_wt[wt_index, wd_index, wave_dir_index, wave_height_index]      = tilt_base[wt_index] + gamma_new
+                                wave_dir_sum_index = wave_dir_index
+                                wave_height_sum_index = wave_height_index
+
+                            break
+                                
+                        recalculate_wind = True
+                        xr_prev = np.copy(xr_new)
+                        yr_prev = np.copy(yr_new)
+                        zr_prev = np.copy(zr_new)
+                        gamma_prev = np.copy(gamma_new)
     
-                xr_prev = np.copy(xr_new)
-                yr_prev = np.copy(yr_new)
-                zr_prev = np.copy(zr_new)
-                gamma_prev = np.copy(gamma_new)
-
-    print(len(fowt_x), len(fowt_y), len(hub_height_wt), len(gamma_wt))
-    return fowt_x, fowt_y, hub_height_wt, gamma_wt
+    return wave_probabilities, fowt_x, fowt_y, hub_height_wt, gamma_wt
 
 
 def power_solver(wd, ws, fowt_x, fowt_y, hub_height_wt, gamma_wt, prob):
-
     my_fowt = nrel5mw()
     wf_model_Uniform = Bastankhah_PorteAgel_2014(My_site_Uniform(), my_fowt, k=0.025)
     return wf_model_Uniform(fowt_x, fowt_y, h=hub_height_wt, tilt=gamma_wt, ws=ws, wd=wd).aep().values.sum() * prob
@@ -184,7 +240,6 @@ class FixedBottomWindFarm(om.ExplicitComponent):
         self.options.declare("interpolated_elevation", types=np.ndarray)
         self.options.declare("aep_init", types=xr.DataArray)
         self.options.declare("plot_lim", types = np.ndarray)
-
 
 
     def setup(self):
@@ -684,10 +739,9 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
     Parameters:
     ----------------------------------------------------------------------------------
     Variable                      Description
-    Mooring Design                Not yet implemented
     Base Coordinates (float):     x and y wind turbine coordinates with no wind or waves
     sim_res (xarray, float):      Instance of wind farm model in xarray format
-    Grids                         
+    wave_site                     weibull distribution of wave significant height 
     using_slurm (bool)            Use this when using slurm to prevent program from trying to use more resources than allocated
     num_cores (int)               Number of Cores used when parallelizing directions, when using_slurm the number defined in the sbatch file is used
     ----------------------------------------------------------------------------------
@@ -710,6 +764,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         self.options.declare("num_cores", types=int)
         self.options.declare("sim_res", 
                              desc="xarray from PyWake") # change here to more general
+        self.options.declare("wave_site")
         self.options.declare('boundary', types=np.ndarray)
         self.options.declare('spacing_diameter', default=6*222, types=(float, int)) # upgrade here for the spacing
         self.options.declare("layout_coordinates", types=np.ndarray)
@@ -805,6 +860,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         #currently only the NREL5MW FOWT exists
         FOWT_Spar_def = FOWT_Spar()
         my_fowt = nrel5mw()
+        current_wave_site = self.options['wave_site']
 
         start_time = time.perf_counter()
         wf_model_Uniform = Bastankhah_PorteAgel_2014(My_site_Uniform(), my_fowt, k=0.025)
@@ -851,12 +907,14 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
                 evaluation_order.insert(insert_index, turbine_index)
             index_matrix[sector_index] = evaluation_order
 
-        ws = np.linspace(0,26, 26)
-        wd = np.linspace(0, 360, 30, endpoint=False)
 
-        wave_height = np.linspace(0,26, 26)
-        wave_direction = np.linspace(0, 360, 60, endpoint=False)
- 
+        # can be increased for more accuracy, at the cost of performance
+        # each of these points is evaluated 
+        ws = np.arange(1,26,1)
+        wd = np.linspace(0, 360, 30, endpoint=False)
+        wave_directions = np.linspace(0,360, len(current_wave_site.f), endpoint=False)
+        # lookup table is [1,7] for wave heights
+        wave_heights = [1, 2, 3, 4, 5, 6, 7]
 
         #   FOR THIS SPECIFIC TURBINE TYPE
         hub_height_base = np.full(n_turbines, 90)
@@ -886,29 +944,44 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
 
         #Multi-directional wind speed loop
         for ws_index in range(len(ws)):
-            data.append([wd, ws[ws_index],  fowt_x_base, fowt_y_base, tilt_base, hub_height_base, index_matrix, sim_result])
+            data.append([wd, ws[ws_index],  fowt_x_base, fowt_y_base, tilt_base, hub_height_base, index_matrix, sim_result, current_wave_site, wave_directions, wave_heights])
 
         data = tuple(data)
 
-        print(len(data))
-
         with multiprocessing.Pool(processes=self.num_cores) as pool:
             results = pool.starmap(displacement_solver, data)
-        results = np.transpose(results, (1, 2, 3, 0))
-        fowt_x, fowt_y, hub_height_wt, gamma_wt = results
+
+        # split inhomogenous array
+        # due to bad displacement solver function we have form [wind_direction, wave direction, wave height]
+        # this is still valid for power (commutative property), speed matrix because sum(wave_probability[wind_direction]) is 1,
+        # but very unreadable and unintuitive. 
+        wave_probabilities = [item[0] for item in results]
+        fowt_results = [item[1:] for item in results]
+
+        fowt_results = np.array(fowt_results)
+        wave_probabilities = np.array(wave_probabilities)
+        # transpose to: [category, wind speed, wt_index, wind directions, wave directions, wave height]
+        fowt_results = np.transpose(fowt_results, (1, 2, 3, 0, 4, 5))
+        fowt_x, fowt_y, hub_height_wt, gamma_wt = fowt_results
 
         outputs['t_displacement_calc'] = time.perf_counter() - sub_start_time
-        print(outputs['t_displacement_calc'].item())
         sub_start_time = time.perf_counter()
-
+        
         #%%Get AEP contribution per wd and ws
         data = []
         for ws_index in range(len(ws)):
             for wd_index in range(len(wd)):
-                #[wd,ws[ws_index], fowt_x_base,fowt_y_base,tilt_base,hub_height_base,index_matrix,sim_result]
-                data.append([wd[wd_index], ws[ws_index], fowt_x[:,wd_index,ws_index], fowt_y[:,wd_index, ws_index], hub_height_wt[:,wd_index,ws_index], gamma_wt[:,wd_index,ws_index], prob[ws_index, wd_index]])
-                # AEP_contrib.append(wf_model_Uniform(fowt_x[:,wd_index,ws_index], fowt_y[:,wd_index,ws_index], h=hub_height_wt[:,wd_index,ws_index], tilt=gamma_wt[:,wd_index,ws_index], ws=ws[ws_index], wd=wd[wd_index]).aep().values.sum() * prob[ws_index,wd_index] )
-                # AEP_contrib_initial.append(wf_model_Uniform(fowt_x_base, fowt_y_base, ws=ws[ws_index], wd=wd[wd_index]).aep().values.sum() * prob[ws_index,wd_index] )
+                for wave_direction_index in range(len(wave_directions)):
+                        for wave_height_index in range(len(wave_heights)):
+                            # make this line more readable
+                            # way too much indexing
+                            # these arguments for function that will calculate the annualized power of a certain FOWT scenario
+                            # multiply by the probability of that scenario over a year
+                            # add together to find AEP
+                            if(wave_probabilities[ws_index,wave_direction_index,wave_height_index] == 0):
+                                continue
+
+                            data.append([wd[wd_index], ws[ws_index], fowt_x[:,wd_index,ws_index,wave_direction_index,wave_height_index], fowt_y[:,wd_index, ws_index,wave_direction_index,wave_height_index], hub_height_wt[:,wd_index,ws_index,wave_direction_index,wave_height_index], gamma_wt[:,wd_index,ws_index,wave_direction_index,wave_height_index], prob[ws_index, wd_index]*wave_probabilities[ws_index, wave_direction_index, wave_height_index]])
         data = tuple(data)
 
         with multiprocessing.Pool(processes=self.num_cores) as pool:
@@ -920,7 +993,6 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         outputs['AEP'] = -AEP_con.sum()
 
         outputs['t_aep_calc'] = time.perf_counter() - sub_start_time
-        print(outputs['t_aep_calc'].item())
         sub_start_time = time.perf_counter()
 
         # fixed_bottom_aep = self.options["sim_res"](inputs['x'], inputs['y']).aep().sum()
@@ -1052,9 +1124,9 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
                     self.cableB = self.ax.plot(xs,ys,'{}'.format(colors[i]),linewidth=1.2)
 
         # Update iteration info
-        # self.text_box.set_text(
-        #     f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
-        # )
+        self.text_box.set_text(
+            f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
+        )
         # self.text_box.set_text(
         #     f"Iteration: {self.iteration}\nAEP Improvement: {-aep} %"
         # )
@@ -1090,7 +1162,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         self.iteration += 1
 
         outputs['t_compute_total'] = time.perf_counter() - start_time
-        print(outputs['t_compute_total'].item())
+        print(f"total time for compute cycle: {outputs['t_compute_total'].item()} seconds")
 
     # def compute_partials(self, inputs, partials):     
     #     # Unavaliable for floating farm

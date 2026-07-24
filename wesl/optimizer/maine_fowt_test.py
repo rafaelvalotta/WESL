@@ -25,6 +25,8 @@ from pyproj import Transformer
 
 from py_wake.site._site import UniformWeibullSite
 
+from wesl.optimizer.offshore_system.fowt.FOWT_spar_lookup import wave_site
+
 class Maine_test(UniformWeibullSite): # Double-check: plot the wind rose
     def __init__(self, ti=0.07, shear=None):
         f = [8.37, 6.83, 5.38, 4.77, 4.10, 4.80,
@@ -36,7 +38,20 @@ class Maine_test(UniformWeibullSite): # Double-check: plot the wind rose
         UniformWeibullSite.__init__(self, np.array(f) / np.sum(f), a, k, ti=ti, shear=shear)
         self.name = "Maine Wind Farm"
 
+
+# 
 def main():
+
+
+    wave_f = [8.37, 6.83, 5.38, 4.77, 4.10, 4.80,
+        8.22, 13.29]#, 11.22, 10.14, 11.72, 11.16]
+    wave_k = [2.971, 2.971, 2.971, 2.971, 2.971, 2.971, 2.971, 2.971]
+    wave_a = [2.027, 2.027, 2.027, 2.027, 2.027, 2.027, 2.027, 2.027,]
+
+    wave_f = np.array(wave_f)
+
+    test_wave_site = wave_site(f=wave_f / sum(wave_f),a=wave_a,k=wave_k)
+
     n_turbine = int(sys.argv[1])
 
     min_lon, max_lon, min_lat, max_lat = -69.1, -68.85, 43.02, 43.15
@@ -51,12 +66,7 @@ def main():
     # Instantiating boundary and layout coordinates
 
     rows = int(np.ceil(np.sqrt(n_turbine)))
-
     columns =  int(np.ceil(n_turbine / rows))
-
-
-    print(columns,rows)
-
 
     spacing = 0.035
 
@@ -118,8 +128,9 @@ def main():
                                                 interpolated_elevation = water_depth_map_params[2],
                                                 plot_lim = np.array(x_boundary + y_boundary),
                                                 aep_init = aep_init,
-                                                num_cores = 8,
-                                                using_slurm = False
+                                                num_cores = 6,
+                                                using_slurm = False,
+                                                wave_site = test_wave_site
                                                 ),
                             promotes_inputs=['x', 'y'])
 
