@@ -43,10 +43,9 @@ class Maine_test(UniformWeibullSite): # Double-check: plot the wind rose
 def main():
 
 
-    wave_f = [8.37, 6.83, 5.38, 4.77, 4.10, 4.80,
-        8.22, 13.29]#, 11.22, 10.14, 11.72, 11.16]
-    wave_k = [2.971, 2.971, 2.971, 2.971, 2.971, 2.971, 2.971, 2.971]
-    wave_a = [2.027, 2.027, 2.027, 2.027, 2.027, 2.027, 2.027, 2.027,]
+    wave_f = [8.37, 6.83, 5.38, 4.77, 4.10, 4.80]
+    wave_k = [2.971, 2.971, 2.971, 2.971, 2.971, 2.971]
+    wave_a = [2.027, 2.027, 2.027, 2.027, 2.027, 2.027]
 
     wave_f = np.array(wave_f)
 
@@ -128,7 +127,7 @@ def main():
                                                 interpolated_elevation = water_depth_map_params[2],
                                                 plot_lim = np.array(x_boundary + y_boundary),
                                                 aep_init = aep_init,
-                                                num_cores = 6,
+                                                num_cores = 3,
                                                 using_slurm = False,
                                                 wave_site = test_wave_site
                                                 ),

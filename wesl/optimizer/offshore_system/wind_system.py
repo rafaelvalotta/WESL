@@ -184,6 +184,7 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
                         zr_prev = np.copy(zr_new)
                         gamma_prev = np.copy(gamma_new)
     
+    # print(np.sum(wave_probabilities))
     return wave_probabilities, fowt_x, fowt_y, hub_height_wt, gamma_wt
 
 
@@ -808,7 +809,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
             self.num_cores = self.options['num_cores']
 
         # # Beginning of the plot definition
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figsize=(7,7))
         # plt.close(self.fig)
         
         # Defines the water depth map
@@ -914,7 +915,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         wd = np.linspace(0, 360, 30, endpoint=False)
         wave_directions = np.linspace(0,360, len(current_wave_site.f), endpoint=False)
         # lookup table is [1,7] for wave heights
-        wave_heights = [1, 2, 3, 4, 5, 6, 7]
+        wave_heights = [1, 3, 5, 7]
 
         #   FOR THIS SPECIFIC TURBINE TYPE
         hub_height_base = np.full(n_turbines, 90)
@@ -1124,12 +1125,16 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
                     self.cableB = self.ax.plot(xs,ys,'{}'.format(colors[i]),linewidth=1.2)
 
         # Update iteration info
-        self.text_box.set_text(
-            f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
-        )
+        # self.text_box.set_text(
+        #     f"Iteration: {self.iteration}\nAEP Improvement: {((-aep / aep_init) - 1) * 100:.3f} %"
+        # )
         # self.text_box.set_text(
         #     f"Iteration: {self.iteration}\nAEP Improvement: {-aep} %"
         # )
+
+        self.text_box.set_text(
+            f"Iteration: {self.iteration} Initial Fixed bottom AEP: {-aep_init:.3f}\n FOWT AEP: {-aep:.3f}, Percent Diff: {(aep_init-aep)/-aep_init*100:.3f}"
+        )
 
         # plt.show()
 
@@ -1142,9 +1147,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         self.ax.legend(by_label.values(), by_label.keys(),
                     loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2, fontsize=10)
 
-        self.text_box.set_text(
-            f"Iteration: {self.iteration}\Initial Fixed bottom AEP: {-aep_init}\n FOWT AEP: {-aep}"
-        )
+
 
         # self.text_box.set_text(
         #     f"AEP Improvement: {((aep / aep_init) - 1) * 100:.3f} %"
