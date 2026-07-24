@@ -37,37 +37,6 @@ class FOWT_Spar(object):
                 row = [float(value) for value in row]
                 csv_file.append(row)
 
-        # new_csv = []
-        # winds = []
-        # waves = []
-
-
-        # for row in csv_file:
-        #     if (row[0]==0):
-        #         winds.append([row[0]+360] + row[1:])
-        #     if waves and waves[0][0] != row[0]:
-        #         if waves[0][0] == 0:
-        #             for wave_row in waves:
-        #                 winds.append([wave_row[0]+360] + wave_row[1:])    
-        #         for wave_row in waves:
-        #             new_csv.append(wave_row)
-        #         waves = []
-        #     if(row[1] == 0):
-        #         waves.append([row[0]] + [row[1]+360] + row[2:])
-        #     new_csv.append(row)
-
-        
-        # for wave_row in waves:
-        #     new_csv.append(wave_row)
-        # waves = []
-        # for wind_row in winds:
-        #     new_csv.append(wind_row)
-
-        # with open(f"{path}/wave_wind_dirs_fixed.csv", "w", newline="", encoding="utf-8") as f:
-        #     writer = csv.writer(f)
-        #     writer.writerow(header)
-        #     writer.writerows(new_csv)
-
         self.space = np.array(csv_file)
         self.lookup_table = csv_file
         self.space = self.space.reshape(wind_directions, wave_directions, wave_heights, wind_speeds, 10)
