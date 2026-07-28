@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Bay State Wind (OCS-A 0500)",
+    "slug": "Bay_State_Wind_OCS_A_0500",
+    "turbines": 0,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 2,
+    "declared_no_turbine": null,
+    "status": "Consent Application Submitted"
+  },
+  {
+    "name": "Beacon Wind",
+    "slug": "Beacon_Wind",
+    "turbines": 0,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 0,
+    "declared_no_turbine": null,
+    "status": "Consent Application Submitted"
+  },
+  {
+    "name": "Block Island",
+    "slug": "Block_Island",
+    "turbines": 5,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 0,
+    "declared_no_turbine": 5,
+    "status": "Fully Commissioned"
+  },
+  {
+    "name": "New England Wind 1",
+    "slug": "New_England_Wind_1",
+    "turbines": 0,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 0,
+    "declared_no_turbine": 44,
+    "status": "Consent Authorised"
+  },
+  {
+    "name": "New England Wind 2",
+    "slug": "New_England_Wind_2",
+    "turbines": 0,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 2,
+    "declared_no_turbine": 60,
+    "status": "Consent Authorised"
+  },
+  {
+    "name": "Revolution Wind",
+    "slug": "Revolution_Wind",
+    "turbines": 65,
+    "substations": 2,
+    "inter_array_bundles": 1,
+    "export_cables": 3,
+    "declared_no_turbine": 65,
+    "status": "Under Construction"
+  },
+  {
+    "name": "South Fork Wind",
+    "slug": "South_Fork_Wind",
+    "turbines": 12,
+    "substations": 1,
+    "inter_array_bundles": 1,
+    "export_cables": 1,
+    "declared_no_turbine": 12,
+    "status": "Fully Commissioned"
+  },
+  {
+    "name": "SouthCoast Wind",
+    "slug": "SouthCoast_Wind",
+    "turbines": 0,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 0,
+    "declared_no_turbine": 141,
+    "status": "Consent Authorised"
+  },
+  {
+    "name": "Sunrise Wind",
+    "slug": "Sunrise_Wind",
+    "turbines": 96,
+    "substations": 1,
+    "inter_array_bundles": 0,
+    "export_cables": 2,
+    "declared_no_turbine": 84,
+    "status": "Under Construction"
+  },
+  {
+    "name": "Vineyard Northeast (OCS-A 0522)",
+    "slug": "Vineyard_Northeast_OCS_A_0522",
+    "turbines": 0,
+    "substations": 0,
+    "inter_array_bundles": 0,
+    "export_cables": 0,
+    "declared_no_turbine": 160,
+    "status": "Consent Application Submitted"
+  },
+  {
+    "name": "Vineyard Wind 1",
+    "slug": "Vineyard_Wind_1",
+    "turbines": 62,
+    "substations": 1,
+    "inter_array_bundles": 1,
+    "export_cables": 2,
+    "declared_no_turbine": 62,
+    "status": "Under Construction"
+  }
+]

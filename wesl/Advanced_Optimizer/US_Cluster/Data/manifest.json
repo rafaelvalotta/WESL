@@ -1,0 +1,220 @@
+[
+  {
+    "name": "BeaconWind",
+    "files": {
+      "polygon": {
+        "file": "BeaconWind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "BlockIsland",
+    "files": {
+      "polygon": {
+        "file": "BlockIsland_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "BlockIsland_turbines.geojson",
+        "count": 5
+      }
+    }
+  },
+  {
+    "name": "NewEnglandWind1",
+    "files": {
+      "polygon": {
+        "file": "NewEnglandWind1_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "SouthCoastWind",
+    "files": {
+      "polygon": {
+        "file": "SouthCoastWind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "SouthForkWind",
+    "files": {
+      "polygon": {
+        "file": "SouthForkWind_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "SouthForkWind_turbines.geojson",
+        "count": 12
+      },
+      "substations": {
+        "file": "SouthForkWind_substations.geojson",
+        "count": 1
+      },
+      "interarray_cables": {
+        "file": "SouthForkWind_interarray_cables.geojson",
+        "count": 1
+      },
+      "export_cables": {
+        "file": "SouthForkWind_export_cables.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "VineyardNortheast",
+    "files": {
+      "polygon": {
+        "file": "VineyardNortheast_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "VineyardWind1",
+    "files": {
+      "polygon": {
+        "file": "VineyardWind1_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "VineyardWind1_turbines.geojson",
+        "count": 62
+      },
+      "substations": {
+        "file": "VineyardWind1_substations.geojson",
+        "count": 1
+      },
+      "interarray_cables": {
+        "file": "VineyardWind1_interarray_cables.geojson",
+        "count": 1
+      },
+      "export_cables": {
+        "file": "VineyardWind1_export_cables.geojson",
+        "count": 2
+      }
+    }
+  },
+  {
+    "name": "RevolutionWind_South",
+    "files": {
+      "polygon": {
+        "file": "RevolutionWind_South_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "RevolutionWind_South_turbines.geojson",
+        "count": 65
+      },
+      "substations": {
+        "file": "RevolutionWind_South_substations.geojson",
+        "count": 2
+      },
+      "interarray_cables": {
+        "file": "RevolutionWind_South_interarray_cables.geojson",
+        "count": 1
+      },
+      "export_cables": {
+        "file": "RevolutionWind_South_export_cables.geojson",
+        "count": 3
+      }
+    }
+  },
+  {
+    "name": "RevolutionWind_North",
+    "files": {
+      "polygon": {
+        "file": "RevolutionWind_North_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "SunriseWind_South",
+    "files": {
+      "polygon": {
+        "file": "SunriseWind_South_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "SunriseWind_South_turbines.geojson",
+        "count": 96
+      },
+      "substations": {
+        "file": "SunriseWind_South_substations.geojson",
+        "count": 1
+      },
+      "export_cables": {
+        "file": "SunriseWind_South_export_cables.geojson",
+        "count": 2
+      }
+    }
+  },
+  {
+    "name": "SunriseWind_North",
+    "files": {
+      "polygon": {
+        "file": "SunriseWind_North_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "BayStateWind_South",
+    "files": {
+      "polygon": {
+        "file": "BayStateWind_South_polygon.geojson",
+        "count": 1
+      },
+      "export_cables": {
+        "file": "BayStateWind_South_export_cables.geojson",
+        "count": 2
+      }
+    }
+  },
+  {
+    "name": "BayStateWind_North",
+    "files": {
+      "polygon": {
+        "file": "BayStateWind_North_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Federal_State_Boundary_SLA",
+    "type": "reference_layer",
+    "description": "Submerged Lands Act boundary (~3 nautical miles from shore baseline) separating state waters from federal OCS waters, covering the full US East Coast (Florida Keys to the Maine/Canada border). Source: BOEM ArcGIS REST (gis.boem.gov/arcgis/rest/services/BOEM_BSEE/MMC_Layers/MapServer/8), queried with bbox -82,24,-65,45 and line-merged from 1,129 block-level fragments into 5 continuous segments (one ~40 degrees long). Indicative only - official reference is BOEM Official Protraction Diagrams (OPDs).",
+    "files": {
+      "boundary": {
+        "file": "Federal_State_Boundary_SLA.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "NewEnglandWind2_South",
+    "files": {
+      "polygon": {
+        "file": "NewEnglandWind2_South_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "NewEnglandWind2_North",
+    "files": {
+      "polygon": {
+        "file": "NewEnglandWind2_North_polygon.geojson",
+        "count": 1
+      },
+      "export_cables": {
+        "file": "NewEnglandWind2_North_export_cables.geojson",
+        "count": 2
+      }
+    }
+  }
+]
