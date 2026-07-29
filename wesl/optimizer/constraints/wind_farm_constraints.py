@@ -78,7 +78,7 @@ class PairWiseSpacing(om.ExplicitComponent):
         # outputs['spacing_violation'] = np.array(dists)
 
         outputs['spacing_violation'] = spacing_violation
-        print(outputs['spacing_violation'])
+        # print(outputs['spacing_violation'])
 
     def compute_partials(self, inputs, J):
         x = inputs['x']

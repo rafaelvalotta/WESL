@@ -1,4 +1,6 @@
-# ##########################################################################################
+#    This file is for testing the FOWT farm optimization. Please refer to FOWT_Overview.ipynb for more information
+#    This script may take an integer command line argument for the number of turbines to simulate 
+
 import matplotlib.pyplot as plt
 
 # # WESL imports
@@ -19,8 +21,6 @@ import os
 import sys
 from multiprocessing import freeze_support, set_start_method
 
-path = os.getcwd()
-
 from pyproj import Transformer
 
 from py_wake.site._site import UniformWeibullSite
@@ -39,10 +39,11 @@ class Maine_test(UniformWeibullSite): # Double-check: plot the wind rose
         self.name = "Maine Wind Farm"
 
 
-# 
+
 def main():
-
-
+    
+    path = os.getcwd()
+    
     wave_f = [8.37, 6.83, 5.38, 4.77, 4.10, 4.80]
     wave_k = [2.971, 2.971, 2.971, 2.971, 2.971, 2.971]
     wave_a = [2.027, 2.027, 2.027, 2.027, 2.027, 2.027]
@@ -51,7 +52,11 @@ def main():
 
     test_wave_site = wave_site(f=wave_f / sum(wave_f),a=wave_a,k=wave_k)
 
-    n_turbine = int(sys.argv[1])
+
+    if len(sys.argv) > 1:
+        n_turbine = int(sys.argv[1])
+    else:
+        n_turbine = 9
 
     min_lon, max_lon, min_lat, max_lat = -69.1, -68.85, 43.02, 43.15
 
@@ -67,7 +72,7 @@ def main():
     rows = int(np.ceil(np.sqrt(n_turbine)))
     columns =  int(np.ceil(n_turbine / rows))
 
-    spacing = 0.035
+    spacing = 0.015
 
     x_coordinates = np.linspace(min_lon+0.02, min_lon+0.02+spacing*columns, columns)
     y_coordinates = np.linspace(min_lat+0.02, min_lat+0.02+spacing*rows, rows,)
