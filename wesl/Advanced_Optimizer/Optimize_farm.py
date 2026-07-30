@@ -6,14 +6,15 @@ from pathlib import Path
 
 from Components.constraints import BoundaryComp, SpacingCompWithNeighbors, ConstraintAggregationComp
 from Components.aep import AEPComp
-from Components.foundations import FoundationsComp, MonopileCurveFitter
+from Components.foundations import FoundationsComp, mean_wind_speed
 from Components.lcoe_comp import LCOEComp
 from Components.cable_wrapper import OptiWindNetComponent
 from Components.Drivers import SGD
 from Components.plotting import FarmPlotter
 
 def build_farm_model(farm_name, n_wt, site_yaml_path, system_yaml_path, bathy_nc_path,
-                     poly_coefficients, neighbor_x, neighbor_y, boundary_vertices,
+                     rated_power, ip_platform, rotor_diameter, hub_height, wind_speed,
+                     neighbor_x, neighbor_y, boundary_vertices,
                      substation_coord, cable_specs, min_spacing,
                      unconstrained_mode=False, stochastic_mode=False, sample_size=1,
                      farm_index=0, neighbor_farm_idx=None):
@@ -64,7 +65,11 @@ def build_farm_model(farm_name, n_wt, site_yaml_path, system_yaml_path, bathy_nc
         FoundationsComp(
             n_wt=n_wt,
             bathy_nc_path=str(bathy_nc_path),
-            poly_coefficients=poly_coefficients
+            rated_power=rated_power,
+            ip_platform=ip_platform,
+            rotor_diameter=rotor_diameter,
+            hub_height=hub_height,
+            wind_speed=wind_speed
         ),
         promotes_inputs=[('x', 'turbine_x'), ('y', 'turbine_y')],
         promotes_outputs=['cost_foundations']
@@ -72,7 +77,7 @@ def build_farm_model(farm_name, n_wt, site_yaml_path, system_yaml_path, bathy_nc
 
     model.add_subsystem(
         'lcoe_comp',
-        LCOEComp(n_wt=n_wt),
+        LCOEComp(n_wt=n_wt, rated_power_kw=float(rated_power) * 1000.0),
         promotes_inputs=['aep', 'cost_foundations', 'cost_cables'],
         promotes_outputs=['lcoe']
     )
@@ -182,7 +187,11 @@ def opt_competitive(farm_sequence, max_cycles, farm_data_registry, optimizer='SL
                 site_yaml_path=cfg['site_yaml'],
                 system_yaml_path=cfg['system_yaml'],
                 bathy_nc_path=cfg['bathy_nc'],
-                poly_coefficients=cfg['poly_coef'],
+                rated_power=cfg['rated_power'],
+                ip_platform=cfg['ip_platform'],
+                rotor_diameter=cfg['rotor_diameter'],
+                hub_height=cfg['hub_height'],
+                wind_speed=cfg['wind_speed'],
                 neighbor_x=neighbor_x_arr,
                 neighbor_y=neighbor_y_arr,
                 boundary_vertices=cfg['boundary_vertices'],
@@ -418,7 +427,6 @@ def opt_competitive(farm_sequence, max_cycles, farm_data_registry, optimizer='SL
 
 if __name__ == "__main__":
     import windIO
-    from Components.foundations import MonopileCurveFitter
 
     # --- Directory and File Paths Mapping ---
     SCRIPT_DIR = Path(__file__).parent
@@ -445,9 +453,14 @@ if __name__ == "__main__":
     site_resource_dict['probabilities'] /= site_resource_dict['probabilities'].sum() # Safe normalization
 
     # --- Turbine and Structural Foundation Properties ---
-    # Fits the monopile surrogate coefficients using the 22MW rotor diameter
     rd_turbine = float(system_dat['wind_farm'][0]['turbines']['rotor_diameter'])
-    coefficients_foundation = MonopileCurveFitter.fit_surrogate(rd=rd_turbine)
+    wind_speed_design = mean_wind_speed(site_resource_dict)
+    # RP=13 (Vineyard/Haliade-X) and RP=11 (Revolution/SG11-200), trained from real IEA
+    # Wind 2200-22-ROWP structural data -- see Data/ssms/train_project_turbines.py
+    FOUNDATION_PARAMS = {
+        'vineyard': {'rated_power': 13, 'ip_platform': 15.0},
+        'revolution': {'rated_power': 11, 'ip_platform': 10.0},
+    }
 
     # --- Cable Specifications (capacity, cost_EUR_per_m) ---
     cable_specs = np.array([
@@ -465,6 +478,7 @@ if __name__ == "__main__":
     for idx, farm_name in enumerate(farm_names_in_yaml):
         farm_node = system_dat['wind_farm'][idx]
         layout_node = farm_node['layouts'][0]['coordinates']
+        turbine_node = farm_node['turbines']
         
         # Extracting real full-scale UTM coordinates
         x_init = np.array(layout_node['x'], dtype=float)
@@ -485,7 +499,11 @@ if __name__ == "__main__":
             'site_yaml': site_resource_dict,
             'system_yaml': system_dat,
             'bathy_nc': BATHY_NC,
-            'poly_coef': coefficients_foundation,
+            'rated_power': FOUNDATION_PARAMS[farm_name]['rated_power'],
+            'ip_platform': FOUNDATION_PARAMS[farm_name]['ip_platform'],
+            'rotor_diameter': float(turbine_node['rotor_diameter']),
+            'hub_height': float(turbine_node['hub_height']),
+            'wind_speed': wind_speed_design,
             'boundary_vertices': boundary_vertices,
             'substation_coord': substation_coord,
             'cable_specs': cable_specs,

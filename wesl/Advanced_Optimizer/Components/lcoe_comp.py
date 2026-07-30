@@ -6,8 +6,14 @@ class LCOEComp(om.ExplicitComponent):
         self.options.declare('n_wt', types=int)
         self.options.declare('discount_rate', default=0.0661)
         self.options.declare('lifetime', default=25)
-        self.options.declare('capex_fixed', default=9.6734e7 * 0.924) # other capex
-        self.options.declare('opex_annual', default=2.97e6 * 0.924) # annual opex
+        self.options.declare('rated_power_kw', types=float)
+        # NREL Fuchs et al. (2024), North Atlantic mid scenario, 2025: total CapEx $6,260/kW,
+        # OpEx $85/kW-yr. capex_fixed_per_kw = 6260 - foundation - array cable (already
+        # modeled separately here) to avoid double-counting those two components.
+        # self.options.declare('capex_fixed_per_kw', default=5700.0 * 0.924) # EUR (old, USD->EUR)
+        self.options.declare('capex_fixed_per_kw', default=5700.0) # USD, no EUR conversion
+        # self.options.declare('opex_annual_per_kw', default=85.0 * 0.924) # EUR (old, USD->EUR)
+        self.options.declare('opex_annual_per_kw', default=85.0) # USD, no EUR conversion
         self.options.declare('liquidation_proceeds', default=0.0)
 
     def setup(self):
@@ -27,8 +33,8 @@ class LCOEComp(om.ExplicitComponent):
         n_wt = self.options['n_wt']
         d = self.options['discount_rate']
         life = self.options['lifetime']
-        capex_f = self.options['capex_fixed']
-        opex_a = self.options['opex_annual']
+        capex_f = self.options['capex_fixed_per_kw'] * self.options['rated_power_kw']
+        opex_a = self.options['opex_annual_per_kw'] * self.options['rated_power_kw']
         lp = self.options['liquidation_proceeds']
 
         aep = inputs['aep'][0] if isinstance(inputs['aep'], np.ndarray) else inputs['aep']
@@ -54,8 +60,8 @@ class LCOEComp(om.ExplicitComponent):
         n_wt = self.options['n_wt']
         d = self.options['discount_rate']
         life = self.options['lifetime']
-        capex_f = self.options['capex_fixed']
-        opex_a = self.options['opex_annual']
+        capex_f = self.options['capex_fixed_per_kw'] * self.options['rated_power_kw']
+        opex_a = self.options['opex_annual_per_kw'] * self.options['rated_power_kw']
         lp = self.options['liquidation_proceeds']
 
         capex_foundations = float(np.sum(cost_foundations))
@@ -70,10 +76,10 @@ class LCOEComp(om.ExplicitComponent):
         n_wt = self.options['n_wt']
         d = self.options['discount_rate']
         life = self.options['lifetime']
-        capex_f = self.options['capex_fixed']
-        opex_a = self.options['opex_annual']
+        capex_f = self.options['capex_fixed_per_kw'] * self.options['rated_power_kw']
+        opex_a = self.options['opex_annual_per_kw'] * self.options['rated_power_kw']
         lp = self.options['liquidation_proceeds']
-        
+
         aep = inputs['aep'][0] if isinstance(inputs['aep'], np.ndarray) else inputs['aep']
         capex_foundations = np.sum(inputs['cost_foundations'])
         capex_cables = inputs['cost_cables']

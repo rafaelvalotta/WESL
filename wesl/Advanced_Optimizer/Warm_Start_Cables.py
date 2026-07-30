@@ -17,6 +17,8 @@ REQUIRED_CHECKPOINT_KEYS = (
     'cost_foundations_eur', 'aep_mwh', 'farm_name', 'cycle',
 )
 
+RATED_POWER_MW = {'vineyard': 13, 'revolution': 11}
+
 
 def default_milp_router():
     """
@@ -80,7 +82,8 @@ def warm_start_cable_routing(checkpoint_path, router=None, output_path=None,
     # AEP and foundation cost don't depend on cable routing, so they carry over unchanged;
     # only the cable-cost term of the LCOE formula is recomputed. compute_lcoe() mirrors
     # LCOEComp.compute()'s formula without needing a full OpenMDAO Problem.setup().
-    lcoe_comp = LCOEComp(n_wt=len(data['x']))
+    rated_power_kw = float(RATED_POWER_MW[data['farm_name']]) * 1000.0
+    lcoe_comp = LCOEComp(n_wt=len(data['x']), rated_power_kw=rated_power_kw)
     lcoe_eur_mwh = lcoe_comp.compute_lcoe(
         aep_mwh=data['aep_mwh'],
         cost_foundations=data['cost_foundations_eur'],
