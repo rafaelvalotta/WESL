@@ -1,0 +1,173 @@
+[
+  {
+    "name": "Awel Y Mor",
+    "slug": "Awel_Y_Mor",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 50,
+    "status": "Consent Authorised",
+    "capacity_mw": 1100
+  },
+  {
+    "name": "Barrow",
+    "slug": "Barrow",
+    "turbines": 30,
+    "substations": 1,
+    "declared_no_turbine": 30,
+    "status": "Fully Commissioned",
+    "capacity_mw": 90
+  },
+  {
+    "name": "Burbo Bank",
+    "slug": "Burbo_Bank",
+    "turbines": 25,
+    "substations": 0,
+    "declared_no_turbine": 25,
+    "status": "Fully Commissioned",
+    "capacity_mw": 90
+  },
+  {
+    "name": "Burbo Bank Extension",
+    "slug": "Burbo_Bank_Extension",
+    "turbines": 32,
+    "substations": 1,
+    "declared_no_turbine": 32,
+    "status": "Fully Commissioned",
+    "capacity_mw": 254
+  },
+  {
+    "name": "Greystones",
+    "slug": "Greystones",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1000
+  },
+  {
+    "name": "Gwynt y Mor",
+    "slug": "Gwynt_y_Mor",
+    "turbines": 160,
+    "substations": 2,
+    "declared_no_turbine": 160,
+    "status": "Fully Commissioned",
+    "capacity_mw": 576
+  },
+  {
+    "name": "Mona",
+    "slug": "Mona",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 96,
+    "status": "Consent Authorised",
+    "capacity_mw": 1500
+  },
+  {
+    "name": "Mooir Vannin",
+    "slug": "Mooir_Vannin",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Consent Application Submitted",
+    "capacity_mw": 1400
+  },
+  {
+    "name": "Morecambe Offshore Windfarm",
+    "slug": "Morecambe_Offshore_Windfarm",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 32,
+    "status": "Consent Authorised",
+    "capacity_mw": 480
+  },
+  {
+    "name": "Morgan",
+    "slug": "Morgan",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 96,
+    "status": "Consent Authorised",
+    "capacity_mw": 1500
+  },
+  {
+    "name": "North Hoyle",
+    "slug": "North_Hoyle",
+    "turbines": 30,
+    "substations": 0,
+    "declared_no_turbine": 30,
+    "status": "Fully Commissioned",
+    "capacity_mw": 60
+  },
+  {
+    "name": "Ormonde",
+    "slug": "Ormonde",
+    "turbines": 30,
+    "substations": 1,
+    "declared_no_turbine": 30,
+    "status": "Fully Commissioned",
+    "capacity_mw": 150
+  },
+  {
+    "name": "Rhyl Flats",
+    "slug": "Rhyl_Flats",
+    "turbines": 25,
+    "substations": 0,
+    "declared_no_turbine": 25,
+    "status": "Fully Commissioned",
+    "capacity_mw": 90
+  },
+  {
+    "name": "Robin Rigg East",
+    "slug": "Robin_Rigg_East",
+    "turbines": 30,
+    "substations": 0,
+    "declared_no_turbine": 28,
+    "status": "Fully Commissioned",
+    "capacity_mw": 84
+  },
+  {
+    "name": "Robin Rigg West",
+    "slug": "Robin_Rigg_West",
+    "turbines": 30,
+    "substations": 1,
+    "declared_no_turbine": 30,
+    "status": "Fully Commissioned",
+    "capacity_mw": 90
+  },
+  {
+    "name": "Walney Extension",
+    "slug": "Walney_Extension",
+    "turbines": 87,
+    "substations": 2,
+    "declared_no_turbine": 40,
+    "status": "Fully Commissioned",
+    "capacity_mw": 330
+  },
+  {
+    "name": "Walney Phase 1",
+    "slug": "Walney_Phase_1",
+    "turbines": 51,
+    "substations": 1,
+    "declared_no_turbine": 51,
+    "status": "Fully Commissioned",
+    "capacity_mw": 184
+  },
+  {
+    "name": "Walney Phase 2",
+    "slug": "Walney_Phase_2",
+    "turbines": 51,
+    "substations": 1,
+    "declared_no_turbine": 51,
+    "status": "Fully Commissioned",
+    "capacity_mw": 184
+  },
+  {
+    "name": "West of Duddon Sands",
+    "slug": "West_of_Duddon_Sands",
+    "turbines": 108,
+    "substations": 1,
+    "declared_no_turbine": 108,
+    "status": "Fully Commissioned",
+    "capacity_mw": 389
+  }
+]

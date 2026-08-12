@@ -1,0 +1,261 @@
+[
+  {
+    "name": "AwelYMor",
+    "files": {
+      "polygon": {
+        "file": "AwelYMor_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Barrow",
+    "files": {
+      "polygon": {
+        "file": "Barrow_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "Barrow_turbines.geojson",
+        "count": 30
+      },
+      "substations": {
+        "file": "Barrow_substations.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "BurboBank",
+    "files": {
+      "polygon": {
+        "file": "BurboBank_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "BurboBank_turbines.geojson",
+        "count": 25
+      }
+    }
+  },
+  {
+    "name": "BurboBankExtension",
+    "files": {
+      "polygon": {
+        "file": "BurboBankExtension_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "BurboBankExtension_turbines.geojson",
+        "count": 32
+      },
+      "substations": {
+        "file": "BurboBankExtension_substations.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Greystones",
+    "files": {
+      "polygon": {
+        "file": "Greystones_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "GwyntYMor",
+    "files": {
+      "polygon": {
+        "file": "GwyntYMor_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "GwyntYMor_turbines.geojson",
+        "count": 160
+      },
+      "substations": {
+        "file": "GwyntYMor_substations.geojson",
+        "count": 2
+      }
+    }
+  },
+  {
+    "name": "Mona",
+    "files": {
+      "polygon": {
+        "file": "Mona_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "MooirVannin",
+    "files": {
+      "polygon": {
+        "file": "MooirVannin_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Morecambe",
+    "files": {
+      "polygon": {
+        "file": "Morecambe_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Morgan",
+    "files": {
+      "polygon": {
+        "file": "Morgan_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "NorthHoyle",
+    "files": {
+      "polygon": {
+        "file": "NorthHoyle_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "NorthHoyle_turbines.geojson",
+        "count": 30
+      }
+    }
+  },
+  {
+    "name": "Ormonde",
+    "files": {
+      "polygon": {
+        "file": "Ormonde_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "Ormonde_turbines.geojson",
+        "count": 30
+      },
+      "substations": {
+        "file": "Ormonde_substations.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "RhylFlats",
+    "files": {
+      "polygon": {
+        "file": "RhylFlats_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "RhylFlats_turbines.geojson",
+        "count": 25
+      }
+    }
+  },
+  {
+    "name": "RobinRiggEast",
+    "files": {
+      "polygon": {
+        "file": "RobinRiggEast_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "RobinRiggEast_turbines.geojson",
+        "count": 30
+      }
+    }
+  },
+  {
+    "name": "RobinRiggWest",
+    "files": {
+      "polygon": {
+        "file": "RobinRiggWest_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "RobinRiggWest_turbines.geojson",
+        "count": 30
+      },
+      "substations": {
+        "file": "RobinRiggWest_substations.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "WalneyExtension",
+    "files": {
+      "polygon": {
+        "file": "WalneyExtension_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "WalneyExtension_turbines.geojson",
+        "count": 87
+      },
+      "substations": {
+        "file": "WalneyExtension_substations.geojson",
+        "count": 2
+      }
+    }
+  },
+  {
+    "name": "WalneyPhase1",
+    "files": {
+      "polygon": {
+        "file": "WalneyPhase1_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "WalneyPhase1_turbines.geojson",
+        "count": 51
+      },
+      "substations": {
+        "file": "WalneyPhase1_substations.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "WalneyPhase2",
+    "files": {
+      "polygon": {
+        "file": "WalneyPhase2_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "WalneyPhase2_turbines.geojson",
+        "count": 51
+      },
+      "substations": {
+        "file": "WalneyPhase2_substations.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "WestOfDuddonSands",
+    "files": {
+      "polygon": {
+        "file": "WestOfDuddonSands_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "WestOfDuddonSands_turbines.geojson",
+        "count": 108
+      },
+      "substations": {
+        "file": "WestOfDuddonSands_substations.geojson",
+        "count": 1
+      }
+    }
+  }
+]

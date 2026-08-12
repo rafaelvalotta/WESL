@@ -1,0 +1,342 @@
+[
+  {
+    "name": "AberdeenOffshoreWind",
+    "files": {
+      "polygon": {
+        "file": "AberdeenOffshoreWind_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "AberdeenOffshoreWind_turbines.geojson",
+        "count": 20
+      }
+    }
+  },
+  {
+    "name": "Aspen",
+    "files": {
+      "polygon": {
+        "file": "Aspen_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Beatrice",
+    "files": {
+      "polygon": {
+        "file": "Beatrice_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "Beatrice_turbines.geojson",
+        "count": 144
+      },
+      "substations": {
+        "file": "Beatrice_substations.geojson",
+        "count": 3
+      }
+    }
+  },
+  {
+    "name": "Beech",
+    "files": {
+      "polygon": {
+        "file": "Beech_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Bellrock",
+    "files": {
+      "polygon": {
+        "file": "Bellrock_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "BerwickBank",
+    "files": {
+      "polygon": {
+        "file": "BerwickBank_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Bowdun",
+    "files": {
+      "polygon": {
+        "file": "Bowdun_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Broadshore",
+    "files": {
+      "polygon": {
+        "file": "Broadshore_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "BuchanOffshoreWind",
+    "files": {
+      "polygon": {
+        "file": "BuchanOffshoreWind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "CampionWind",
+    "files": {
+      "polygon": {
+        "file": "CampionWind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Cedar",
+    "files": {
+      "polygon": {
+        "file": "Cedar_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Cenos",
+    "files": {
+      "polygon": {
+        "file": "Cenos_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Forthwind",
+    "files": {
+      "polygon": {
+        "file": "Forthwind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "GreenVolt",
+    "files": {
+      "polygon": {
+        "file": "GreenVolt_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "HarbourEnergy1",
+    "files": {
+      "polygon": {
+        "file": "HarbourEnergy1_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "HarbourEnergy2",
+    "files": {
+      "polygon": {
+        "file": "HarbourEnergy2_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "HywindScotland",
+    "files": {
+      "polygon": {
+        "file": "HywindScotland_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "HywindScotland_turbines.geojson",
+        "count": 36
+      }
+    }
+  },
+  {
+    "name": "InchCape",
+    "files": {
+      "polygon": {
+        "file": "InchCape_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "InchCape_turbines.geojson",
+        "count": 124
+      },
+      "substations": {
+        "file": "InchCape_substations.geojson",
+        "count": 2
+      }
+    }
+  },
+  {
+    "name": "Kincardine",
+    "files": {
+      "polygon": {
+        "file": "Kincardine_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "Kincardine_turbines.geojson",
+        "count": 34
+      }
+    }
+  },
+  {
+    "name": "MarramWind",
+    "files": {
+      "polygon": {
+        "file": "MarramWind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "MorayEast",
+    "files": {
+      "polygon": {
+        "file": "MorayEast_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "MorayEast_turbines.geojson",
+        "count": 174
+      },
+      "substations": {
+        "file": "MorayEast_substations.geojson",
+        "count": 5
+      }
+    }
+  },
+  {
+    "name": "MorayWest",
+    "files": {
+      "polygon": {
+        "file": "MorayWest_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "MorayWest_turbines.geojson",
+        "count": 105
+      },
+      "substations": {
+        "file": "MorayWest_substations.geojson",
+        "count": 4
+      }
+    }
+  },
+  {
+    "name": "Morven",
+    "files": {
+      "polygon": {
+        "file": "Morven_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "MuirMhor",
+    "files": {
+      "polygon": {
+        "file": "MuirMhor_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "NeartNaGaoithe",
+    "files": {
+      "polygon": {
+        "file": "NeartNaGaoithe_polygon.geojson",
+        "count": 1
+      },
+      "turbines": {
+        "file": "NeartNaGaoithe_turbines.geojson",
+        "count": 97
+      },
+      "substations": {
+        "file": "NeartNaGaoithe_substations.geojson",
+        "count": 4
+      }
+    }
+  },
+  {
+    "name": "Ossian",
+    "files": {
+      "polygon": {
+        "file": "Ossian_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "PentlandFloating",
+    "files": {
+      "polygon": {
+        "file": "PentlandFloating_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "SalamanderFloating",
+    "files": {
+      "polygon": {
+        "file": "SalamanderFloating_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Seagreen1A",
+    "files": {
+      "polygon": {
+        "file": "Seagreen1A_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "Sinclair",
+    "files": {
+      "polygon": {
+        "file": "Sinclair_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "StromarWind",
+    "files": {
+      "polygon": {
+        "file": "StromarWind_polygon.geojson",
+        "count": 1
+      }
+    }
+  },
+  {
+    "name": "TotalEnergiesEPUK",
+    "files": {
+      "polygon": {
+        "file": "TotalEnergiesEPUK_polygon.geojson",
+        "count": 1
+      }
+    }
+  }
+]

@@ -1,0 +1,290 @@
+[
+  {
+    "name": "Aberdeen Offshore Wind Farm",
+    "slug": "Aberdeen_Offshore_Wind_Farm",
+    "turbines": 20,
+    "substations": 0,
+    "declared_no_turbine": 11,
+    "status": "Fully Commissioned",
+    "capacity_mw": 93
+  },
+  {
+    "name": "Aspen",
+    "slug": "Aspen",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1008
+  },
+  {
+    "name": "Beatrice",
+    "slug": "Beatrice",
+    "turbines": 144,
+    "substations": 3,
+    "declared_no_turbine": 84,
+    "status": "Fully Commissioned",
+    "capacity_mw": 588
+  },
+  {
+    "name": "Beech",
+    "slug": "Beech",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1008
+  },
+  {
+    "name": "Bellrock",
+    "slug": "Bellrock",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1200
+  },
+  {
+    "name": "Berwick Bank Wind Farm",
+    "slug": "Berwick_Bank_Wind_Farm",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Consent Application Submitted",
+    "capacity_mw": 4100
+  },
+  {
+    "name": "Bowdun",
+    "slug": "Bowdun",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 60,
+    "status": "Early Planning",
+    "capacity_mw": 1000
+  },
+  {
+    "name": "Broadshore",
+    "slug": "Broadshore",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1200
+  },
+  {
+    "name": "Buchan Offshore Wind",
+    "slug": "Buchan_Offshore_Wind",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 960
+  },
+  {
+    "name": "CampionWind",
+    "slug": "CampionWind",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": null
+  },
+  {
+    "name": "Cedar",
+    "slug": "Cedar",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1008
+  },
+  {
+    "name": "Cenos",
+    "slug": "Cenos",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1350
+  },
+  {
+    "name": "Forthwind Offshore Wind Turbine Demonstration",
+    "slug": "Forthwind_Offshore_Wind_Turbine_Demonstration",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 2,
+    "status": "Consent Authorised",
+    "capacity_mw": 18
+  },
+  {
+    "name": "Green Volt",
+    "slug": "Green_Volt",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 35,
+    "status": "Consent Authorised",
+    "capacity_mw": 560
+  },
+  {
+    "name": "Harbour Energy 1",
+    "slug": "Harbour_Energy_1",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 15
+  },
+  {
+    "name": "Harbour Energy 2",
+    "slug": "Harbour_Energy_2",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 15
+  },
+  {
+    "name": "Hywind Scotland",
+    "slug": "Hywind_Scotland",
+    "turbines": 36,
+    "substations": 0,
+    "declared_no_turbine": 5,
+    "status": "Fully Commissioned",
+    "capacity_mw": 30
+  },
+  {
+    "name": "Inch Cape",
+    "slug": "Inch_Cape",
+    "turbines": 124,
+    "substations": 2,
+    "declared_no_turbine": 72,
+    "status": "Under Construction",
+    "capacity_mw": 1080
+  },
+  {
+    "name": "Kincardine",
+    "slug": "Kincardine",
+    "turbines": 34,
+    "substations": 0,
+    "declared_no_turbine": 5,
+    "status": "Fully Commissioned",
+    "capacity_mw": 48
+  },
+  {
+    "name": "MarramWind",
+    "slug": "MarramWind",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 3000
+  },
+  {
+    "name": "Moray East",
+    "slug": "Moray_East",
+    "turbines": 174,
+    "substations": 5,
+    "declared_no_turbine": 100,
+    "status": "Fully Commissioned",
+    "capacity_mw": 950
+  },
+  {
+    "name": "Moray West",
+    "slug": "Moray_West",
+    "turbines": 105,
+    "substations": 4,
+    "declared_no_turbine": 60,
+    "status": "Fully Commissioned",
+    "capacity_mw": 882
+  },
+  {
+    "name": "Morven",
+    "slug": "Morven",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 2907
+  },
+  {
+    "name": "Muir Mh\u00f2r",
+    "slug": "Muir_Mh_r",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Consent Application Submitted",
+    "capacity_mw": 798
+  },
+  {
+    "name": "Neart na Gaoithe",
+    "slug": "Neart_na_Gaoithe",
+    "turbines": 97,
+    "substations": 4,
+    "declared_no_turbine": 54,
+    "status": "Fully Commissioned",
+    "capacity_mw": 448
+  },
+  {
+    "name": "Ossian",
+    "slug": "Ossian",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 3600
+  },
+  {
+    "name": "Pentland Floating Offshore Wind Farm",
+    "slug": "Pentland_Floating_Offshore_Wind_Farm",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 6,
+    "status": "Consent Authorised",
+    "capacity_mw": 100
+  },
+  {
+    "name": "Salamander Floating Wind",
+    "slug": "Salamander_Floating_Wind",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Consent Application Submitted",
+    "capacity_mw": 100
+  },
+  {
+    "name": "Seagreen 1A",
+    "slug": "Seagreen_1A",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": 36,
+    "status": "Consent Authorised",
+    "capacity_mw": 360
+  },
+  {
+    "name": "Sinclair",
+    "slug": "Sinclair",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 99
+  },
+  {
+    "name": "Stromar Wind",
+    "slug": "Stromar_Wind",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 1000
+  },
+  {
+    "name": "TotalEnergies E&P UK",
+    "slug": "TotalEnergies_E_P_UK",
+    "turbines": 0,
+    "substations": 0,
+    "declared_no_turbine": null,
+    "status": "Early Planning",
+    "capacity_mw": 3
+  }
+]

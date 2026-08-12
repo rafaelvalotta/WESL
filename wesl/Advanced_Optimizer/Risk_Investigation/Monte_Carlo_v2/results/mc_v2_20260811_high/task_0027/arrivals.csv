@@ -1,0 +1,243 @@
+trial_id,run_id,seed,tier,target_mw,delivered_mw,fraction_used,n_tries,success,band,angle,template,turbine,arrival_year
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,0.0,0.0,160,False,"(90, 105)",240,,SG11.0-200DD,0.514
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,715.0,0.0,0.0,160,False,"(3, 10)",240,,Haliade-X 13MW,0.866
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,780.0,585.0,0.75,57,True,"(30, 45)",270,staircase_9corners,SG11.0-200DD,1.322
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(20, 30)",180,,Haliade-X 13MW,1.394
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,2080.0,0.0,0.0,160,False,"(75, 90)",210,,IEA 2200-22MW,2.259
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,0.0,0.0,160,False,"(20, 30)",0,,Haliade-X 13MW,3.232
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,458.25,0.25,140,True,"(60, 75)",30,staircase_9corners,SG11.0-200DD,3.648
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,1833.0,1.0,21,True,"(30, 45)",90,staircase_7corners,SG11.0-200DD,3.938
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(20, 30)",210,,Haliade-X 13MW,5.505
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,916.5,0.5,82,True,"(30, 45)",30,staircase_9corners,Haliade-X 15.5MW,6.914
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,806.0,1.0,1,True,"(105, 120)",270,staircase_7corners,Haliade-X 13MW,7.149
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,132.0,132.0,1.0,8,True,"(60, 75)",330,staircase_8corners,Haliade-X 15.5MW,7.392
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,0.0,0.0,160,False,"(45, 60)",150,,SG11.0-200DD,7.658
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,780.0,0.0,0.0,160,False,"(3, 10)",180,,IEA 2200-22MW,8.07
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,2080.0,0.0,0.0,160,False,"(30, 45)",120,,Haliade-X 15.5MW,9.882
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 13MW,9.947
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(3, 10)",60,,Haliade-X 15.5MW,10.914
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,924.0,0.0,0.0,160,False,"(105, 120)",180,,SG11.0-200DD,11.016
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,2080.0,0.0,0.0,160,False,"(10, 20)",30,,Haliade-X 13MW,11.121
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,715.0,0.0,0.0,160,False,"(10, 20)",330,,SG11.0-200DD,11.216
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(10, 20)",120,,IEA 2200-22MW,11.43
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,1833.0,1.0,1,True,"(60, 75)",60,staircase_7corners,Haliade-X 15.5MW,11.48
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,201.5,0.25,149,True,"(30, 45)",30,staircase_7corners,SG11.0-200DD,11.678
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,572.0,0.0,0.0,160,False,"(60, 75)",120,,Haliade-X 15.5MW,12.442
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,132.0,0.0,0.0,160,False,"(3, 10)",30,,Haliade-X 13MW,13.997
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,30.0,0.0,0.0,40,False,"(3, 10)",120,,Haliade-X 15.5MW,14.419
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,1833.0,1.0,2,True,"(60, 75)",270,staircase_7corners,Haliade-X 13MW,14.486
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,780.0,390.0,0.5,95,True,"(30, 45)",90,staircase_8corners,IEA 2200-22MW,15.827
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,572.0,0.0,0.0,160,False,"(45, 60)",300,,IEA 2200-22MW,15.985
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(30, 45)",240,,IEA 2200-22MW,15.989
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,30.0,30.0,1.0,1,True,"(45, 60)",270,staircase_9corners,Haliade-X 13MW,16.077
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,924.0,0.0,0.0,160,False,"(105, 120)",150,,Haliade-X 13MW,16.167
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,806.0,0.0,0.0,160,False,"(30, 45)",300,,IEA 2200-22MW,16.728
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,572.0,0.0,0.0,160,False,"(90, 105)",240,,SG11.0-200DD,17.478
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,924.0,0.0,0.0,160,False,"(45, 60)",270,,Haliade-X 15.5MW,17.577
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,132.0,0.0,0.0,160,False,"(3, 10)",150,,Haliade-X 15.5MW,18.019
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,572.0,0.0,0.0,160,False,"(75, 90)",240,,Haliade-X 15.5MW,18.264
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,572.0,572.0,1.0,1,True,"(90, 105)",30,staircase_6corners,SG11.0-200DD,19.376
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,924.0,0.0,0.0,160,False,"(45, 60)",270,,Haliade-X 15.5MW,19.639
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(30, 45)",330,,IEA 2200-22MW,20.111
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,924.0,0.0,0.0,160,False,"(45, 60)",300,,Haliade-X 15.5MW,20.632
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,715.0,715.0,1.0,5,True,"(90, 105)",30,staircase_8corners,Haliade-X 15.5MW,20.978
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,780.0,0.0,0.0,160,False,"(105, 120)",210,,Haliade-X 13MW,21.27
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,132.0,0.0,0.0,160,False,"(105, 120)",150,,Haliade-X 13MW,21.609
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,1833.0,0.0,0.0,160,False,"(105, 120)",210,,SG11.0-200DD,23.862
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,132.0,132.0,1.0,1,True,"(90, 105)",60,staircase_6corners,Haliade-X 15.5MW,23.897
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,780.0,0.0,0.0,160,False,"(45, 60)",300,,Haliade-X 15.5MW,23.917
+mc_v2_20260811_high_000135,mc_v2_20260811_high/task_0027,135,high,30.0,0.0,0.0,40,False,"(20, 30)",240,,SG11.0-200DD,23.919
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,572.0,572.0,1.0,3,True,"(60, 75)",90,staircase_7corners,Haliade-X 13MW,0.374
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,132.0,0.0,0.0,160,False,"(10, 20)",330,,Haliade-X 13MW,0.669
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,0.0,0.0,160,False,"(105, 120)",150,,Haliade-X 13MW,1.423
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,924.0,0.0,0.0,160,False,"(60, 75)",240,,Haliade-X 15.5MW,2.222
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,132.0,132.0,1.0,1,True,"(75, 90)",60,staircase_6corners,SG11.0-200DD,2.501
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,806.0,1.0,1,True,"(45, 60)",30,staircase_8corners,Haliade-X 15.5MW,3.51
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,715.0,0.0,0.0,160,False,"(90, 105)",240,,Haliade-X 13MW,3.586
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,2080.0,0.0,0.0,160,False,"(3, 10)",300,,Haliade-X 13MW,3.815
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,2080.0,520.0,0.25,135,True,"(75, 90)",330,staircase_9corners,SG11.0-200DD,4.369
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,585.0,0.75,46,True,"(105, 120)",300,staircase_9corners,SG11.0-200DD,4.55
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,2080.0,2080.0,1.0,12,True,"(75, 90)",90,staircase_8corners,IEA 2200-22MW,5.137
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,2080.0,0.0,0.0,160,False,"(20, 30)",150,,Haliade-X 15.5MW,6.776
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,2080.0,0.0,0.0,160,False,"(90, 105)",240,,Haliade-X 13MW,7.671
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,0.0,0.0,160,False,"(90, 105)",0,,Haliade-X 15.5MW,7.859
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,0.0,0.0,160,False,"(30, 45)",240,,SG11.0-200DD,8.351
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,780.0,1.0,28,True,"(20, 30)",60,staircase_9corners,Haliade-X 15.5MW,9.452
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,806.0,1.0,1,True,"(75, 90)",270,staircase_7corners,IEA 2200-22MW,10.286
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,806.0,1.0,23,True,"(30, 45)",270,staircase_10corners,Haliade-X 13MW,10.968
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,132.0,33.0,0.25,129,True,"(45, 60)",300,staircase_10corners,Haliade-X 13MW,11.098
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,806.0,1.0,3,True,"(105, 120)",270,staircase_10corners,SG11.0-200DD,12.131
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,604.5,0.75,76,True,"(30, 45)",0,staircase_6corners,Haliade-X 15.5MW,13.121
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,715.0,0.0,0.0,160,False,"(10, 20)",0,,Haliade-X 13MW,13.248
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,572.0,143.0,0.25,121,True,"(60, 75)",30,staircase_9corners,Haliade-X 13MW,14.664
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,30.0,30.0,1.0,1,True,"(75, 90)",60,staircase_7corners,SG11.0-200DD,14.8
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,30.0,30.0,1.0,2,True,"(30, 45)",60,staircase_7corners,Haliade-X 15.5MW,15.195
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,30.0,30.0,1.0,1,True,"(75, 90)",270,staircase_6corners,SG11.0-200DD,15.532
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,1833.0,0.0,0.0,160,False,"(60, 75)",240,,SG11.0-200DD,15.566
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,806.0,0.0,0.0,160,False,"(75, 90)",150,,IEA 2200-22MW,16.214
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,0.0,0.0,160,False,"(20, 30)",90,,Haliade-X 13MW,16.367
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,1833.0,0.0,0.0,160,False,"(3, 10)",120,,IEA 2200-22MW,16.531
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,715.0,0.0,0.0,160,False,"(20, 30)",90,,IEA 2200-22MW,16.59
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,572.0,0.0,0.0,160,False,"(3, 10)",120,,Haliade-X 13MW,18.147
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 13MW,18.591
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,0.0,0.0,160,False,"(10, 20)",60,,IEA 2200-22MW,18.688
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,30.0,0.0,0.0,40,False,"(105, 120)",210,,Haliade-X 13MW,18.734
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,715.0,0.0,0.0,160,False,"(10, 20)",150,,SG11.0-200DD,18.773
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,780.0,0.0,0.0,160,False,"(30, 45)",30,,IEA 2200-22MW,19.213
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,1833.0,1374.75,0.75,62,True,"(105, 120)",270,staircase_10corners,SG11.0-200DD,19.421
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,715.0,0.0,0.0,160,False,"(20, 30)",240,,Haliade-X 15.5MW,21.473
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,715.0,715.0,1.0,2,True,"(45, 60)",60,staircase_8corners,IEA 2200-22MW,22.618
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,30.0,0.0,0.0,40,False,"(60, 75)",0,,Haliade-X 13MW,23.314
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,924.0,0.0,0.0,160,False,"(10, 20)",150,,Haliade-X 13MW,23.64
+mc_v2_20260811_high_000136,mc_v2_20260811_high/task_0027,136,high,572.0,0.0,0.0,160,False,"(20, 30)",150,,IEA 2200-22MW,24.771
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,572.0,1.0,1,True,"(45, 60)",30,staircase_6corners,Haliade-X 13MW,0.542
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,30.0,30.0,1.0,1,True,"(90, 105)",270,staircase_7corners,Haliade-X 15.5MW,1.72
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,1833.0,0.0,0.0,160,False,"(90, 105)",210,,SG11.0-200DD,2.266
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,924.0,1.0,1,True,"(45, 60)",60,staircase_7corners,SG11.0-200DD,2.371
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(45, 60)",210,,SG11.0-200DD,2.442
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,0.0,0.0,160,False,"(60, 75)",300,,Haliade-X 13MW,2.666
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,2080.0,0.0,0.0,160,False,"(10, 20)",210,,SG11.0-200DD,2.703
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(45, 60)",120,,Haliade-X 13MW,2.711
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,806.0,806.0,1.0,1,True,"(75, 90)",60,staircase_6corners,SG11.0-200DD,4.496
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,572.0,1.0,1,True,"(60, 75)",270,staircase_8corners,Haliade-X 13MW,4.511
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,924.0,1.0,1,True,"(90, 105)",60,staircase_6corners,Haliade-X 15.5MW,4.753
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,0.0,0.0,160,False,"(90, 105)",240,,SG11.0-200DD,5.089
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,132.0,0.0,0.0,160,False,"(20, 30)",0,,Haliade-X 15.5MW,5.504
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,2080.0,0.0,0.0,160,False,"(75, 90)",150,,Haliade-X 13MW,6.529
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,806.0,0.0,0.0,160,False,"(3, 10)",180,,IEA 2200-22MW,7.445
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,0.0,0.0,160,False,"(10, 20)",180,,IEA 2200-22MW,7.464
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,2080.0,1040.0,0.5,100,True,"(30, 45)",90,staircase_7corners,IEA 2200-22MW,7.466
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,715.0,1.0,1,True,"(60, 75)",90,staircase_8corners,Haliade-X 13MW,8.068
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,1833.0,1833.0,1.0,25,True,"(90, 105)",300,staircase_7corners,SG11.0-200DD,8.186
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,780.0,390.0,0.5,85,True,"(105, 120)",300,staircase_7corners,Haliade-X 13MW,8.277
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(10, 20)",60,,SG11.0-200DD,8.299
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,231.0,0.25,124,True,"(75, 90)",330,staircase_6corners,SG11.0-200DD,8.845
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,1833.0,0.0,0.0,160,False,"(30, 45)",180,,Haliade-X 15.5MW,9.811
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(3, 10)",180,,Haliade-X 13MW,10.509
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,30.0,0.0,0.0,40,False,"(45, 60)",210,,SG11.0-200DD,10.983
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,2080.0,0.0,0.0,160,False,"(105, 120)",300,,Haliade-X 15.5MW,11.017
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,0.0,0.0,160,False,"(90, 105)",120,,SG11.0-200DD,11.106
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,2080.0,1040.0,0.5,118,True,"(90, 105)",60,staircase_10corners,SG11.0-200DD,12.499
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,2080.0,0.0,0.0,160,False,"(105, 120)",180,,IEA 2200-22MW,13.01
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,132.0,132.0,1.0,4,True,"(30, 45)",60,staircase_10corners,Haliade-X 15.5MW,13.06
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,429.0,0.75,73,True,"(105, 120)",90,staircase_8corners,IEA 2200-22MW,13.387
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,30.0,0.0,0.0,40,False,"(10, 20)",90,,Haliade-X 13MW,13.913
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,0.0,0.0,160,False,"(30, 45)",60,,Haliade-X 15.5MW,14.874
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,132.0,0.0,0.0,160,False,"(75, 90)",120,,SG11.0-200DD,15.107
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(105, 120)",180,,SG11.0-200DD,15.261
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,132.0,33.0,0.25,148,True,"(60, 75)",0,staircase_9corners,IEA 2200-22MW,15.403
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,357.5,0.5,94,True,"(105, 120)",60,staircase_7corners,Haliade-X 13MW,15.433
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,780.0,195.0,0.25,155,True,"(105, 120)",240,staircase_9corners,IEA 2200-22MW,15.675
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,1833.0,0.0,0.0,160,False,"(45, 60)",120,,SG11.0-200DD,15.717
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,0.0,0.0,160,False,"(105, 120)",210,,IEA 2200-22MW,16.866
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,780.0,0.0,0.0,160,False,"(3, 10)",180,,IEA 2200-22MW,17.263
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,30.0,0.0,0.0,40,False,"(20, 30)",180,,IEA 2200-22MW,18.479
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,286.0,0.5,93,True,"(30, 45)",0,staircase_6corners,IEA 2200-22MW,19.633
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,780.0,0.0,0.0,160,False,"(10, 20)",150,,Haliade-X 13MW,21.169
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(90, 105)",180,,SG11.0-200DD,21.613
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,0.0,0.0,160,False,"(60, 75)",120,,Haliade-X 13MW,21.846
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,30.0,30.0,1.0,1,True,"(75, 90)",270,staircase_6corners,SG11.0-200DD,21.925
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,572.0,286.0,0.5,88,True,"(30, 45)",90,staircase_7corners,Haliade-X 15.5MW,22.377
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,0.0,0.0,160,False,"(10, 20)",150,,Haliade-X 15.5MW,22.79
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,715.0,178.75,0.25,157,True,"(60, 75)",330,staircase_6corners,Haliade-X 13MW,23.44
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,30.0,0.0,0.0,40,False,"(10, 20)",300,,SG11.0-200DD,23.507
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,780.0,585.0,0.75,45,True,"(75, 90)",90,staircase_10corners,SG11.0-200DD,23.517
+mc_v2_20260811_high_000137,mc_v2_20260811_high/task_0027,137,high,924.0,0.0,0.0,160,False,"(60, 75)",210,,IEA 2200-22MW,24.011
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,0.0,0.0,160,False,"(45, 60)",180,,SG11.0-200DD,0.37
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,693.0,0.75,43,True,"(30, 45)",270,staircase_6corners,Haliade-X 15.5MW,1.757
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,132.0,132.0,1.0,1,True,"(75, 90)",270,staircase_8corners,SG11.0-200DD,2.059
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,231.0,0.25,138,True,"(20, 30)",90,staircase_6corners,Haliade-X 13MW,3.975
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,0.0,0.0,40,False,"(45, 60)",210,,SG11.0-200DD,4.01
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,132.0,0.0,0.0,160,False,"(30, 45)",210,,IEA 2200-22MW,4.113
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,2080.0,0.0,0.0,160,False,"(10, 20)",210,,SG11.0-200DD,4.136
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,715.0,715.0,1.0,4,True,"(90, 105)",90,staircase_8corners,SG11.0-200DD,5.582
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,30.0,1.0,1,True,"(75, 90)",90,staircase_10corners,Haliade-X 15.5MW,6.28
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,30.0,1.0,2,True,"(75, 90)",300,staircase_6corners,IEA 2200-22MW,6.648
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,780.0,0.0,0.0,160,False,"(105, 120)",210,,Haliade-X 13MW,6.823
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,2080.0,0.0,0.0,160,False,"(90, 105)",90,,Haliade-X 13MW,6.92
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,30.0,1.0,2,True,"(90, 105)",90,staircase_9corners,Haliade-X 13MW,7.116
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,0.0,0.0,40,False,"(10, 20)",30,,SG11.0-200DD,7.603
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,132.0,0.0,0.0,160,False,"(45, 60)",150,,SG11.0-200DD,7.766
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,572.0,0.0,0.0,160,False,"(90, 105)",210,,Haliade-X 13MW,7.898
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,0.0,0.0,160,False,"(30, 45)",240,,SG11.0-200DD,8.184
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,780.0,780.0,1.0,1,True,"(90, 105)",60,staircase_10corners,SG11.0-200DD,8.28
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,0.0,0.0,40,False,"(20, 30)",240,,IEA 2200-22MW,8.766
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,231.0,0.25,124,True,"(60, 75)",30,staircase_8corners,Haliade-X 15.5MW,9.613
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,30.0,1.0,2,True,"(30, 45)",90,staircase_9corners,IEA 2200-22MW,10.316
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,780.0,390.0,0.5,98,True,"(90, 105)",330,staircase_9corners,IEA 2200-22MW,10.409
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,0.0,0.0,160,False,"(45, 60)",300,,IEA 2200-22MW,10.506
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,0.0,0.0,160,False,"(60, 75)",180,,SG11.0-200DD,11.221
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,30.0,1.0,1,True,"(90, 105)",60,staircase_10corners,Haliade-X 13MW,11.801
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,806.0,806.0,1.0,1,True,"(45, 60)",30,staircase_6corners,IEA 2200-22MW,12.843
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,458.25,0.25,156,True,"(75, 90)",0,staircase_6corners,Haliade-X 15.5MW,13.626
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,30.0,1.0,9,True,"(30, 45)",0,staircase_9corners,IEA 2200-22MW,14.196
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,2080.0,0.0,0.0,160,False,"(3, 10)",0,,Haliade-X 13MW,14.749
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,780.0,0.0,0.0,160,False,"(3, 10)",0,,IEA 2200-22MW,14.898
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,0.0,0.0,160,False,"(3, 10)",0,,SG11.0-200DD,16.18
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,0.0,0.0,160,False,"(60, 75)",120,,Haliade-X 13MW,16.593
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,780.0,0.0,0.0,160,False,"(10, 20)",60,,Haliade-X 15.5MW,17.413
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,572.0,0.0,0.0,160,False,"(30, 45)",210,,Haliade-X 15.5MW,17.679
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,924.0,0.0,0.0,160,False,"(20, 30)",210,,IEA 2200-22MW,17.7
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,0.0,0.0,160,False,"(45, 60)",300,,Haliade-X 15.5MW,18.071
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,2080.0,0.0,0.0,160,False,"(30, 45)",0,,IEA 2200-22MW,18.564
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,132.0,0.0,0.0,160,False,"(10, 20)",240,,Haliade-X 13MW,18.766
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,0.0,0.0,160,False,"(60, 75)",0,,Haliade-X 15.5MW,19.127
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,132.0,0.0,0.0,160,False,"(20, 30)",120,,IEA 2200-22MW,19.13
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,132.0,0.0,0.0,160,False,"(20, 30)",90,,IEA 2200-22MW,19.375
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,0.0,0.0,160,False,"(20, 30)",270,,Haliade-X 15.5MW,20.115
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,572.0,572.0,1.0,1,True,"(60, 75)",90,staircase_7corners,Haliade-X 15.5MW,20.845
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,572.0,429.0,0.75,72,True,"(75, 90)",90,staircase_7corners,SG11.0-200DD,21.295
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,1833.0,458.25,0.25,141,True,"(30, 45)",90,staircase_7corners,Haliade-X 15.5MW,21.559
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,572.0,572.0,1.0,3,True,"(105, 120)",60,staircase_7corners,IEA 2200-22MW,21.587
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,2080.0,0.0,0.0,160,False,"(30, 45)",240,,Haliade-X 15.5MW,21.903
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,572.0,0.0,0.0,160,False,"(10, 20)",0,,Haliade-X 15.5MW,22.073
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,30.0,0.0,0.0,40,False,"(10, 20)",150,,Haliade-X 15.5MW,22.98
+mc_v2_20260811_high_000138,mc_v2_20260811_high/task_0027,138,high,715.0,357.5,0.5,82,True,"(60, 75)",300,staircase_6corners,IEA 2200-22MW,23.897
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,2080.0,0.0,0.0,160,False,"(20, 30)",150,,Haliade-X 15.5MW,0.055
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,0.0,0.0,40,False,"(20, 30)",0,,SG11.0-200DD,0.932
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,780.0,1.0,4,True,"(30, 45)",270,staircase_7corners,Haliade-X 13MW,0.95
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(105, 120)",150,,Haliade-X 15.5MW,1.702
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,572.0,1.0,1,True,"(60, 75)",60,staircase_8corners,Haliade-X 15.5MW,1.832
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,806.0,806.0,1.0,5,True,"(90, 105)",30,staircase_9corners,Haliade-X 15.5MW,2.935
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,30.0,1.0,1,True,"(60, 75)",90,staircase_7corners,SG11.0-200DD,3.393
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,572.0,1.0,20,True,"(105, 120)",300,staircase_10corners,Haliade-X 15.5MW,4.555
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(30, 45)",240,,SG11.0-200DD,6.005
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,30.0,1.0,1,True,"(30, 45)",60,staircase_6corners,Haliade-X 15.5MW,6.02
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(30, 45)",120,,IEA 2200-22MW,6.159
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,0.0,0.0,160,False,"(30, 45)",210,,Haliade-X 15.5MW,7.121
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,0.0,0.0,160,False,"(45, 60)",240,,Haliade-X 13MW,7.732
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,2080.0,520.0,0.25,134,True,"(45, 60)",330,staircase_9corners,IEA 2200-22MW,8.957
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,0.0,0.0,160,False,"(105, 120)",120,,Haliade-X 13MW,8.969
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(30, 45)",300,,IEA 2200-22MW,9.701
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,99.0,0.75,56,True,"(45, 60)",300,staircase_9corners,Haliade-X 15.5MW,9.734
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,0.0,0.0,160,False,"(105, 120)",240,,IEA 2200-22MW,11.675
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,429.0,0.75,43,True,"(75, 90)",0,staircase_6corners,IEA 2200-22MW,11.817
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,924.0,0.0,0.0,160,False,"(105, 120)",240,,SG11.0-200DD,12.078
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,1833.0,0.0,0.0,160,False,"(20, 30)",180,,IEA 2200-22MW,12.43
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,1833.0,1833.0,1.0,3,True,"(60, 75)",60,staircase_6corners,SG11.0-200DD,13.682
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,0.0,0.0,40,False,"(3, 10)",300,,Haliade-X 15.5MW,13.755
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,0.0,0.0,160,False,"(3, 10)",270,,SG11.0-200DD,14.826
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,132.0,1.0,2,True,"(45, 60)",30,staircase_10corners,Haliade-X 13MW,15.075
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,0.0,0.0,160,False,"(45, 60)",330,,Haliade-X 13MW,15.384
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,0.0,0.0,160,False,"(105, 120)",0,,Haliade-X 13MW,15.63
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,2080.0,0.0,0.0,160,False,"(10, 20)",300,,Haliade-X 15.5MW,16.421
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,2080.0,1560.0,0.75,80,True,"(45, 60)",60,staircase_7corners,Haliade-X 15.5MW,16.483
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,536.25,0.75,58,True,"(75, 90)",30,staircase_8corners,IEA 2200-22MW,16.764
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(20, 30)",120,,Haliade-X 15.5MW,16.816
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(45, 60)",300,,Haliade-X 13MW,16.906
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,0.0,0.0,160,False,"(90, 105)",150,,SG11.0-200DD,16.966
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,572.0,572.0,1.0,39,True,"(105, 120)",90,staircase_9corners,Haliade-X 13MW,17.007
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,132.0,1.0,1,True,"(45, 60)",0,staircase_10corners,SG11.0-200DD,17.639
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,0.0,0.0,40,False,"(90, 105)",210,,Haliade-X 15.5MW,17.74
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,132.0,1.0,5,True,"(75, 90)",90,staircase_7corners,Haliade-X 13MW,18.233
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,2080.0,0.0,0.0,160,False,"(3, 10)",120,,Haliade-X 15.5MW,18.95
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,30.0,1.0,1,True,"(30, 45)",120,staircase_8corners,Haliade-X 13MW,19.224
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,0.0,0.0,160,False,"(105, 120)",330,,Haliade-X 13MW,20.105
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,30.0,0.0,0.0,40,False,"(105, 120)",240,,SG11.0-200DD,20.407
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,0.0,0.0,160,False,"(3, 10)",120,,Haliade-X 13MW,20.763
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(60, 75)",150,,Haliade-X 13MW,21.073
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,0.0,0.0,160,False,"(20, 30)",270,,Haliade-X 15.5MW,21.154
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,132.0,66.0,0.5,87,True,"(30, 45)",270,staircase_8corners,SG11.0-200DD,21.444
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,0.0,0.0,160,False,"(30, 45)",240,,IEA 2200-22MW,24.406
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,780.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 13MW,24.59
+mc_v2_20260811_high_000139,mc_v2_20260811_high/task_0027,139,high,715.0,0.0,0.0,160,False,"(75, 90)",120,,IEA 2200-22MW,24.78

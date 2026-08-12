@@ -8,7 +8,8 @@ import cdsapi
 import numpy as np
 import xarray as xr
 
-sys.stdout.reconfigure(line_buffering=True)  # avoid buffered prints interleaving with cdsapi's own logs
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(line_buffering=True)  # avoid buffered prints interleaving with cdsapi's own logs
 
 # Real center coordinate of the cluster (Vineyard Northeast)
 LAT_CENTER = 40.9508654

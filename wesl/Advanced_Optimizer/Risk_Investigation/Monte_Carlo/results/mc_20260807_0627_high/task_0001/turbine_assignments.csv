@@ -1,0 +1,23 @@
+trial_id,run_id,seed,farm_name,is_synthetic,n_turbines,turbine_used
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Vineyard Wind,False,62,GE Haliade-X 13MW  (Vineyard 1)
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Revolution Wind,False,65,Siemens Gamesa SG 11.0-200 DD
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,SouthCoast Wind,True,84,Haliade-X 13MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,South Fork Wind,False,12,Siemens Gamesa SG 11.0-200 DD
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Sunrise Wind South,False,96,Siemens Gamesa SG 11.0-200 DD
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Sunrise Wind North,True,2,DTU10MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Revolution Wind North,True,1,Haliade-X 13MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Vineyard Northeast,True,87,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,New England Wind 1,True,36,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,New England Wind 2 South,True,54,Haliade-X 13MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Beacon Wind,True,124,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Bay State Wind South,True,179,DTU10MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Bay State Wind North,True,1,Haliade-X 13MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_00,True,61,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_01,True,156,DTU10MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_02,True,186,DTU10MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_03,True,185,DTU10MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_04,True,37,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_05,True,1,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_06,True,24,Haliade-X 15.5MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_07,True,15,DTU10MW
+mc_20260807_0627_high_000005,mc_20260807_0627_high/task_0001,5,Speculative_08,True,9,Haliade-X 13MW

@@ -1,0 +1,148 @@
+trial_id,run_id,seed,farm_name,is_synthetic,n_turbines,turbine_used
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Vineyard Wind,False,62,GE Haliade-X 13MW  (Vineyard 1)
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Revolution Wind,False,65,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,South Fork Wind,False,12,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Sunrise Wind South,False,96,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Sunrise Wind North,True,3,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Revolution Wind North,True,1,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Vineyard Northeast,True,142,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,New England Wind 1,True,80,SG11.0-200DD
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,New England Wind 2 South,True,61,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Beacon Wind,True,99,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Bay State Wind South,True,114,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Bay State Wind North,True,1,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,SouthCoast Wind,True,164,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_00,True,3,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_01,True,72,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_02,True,25,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_03,True,44,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_04,True,26,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_05,True,12,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_06,True,12,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_07,True,101,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_08,True,50,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_09,True,50,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_10,True,1,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_11,True,5,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_12,True,41,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_13,True,42,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_14,True,8,Haliade-X 15.5MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_15,True,5,IEA 2200-22MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_16,True,35,Haliade-X 13MW
+mc_v2_20260811_high_000055,mc_v2_20260811_high/task_0011,55,Speculative_17,True,25,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Vineyard Wind,False,62,GE Haliade-X 13MW  (Vineyard 1)
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Revolution Wind,False,65,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,South Fork Wind,False,12,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Sunrise Wind South,False,96,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Sunrise Wind North,True,2,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Revolution Wind North,True,1,SG11.0-200DD
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Vineyard Northeast,True,172,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,New England Wind 1,True,39,IEA 2200-22MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,New England Wind 2 South,True,37,IEA 2200-22MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Beacon Wind,True,99,IEA 2200-22MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Bay State Wind South,True,195,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Bay State Wind North,True,3,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,SouthCoast Wind,True,164,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_00,True,8,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_01,True,135,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_02,True,2,SG11.0-200DD
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_03,True,2,SG11.0-200DD
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_04,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_05,True,2,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_06,True,58,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_07,True,31,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_08,True,108,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_09,True,25,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_10,True,46,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_11,True,13,Haliade-X 15.5MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_12,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_13,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_14,True,55,Haliade-X 13MW
+mc_v2_20260811_high_000056,mc_v2_20260811_high/task_0011,56,Speculative_15,True,2,Haliade-X 13MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Vineyard Wind,False,62,GE Haliade-X 13MW  (Vineyard 1)
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Revolution Wind,False,65,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,South Fork Wind,False,12,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Sunrise Wind South,False,96,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Sunrise Wind North,True,2,IEA 2200-22MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Revolution Wind North,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Vineyard Northeast,True,98,IEA 2200-22MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,New England Wind 1,True,55,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,New England Wind 2 South,True,45,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Beacon Wind,True,128,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Bay State Wind South,True,222,SG11.0-200DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Bay State Wind North,True,3,SG11.0-200DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,SouthCoast Wind,True,127,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_00,True,27,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_01,True,47,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_02,True,49,SG11.0-200DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_03,True,8,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_04,True,63,SG11.0-200DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_05,True,34,SG11.0-200DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_06,True,32,IEA 2200-22MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_07,True,37,Haliade-X 15.5MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_08,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_09,True,23,SG11.0-200DD
+mc_v2_20260811_high_000057,mc_v2_20260811_high/task_0011,57,Speculative_10,True,2,SG11.0-200DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Vineyard Wind,False,62,GE Haliade-X 13MW  (Vineyard 1)
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Revolution Wind,False,65,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,South Fork Wind,False,12,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Sunrise Wind South,False,96,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Sunrise Wind North,True,2,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Revolution Wind North,True,1,Haliade-X 13MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Vineyard Northeast,True,98,IEA 2200-22MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,New England Wind 1,True,66,Haliade-X 13MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,New England Wind 2 South,True,45,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Beacon Wind,True,128,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Bay State Wind South,True,140,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Bay State Wind North,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,SouthCoast Wind,True,127,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_00,True,10,Haliade-X 13MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_01,True,135,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_02,True,17,SG11.0-200DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_03,True,12,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_04,True,20,Haliade-X 13MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_05,True,17,IEA 2200-22MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_06,True,9,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_07,True,12,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_08,True,11,SG11.0-200DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_09,True,11,SG11.0-200DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_10,True,5,IEA 2200-22MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_11,True,27,Haliade-X 15.5MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_12,True,45,Haliade-X 13MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_13,True,3,SG11.0-200DD
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_14,True,16,Haliade-X 13MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_15,True,10,IEA 2200-22MW
+mc_v2_20260811_high_000058,mc_v2_20260811_high/task_0011,58,Speculative_16,True,8,Haliade-X 15.5MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Vineyard Wind,False,62,GE Haliade-X 13MW  (Vineyard 1)
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Revolution Wind,False,65,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,South Fork Wind,False,12,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Sunrise Wind South,False,96,Siemens Gamesa SG 11.0-200 DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Sunrise Wind North,True,3,Haliade-X 13MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Revolution Wind North,True,1,Haliade-X 15.5MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Vineyard Northeast,True,205,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,New England Wind 1,True,39,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,New England Wind 2 South,True,78,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Beacon Wind,True,204,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Bay State Wind South,True,222,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Bay State Wind North,True,3,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,SouthCoast Wind,True,203,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_00,True,1,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_01,True,30,Haliade-X 15.5MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_02,True,5,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_03,True,29,Haliade-X 13MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_04,True,162,Haliade-X 13MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_05,True,9,Haliade-X 15.5MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_06,True,27,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_07,True,2,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_08,True,10,Haliade-X 13MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_09,True,9,Haliade-X 15.5MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_10,True,18,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_11,True,3,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_12,True,14,Haliade-X 13MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_13,True,9,Haliade-X 15.5MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_14,True,35,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_15,True,73,SG11.0-200DD
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_16,True,39,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_17,True,32,IEA 2200-22MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_18,True,11,Haliade-X 13MW
+mc_v2_20260811_high_000059,mc_v2_20260811_high/task_0011,59,Speculative_19,True,58,Haliade-X 13MW

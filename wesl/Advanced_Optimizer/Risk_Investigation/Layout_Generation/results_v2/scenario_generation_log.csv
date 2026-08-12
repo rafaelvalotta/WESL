@@ -1,0 +1,304 @@
+target_mw,delivered_mw,fraction_used,n_tries,success,band,angle,template,turbine,seed
+1833.0,0.0,0.0,160,False,"(75, 90)",300,,Haliade-X 15.5MW,0
+924.0,0.0,0.0,160,False,"(3, 10)",240,,Haliade-X 15.5MW,0
+924.0,924.0,1.0,5,True,"(20, 30)",120,staircase_10corners,DTU10MW,0
+1833.0,0.0,0.0,160,False,"(10, 20)",240,,Haliade-X 13MW,0
+132.0,132.0,1.0,3,True,"(75, 90)",120,staircase_7corners,Haliade-X 13MW,0
+30.0,30.0,1.0,2,True,"(110, 130)",30,staircase_9corners,Haliade-X 15.5MW,0
+1833.0,0.0,0.0,160,False,"(90, 110)",0,,Haliade-X 15.5MW,0
+30.0,30.0,1.0,2,True,"(10, 20)",90,staircase_9corners,Haliade-X 15.5MW,0
+780.0,0.0,0.0,160,False,"(60, 75)",330,,Haliade-X 13MW,0
+30.0,0.0,0.0,40,False,"(3, 10)",240,,Haliade-X 13MW,0
+572.0,0.0,0.0,160,False,"(90, 110)",210,,Haliade-X 13MW,0
+780.0,0.0,0.0,160,False,"(75, 90)",180,,Haliade-X 15.5MW,0
+715.0,0.0,0.0,160,False,"(30, 45)",180,,Haliade-X 13MW,0
+715.0,0.0,0.0,160,False,"(60, 75)",150,,Haliade-X 13MW,0
+30.0,30.0,1.0,1,True,"(45, 60)",210,staircase_7corners,DTU10MW,0
+30.0,30.0,1.0,4,True,"(90, 110)",30,staircase_6corners,Haliade-X 13MW,0
+132.0,132.0,1.0,1,True,"(110, 130)",0,staircase_9corners,DTU10MW,0
+30.0,0.0,0.0,40,False,"(20, 30)",270,,DTU10MW,0
+924.0,924.0,1.0,1,True,"(75, 90)",60,staircase_10corners,Haliade-X 15.5MW,0
+780.0,0.0,0.0,160,False,"(130, 150)",210,,Haliade-X 15.5MW,0
+806.0,0.0,0.0,160,False,"(20, 30)",240,,DTU10MW,0
+572.0,429.0,0.75,46,True,"(60, 75)",300,staircase_8corners,DTU10MW,0
+806.0,0.0,0.0,160,False,"(90, 110)",180,,DTU10MW,0
+924.0,0.0,0.0,160,False,"(130, 150)",150,,DTU10MW,0
+715.0,357.5,0.5,86,True,"(10, 20)",330,staircase_8corners,DTU10MW,0
+780.0,0.0,0.0,160,False,"(75, 90)",0,,DTU10MW,0
+2080.0,0.0,0.0,160,False,"(3, 10)",0,,DTU10MW,0
+1833.0,0.0,0.0,160,False,"(20, 30)",240,,Haliade-X 15.5MW,0
+2043.0,0.0,0.0,160,False,"(20, 30)",210,,Haliade-X 15.5MW,0
+572.0,0.0,0.0,160,False,"(45, 60)",180,,Haliade-X 13MW,1
+132.0,0.0,0.0,160,False,"(45, 60)",180,,DTU10MW,1
+572.0,572.0,1.0,6,True,"(20, 30)",120,staircase_10corners,Haliade-X 15.5MW,1
+132.0,132.0,1.0,11,True,"(75, 90)",300,staircase_8corners,Haliade-X 13MW,1
+780.0,0.0,0.0,160,False,"(60, 75)",30,,Haliade-X 13MW,1
+2080.0,0.0,0.0,160,False,"(130, 150)",120,,Haliade-X 15.5MW,1
+132.0,0.0,0.0,160,False,"(60, 75)",0,,Haliade-X 15.5MW,1
+715.0,536.25,0.75,55,True,"(45, 60)",210,staircase_6corners,Haliade-X 15.5MW,1
+715.0,0.0,0.0,160,False,"(110, 130)",330,,DTU10MW,1
+2080.0,0.0,0.0,160,False,"(3, 10)",210,,Haliade-X 15.5MW,1
+132.0,33.0,0.25,144,True,"(60, 75)",150,staircase_10corners,Haliade-X 15.5MW,1
+780.0,0.0,0.0,160,False,"(90, 110)",300,,DTU10MW,1
+572.0,286.0,0.5,93,True,"(45, 60)",30,staircase_6corners,Haliade-X 15.5MW,1
+30.0,30.0,1.0,1,True,"(20, 30)",330,staircase_6corners,Haliade-X 15.5MW,1
+924.0,0.0,0.0,160,False,"(110, 130)",60,,DTU10MW,1
+30.0,0.0,0.0,40,False,"(110, 130)",150,,Haliade-X 13MW,1
+572.0,572.0,1.0,1,True,"(130, 150)",0,staircase_9corners,Haliade-X 13MW,1
+780.0,0.0,0.0,160,False,"(3, 10)",30,,Haliade-X 15.5MW,1
+780.0,195.0,0.25,134,True,"(10, 20)",0,staircase_8corners,Haliade-X 15.5MW,1
+132.0,0.0,0.0,160,False,"(75, 90)",150,,DTU10MW,1
+2080.0,0.0,0.0,160,False,"(45, 60)",180,,Haliade-X 15.5MW,1
+924.0,693.0,0.75,45,True,"(30, 45)",90,staircase_6corners,DTU10MW,1
+2080.0,0.0,0.0,160,False,"(30, 45)",240,,DTU10MW,1
+30.0,30.0,1.0,1,True,"(75, 90)",60,staircase_8corners,Haliade-X 13MW,1
+924.0,924.0,1.0,3,True,"(130, 150)",270,staircase_7corners,Haliade-X 13MW,1
+572.0,429.0,0.75,49,True,"(90, 110)",120,staircase_9corners,Haliade-X 15.5MW,1
+780.0,0.0,0.0,160,False,"(20, 30)",240,,Haliade-X 13MW,1
+2080.0,0.0,0.0,160,False,"(110, 130)",0,,Haliade-X 15.5MW,1
+572.0,0.0,0.0,160,False,"(10, 20)",300,,DTU10MW,1
+924.0,924.0,1.0,1,True,"(75, 90)",240,staircase_8corners,Haliade-X 13MW,1
+715.0,0.0,0.0,160,False,"(20, 30)",150,,Haliade-X 13MW,2
+2080.0,2080.0,1.0,6,True,"(130, 150)",0,staircase_8corners,DTU10MW,2
+715.0,715.0,1.0,1,True,"(90, 110)",240,staircase_6corners,DTU10MW,2
+132.0,132.0,1.0,1,True,"(10, 20)",30,staircase_7corners,DTU10MW,2
+806.0,201.5,0.25,135,True,"(110, 130)",0,staircase_8corners,Haliade-X 15.5MW,2
+2080.0,0.0,0.0,160,False,"(60, 75)",150,,Haliade-X 15.5MW,2
+2080.0,0.0,0.0,160,False,"(110, 130)",120,,Haliade-X 15.5MW,2
+1833.0,0.0,0.0,160,False,"(30, 45)",150,,Haliade-X 13MW,2
+924.0,924.0,1.0,1,True,"(75, 90)",90,staircase_9corners,Haliade-X 13MW,2
+715.0,0.0,0.0,160,False,"(110, 130)",150,,Haliade-X 13MW,2
+715.0,0.0,0.0,160,False,"(45, 60)",150,,Haliade-X 15.5MW,2
+30.0,30.0,1.0,1,True,"(75, 90)",120,staircase_10corners,DTU10MW,2
+132.0,0.0,0.0,160,False,"(45, 60)",270,,Haliade-X 15.5MW,2
+572.0,0.0,0.0,160,False,"(20, 30)",270,,DTU10MW,2
+715.0,178.75,0.25,129,True,"(20, 30)",300,staircase_10corners,Haliade-X 15.5MW,2
+806.0,806.0,1.0,10,True,"(75, 90)",240,staircase_10corners,Haliade-X 15.5MW,2
+780.0,0.0,0.0,160,False,"(10, 20)",210,,Haliade-X 15.5MW,2
+924.0,0.0,0.0,160,False,"(10, 20)",300,,Haliade-X 13MW,2
+2080.0,0.0,0.0,160,False,"(75, 90)",210,,Haliade-X 15.5MW,2
+1833.0,458.25,0.25,131,True,"(20, 30)",60,staircase_7corners,Haliade-X 15.5MW,2
+924.0,0.0,0.0,160,False,"(60, 75)",330,,Haliade-X 13MW,2
+2025.0,0.0,0.0,160,False,"(45, 60)",180,,Haliade-X 15.5MW,2
+715.0,0.0,0.0,160,False,"(45, 60)",150,,Haliade-X 13MW,3
+132.0,0.0,0.0,160,False,"(45, 60)",180,,Haliade-X 13MW,3
+924.0,0.0,0.0,160,False,"(10, 20)",150,,Haliade-X 15.5MW,3
+924.0,0.0,0.0,160,False,"(3, 10)",150,,DTU10MW,3
+2080.0,0.0,0.0,160,False,"(110, 130)",150,,Haliade-X 15.5MW,3
+1833.0,1833.0,1.0,5,True,"(110, 130)",270,staircase_8corners,Haliade-X 15.5MW,3
+572.0,0.0,0.0,160,False,"(45, 60)",180,,Haliade-X 15.5MW,3
+572.0,572.0,1.0,2,True,"(45, 60)",90,staircase_7corners,Haliade-X 15.5MW,3
+806.0,201.5,0.25,129,True,"(110, 130)",30,staircase_8corners,Haliade-X 15.5MW,3
+806.0,403.0,0.5,87,True,"(110, 130)",0,staircase_8corners,Haliade-X 15.5MW,3
+924.0,0.0,0.0,160,False,"(10, 20)",210,,Haliade-X 15.5MW,3
+1833.0,0.0,0.0,160,False,"(3, 10)",210,,Haliade-X 15.5MW,3
+572.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 15.5MW,3
+2080.0,0.0,0.0,160,False,"(75, 90)",330,,Haliade-X 13MW,3
+30.0,30.0,1.0,4,True,"(45, 60)",150,staircase_6corners,Haliade-X 15.5MW,3
+30.0,0.0,0.0,40,False,"(45, 60)",180,,Haliade-X 13MW,3
+2080.0,2080.0,1.0,6,True,"(90, 110)",90,staircase_6corners,DTU10MW,3
+2080.0,0.0,0.0,160,False,"(3, 10)",150,,DTU10MW,3
+572.0,0.0,0.0,160,False,"(20, 30)",240,,Haliade-X 13MW,3
+132.0,132.0,1.0,3,True,"(10, 20)",30,staircase_10corners,DTU10MW,3
+572.0,572.0,1.0,4,True,"(20, 30)",120,staircase_8corners,Haliade-X 13MW,3
+30.0,0.0,0.0,40,False,"(110, 130)",180,,Haliade-X 15.5MW,3
+2080.0,520.0,0.25,135,True,"(60, 75)",300,staircase_10corners,Haliade-X 13MW,3
+806.0,0.0,0.0,160,False,"(3, 10)",300,,Haliade-X 15.5MW,3
+431.0,0.0,0.0,160,False,"(110, 130)",300,,Haliade-X 13MW,3
+715.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 15.5MW,4
+2080.0,0.0,0.0,160,False,"(20, 30)",150,,Haliade-X 13MW,4
+2080.0,0.0,0.0,160,False,"(3, 10)",240,,Haliade-X 13MW,4
+2080.0,0.0,0.0,160,False,"(20, 30)",180,,Haliade-X 13MW,4
+715.0,715.0,1.0,12,True,"(20, 30)",120,staircase_9corners,Haliade-X 15.5MW,4
+924.0,0.0,0.0,160,False,"(110, 130)",300,,Haliade-X 13MW,4
+2080.0,0.0,0.0,160,False,"(90, 110)",210,,DTU10MW,4
+806.0,0.0,0.0,160,False,"(75, 90)",0,,Haliade-X 13MW,4
+2080.0,0.0,0.0,160,False,"(45, 60)",330,,Haliade-X 13MW,4
+806.0,201.5,0.25,125,True,"(20, 30)",300,staircase_8corners,DTU10MW,4
+132.0,132.0,1.0,3,True,"(130, 150)",240,staircase_8corners,Haliade-X 13MW,4
+780.0,390.0,0.5,108,True,"(45, 60)",300,staircase_8corners,DTU10MW,4
+806.0,0.0,0.0,160,False,"(90, 110)",150,,Haliade-X 15.5MW,4
+572.0,143.0,0.25,138,True,"(45, 60)",0,staircase_6corners,DTU10MW,4
+924.0,462.0,0.5,89,True,"(45, 60)",210,staircase_8corners,DTU10MW,4
+715.0,0.0,0.0,160,False,"(30, 45)",60,,DTU10MW,4
+2080.0,0.0,0.0,160,False,"(45, 60)",300,,Haliade-X 13MW,4
+132.0,0.0,0.0,160,False,"(3, 10)",30,,Haliade-X 13MW,4
+806.0,0.0,0.0,160,False,"(30, 45)",150,,Haliade-X 13MW,4
+30.0,30.0,1.0,1,True,"(60, 75)",90,staircase_7corners,Haliade-X 15.5MW,4
+132.0,0.0,0.0,160,False,"(10, 20)",270,,Haliade-X 15.5MW,4
+780.0,780.0,1.0,2,True,"(130, 150)",270,staircase_10corners,DTU10MW,4
+780.0,0.0,0.0,160,False,"(3, 10)",240,,Haliade-X 15.5MW,4
+581.0,0.0,0.0,160,False,"(20, 30)",270,,Haliade-X 15.5MW,4
+715.0,0.0,0.0,160,False,"(110, 130)",300,,Haliade-X 13MW,5
+132.0,66.0,0.5,120,True,"(60, 75)",150,staircase_10corners,Haliade-X 15.5MW,5
+2080.0,0.0,0.0,160,False,"(30, 45)",240,,Haliade-X 13MW,5
+1833.0,1833.0,1.0,4,True,"(90, 110)",270,staircase_10corners,DTU10MW,5
+1833.0,0.0,0.0,160,False,"(75, 90)",210,,DTU10MW,5
+132.0,99.0,0.75,52,True,"(90, 110)",30,staircase_8corners,DTU10MW,5
+715.0,0.0,0.0,160,False,"(130, 150)",180,,Haliade-X 15.5MW,5
+806.0,0.0,0.0,160,False,"(130, 150)",330,,Haliade-X 15.5MW,5
+780.0,780.0,1.0,4,True,"(30, 45)",120,staircase_6corners,DTU10MW,5
+806.0,0.0,0.0,160,False,"(60, 75)",330,,Haliade-X 13MW,5
+924.0,462.0,0.5,118,True,"(30, 45)",60,staircase_7corners,Haliade-X 15.5MW,5
+806.0,0.0,0.0,160,False,"(110, 130)",330,,Haliade-X 13MW,5
+30.0,30.0,1.0,4,True,"(90, 110)",270,staircase_7corners,DTU10MW,5
+2080.0,0.0,0.0,160,False,"(60, 75)",330,,Haliade-X 13MW,5
+806.0,0.0,0.0,160,False,"(45, 60)",330,,Haliade-X 15.5MW,5
+2080.0,0.0,0.0,160,False,"(60, 75)",180,,Haliade-X 13MW,5
+572.0,0.0,0.0,160,False,"(110, 130)",30,,Haliade-X 13MW,5
+715.0,0.0,0.0,160,False,"(75, 90)",180,,Haliade-X 13MW,5
+1833.0,1833.0,1.0,3,True,"(130, 150)",0,staircase_8corners,Haliade-X 13MW,5
+132.0,0.0,0.0,160,False,"(3, 10)",150,,Haliade-X 13MW,5
+30.0,0.0,0.0,40,False,"(110, 130)",210,,DTU10MW,5
+715.0,0.0,0.0,160,False,"(75, 90)",210,,DTU10MW,5
+924.0,0.0,0.0,160,False,"(130, 150)",150,,Haliade-X 15.5MW,5
+132.0,0.0,0.0,160,False,"(30, 45)",180,,Haliade-X 15.5MW,5
+1833.0,1833.0,1.0,6,True,"(90, 110)",90,staircase_10corners,DTU10MW,5
+172.0,0.0,0.0,160,False,"(130, 150)",150,,Haliade-X 13MW,5
+30.0,30.0,1.0,1,True,"(30, 45)",90,staircase_8corners,Haliade-X 15.5MW,6
+806.0,806.0,1.0,1,True,"(75, 90)",240,staircase_10corners,Haliade-X 15.5MW,6
+1833.0,0.0,0.0,160,False,"(75, 90)",330,,DTU10MW,6
+924.0,924.0,1.0,31,True,"(10, 20)",90,staircase_6corners,Haliade-X 13MW,6
+1833.0,0.0,0.0,160,False,"(75, 90)",0,,Haliade-X 15.5MW,6
+132.0,0.0,0.0,160,False,"(90, 110)",300,,DTU10MW,6
+30.0,0.0,0.0,40,False,"(30, 45)",0,,Haliade-X 15.5MW,6
+572.0,0.0,0.0,160,False,"(20, 30)",90,,DTU10MW,6
+132.0,132.0,1.0,2,True,"(30, 45)",240,staircase_10corners,DTU10MW,6
+780.0,0.0,0.0,160,False,"(75, 90)",210,,Haliade-X 13MW,6
+1833.0,0.0,0.0,160,False,"(130, 150)",300,,Haliade-X 15.5MW,6
+924.0,0.0,0.0,160,False,"(130, 150)",120,,Haliade-X 15.5MW,6
+715.0,715.0,1.0,1,True,"(110, 130)",240,staircase_10corners,DTU10MW,6
+780.0,0.0,0.0,160,False,"(20, 30)",60,,Haliade-X 15.5MW,6
+806.0,806.0,1.0,11,True,"(90, 110)",270,staircase_8corners,Haliade-X 15.5MW,6
+924.0,231.0,0.25,131,True,"(45, 60)",240,staircase_7corners,Haliade-X 13MW,6
+132.0,0.0,0.0,160,False,"(130, 150)",330,,DTU10MW,6
+1833.0,0.0,0.0,160,False,"(130, 150)",210,,Haliade-X 13MW,6
+132.0,0.0,0.0,160,False,"(10, 20)",270,,Haliade-X 15.5MW,6
+806.0,806.0,1.0,2,True,"(30, 45)",120,staircase_10corners,Haliade-X 15.5MW,6
+780.0,390.0,0.5,92,True,"(75, 90)",270,staircase_9corners,DTU10MW,6
+1833.0,458.25,0.25,144,True,"(75, 90)",30,staircase_10corners,Haliade-X 13MW,6
+924.0,0.0,0.0,160,False,"(10, 20)",240,,DTU10MW,6
+132.0,132.0,1.0,15,True,"(20, 30)",300,staircase_7corners,Haliade-X 13MW,6
+780.0,0.0,0.0,160,False,"(20, 30)",90,,Haliade-X 15.5MW,6
+30.0,0.0,0.0,40,False,"(10, 20)",210,,DTU10MW,6
+30.0,30.0,1.0,1,True,"(60, 75)",120,staircase_9corners,DTU10MW,6
+780.0,0.0,0.0,160,False,"(110, 130)",180,,Haliade-X 13MW,6
+1833.0,0.0,0.0,160,False,"(45, 60)",150,,DTU10MW,6
+132.0,0.0,0.0,160,False,"(90, 110)",300,,Haliade-X 15.5MW,6
+132.0,132.0,1.0,22,True,"(30, 45)",30,staircase_10corners,DTU10MW,6
+273.0,0.0,0.0,160,False,"(110, 130)",180,,DTU10MW,6
+572.0,0.0,0.0,160,False,"(110, 130)",210,,Haliade-X 15.5MW,7
+780.0,0.0,0.0,160,False,"(130, 150)",300,,Haliade-X 13MW,7
+780.0,0.0,0.0,160,False,"(30, 45)",180,,DTU10MW,7
+806.0,201.5,0.25,129,True,"(75, 90)",300,staircase_8corners,Haliade-X 13MW,7
+780.0,195.0,0.25,136,True,"(20, 30)",0,staircase_7corners,Haliade-X 13MW,7
+780.0,780.0,1.0,34,True,"(130, 150)",30,staircase_9corners,Haliade-X 15.5MW,7
+2080.0,0.0,0.0,160,False,"(3, 10)",0,,DTU10MW,7
+1833.0,1833.0,1.0,12,True,"(90, 110)",240,staircase_10corners,Haliade-X 15.5MW,7
+1833.0,458.25,0.25,154,True,"(60, 75)",270,staircase_9corners,DTU10MW,7
+924.0,231.0,0.25,138,True,"(10, 20)",300,staircase_10corners,Haliade-X 13MW,7
+806.0,201.5,0.25,123,True,"(45, 60)",30,staircase_8corners,Haliade-X 15.5MW,7
+715.0,0.0,0.0,160,False,"(20, 30)",210,,DTU10MW,7
+2080.0,0.0,0.0,160,False,"(110, 130)",180,,Haliade-X 13MW,7
+780.0,780.0,1.0,2,True,"(10, 20)",90,staircase_6corners,DTU10MW,7
+132.0,33.0,0.25,127,True,"(10, 20)",0,staircase_7corners,Haliade-X 13MW,7
+1833.0,0.0,0.0,160,False,"(30, 45)",270,,Haliade-X 15.5MW,7
+132.0,132.0,1.0,40,True,"(90, 110)",120,staircase_9corners,Haliade-X 13MW,7
+1833.0,1833.0,1.0,1,True,"(45, 60)",90,staircase_10corners,Haliade-X 13MW,7
+806.0,0.0,0.0,160,False,"(110, 130)",180,,DTU10MW,7
+132.0,0.0,0.0,160,False,"(3, 10)",120,,Haliade-X 15.5MW,7
+30.0,30.0,1.0,1,True,"(45, 60)",210,staircase_8corners,Haliade-X 15.5MW,7
+780.0,585.0,0.75,66,True,"(60, 75)",90,staircase_8corners,Haliade-X 15.5MW,7
+30.0,30.0,1.0,2,True,"(75, 90)",90,staircase_6corners,DTU10MW,7
+132.0,132.0,1.0,10,True,"(20, 30)",120,staircase_6corners,Haliade-X 15.5MW,7
+780.0,0.0,0.0,160,False,"(130, 150)",150,,Haliade-X 15.5MW,7
+1447.0,0.0,0.0,160,False,"(30, 45)",240,,DTU10MW,7
+132.0,132.0,1.0,1,True,"(30, 45)",120,staircase_8corners,DTU10MW,8
+2080.0,0.0,0.0,160,False,"(20, 30)",300,,Haliade-X 15.5MW,8
+1833.0,1833.0,1.0,2,True,"(60, 75)",60,staircase_7corners,Haliade-X 15.5MW,8
+1833.0,0.0,0.0,160,False,"(110, 130)",210,,Haliade-X 13MW,8
+715.0,0.0,0.0,160,False,"(3, 10)",0,,DTU10MW,8
+30.0,30.0,1.0,2,True,"(75, 90)",120,staircase_7corners,Haliade-X 15.5MW,8
+572.0,0.0,0.0,160,False,"(30, 45)",210,,DTU10MW,8
+780.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 13MW,8
+806.0,806.0,1.0,5,True,"(90, 110)",90,staircase_7corners,Haliade-X 15.5MW,8
+780.0,0.0,0.0,160,False,"(10, 20)",150,,Haliade-X 13MW,8
+806.0,0.0,0.0,160,False,"(90, 110)",300,,Haliade-X 15.5MW,8
+715.0,0.0,0.0,160,False,"(10, 20)",300,,DTU10MW,8
+806.0,806.0,1.0,3,True,"(60, 75)",240,staircase_8corners,DTU10MW,8
+30.0,30.0,1.0,1,True,"(30, 45)",90,staircase_7corners,DTU10MW,8
+2080.0,0.0,0.0,160,False,"(110, 130)",150,,Haliade-X 13MW,8
+780.0,390.0,0.5,84,True,"(10, 20)",30,staircase_7corners,DTU10MW,8
+132.0,132.0,1.0,1,True,"(90, 110)",270,staircase_6corners,DTU10MW,8
+1833.0,0.0,0.0,160,False,"(45, 60)",30,,Haliade-X 15.5MW,8
+715.0,0.0,0.0,160,False,"(130, 150)",330,,DTU10MW,8
+1833.0,458.25,0.25,146,True,"(20, 30)",60,staircase_10corners,DTU10MW,8
+572.0,0.0,0.0,160,False,"(30, 45)",210,,Haliade-X 13MW,8
+2080.0,0.0,0.0,160,False,"(20, 30)",330,,Haliade-X 13MW,8
+30.0,0.0,0.0,40,False,"(20, 30)",150,,Haliade-X 15.5MW,8
+715.0,536.25,0.75,64,True,"(20, 30)",330,staircase_6corners,Haliade-X 13MW,8
+132.0,132.0,1.0,2,True,"(75, 90)",240,staircase_8corners,DTU10MW,8
+715.0,715.0,1.0,13,True,"(130, 150)",270,staircase_10corners,DTU10MW,8
+81.0,81.0,1.0,2,True,"(75, 90)",30,staircase_6corners,Haliade-X 15.5MW,8
+30.0,0.0,0.0,40,False,"(130, 150)",300,,Haliade-X 13MW,9
+572.0,572.0,1.0,1,True,"(130, 150)",270,staircase_8corners,Haliade-X 15.5MW,9
+2080.0,0.0,0.0,160,False,"(45, 60)",150,,Haliade-X 13MW,9
+715.0,0.0,0.0,160,False,"(110, 130)",60,,Haliade-X 13MW,9
+1833.0,1374.75,0.75,75,True,"(90, 110)",60,staircase_10corners,Haliade-X 13MW,9
+2080.0,0.0,0.0,160,False,"(110, 130)",150,,Haliade-X 15.5MW,9
+572.0,143.0,0.25,130,True,"(45, 60)",0,staircase_10corners,Haliade-X 15.5MW,9
+2080.0,0.0,0.0,160,False,"(20, 30)",150,,Haliade-X 15.5MW,9
+924.0,924.0,1.0,2,True,"(60, 75)",60,staircase_6corners,Haliade-X 13MW,9
+2080.0,520.0,0.25,127,True,"(10, 20)",30,staircase_6corners,Haliade-X 13MW,9
+572.0,0.0,0.0,160,False,"(30, 45)",270,,Haliade-X 15.5MW,9
+780.0,0.0,0.0,160,False,"(3, 10)",150,,Haliade-X 13MW,9
+924.0,462.0,0.5,82,True,"(75, 90)",300,staircase_9corners,DTU10MW,9
+2080.0,2080.0,1.0,1,True,"(45, 60)",90,staircase_10corners,DTU10MW,9
+572.0,0.0,0.0,160,False,"(60, 75)",330,,DTU10MW,9
+780.0,390.0,0.5,87,True,"(90, 110)",120,staircase_7corners,Haliade-X 13MW,9
+1833.0,0.0,0.0,160,False,"(110, 130)",120,,Haliade-X 15.5MW,9
+1833.0,0.0,0.0,160,False,"(30, 45)",300,,Haliade-X 13MW,9
+1276.0,0.0,0.0,160,False,"(75, 90)",30,,Haliade-X 13MW,9
+806.0,0.0,0.0,160,False,"(60, 75)",180,,Haliade-X 13MW,10
+2080.0,2080.0,1.0,6,True,"(90, 110)",270,staircase_10corners,Haliade-X 15.5MW,10
+1833.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 15.5MW,10
+132.0,132.0,1.0,1,True,"(20, 30)",120,staircase_8corners,Haliade-X 13MW,10
+2080.0,0.0,0.0,160,False,"(60, 75)",270,,Haliade-X 13MW,10
+1833.0,0.0,0.0,160,False,"(20, 30)",150,,Haliade-X 15.5MW,10
+132.0,132.0,1.0,1,True,"(30, 45)",120,staircase_7corners,DTU10MW,10
+2080.0,0.0,0.0,160,False,"(20, 30)",0,,DTU10MW,10
+924.0,231.0,0.25,129,True,"(75, 90)",300,staircase_10corners,DTU10MW,10
+572.0,0.0,0.0,160,False,"(30, 45)",150,,Haliade-X 15.5MW,10
+132.0,132.0,1.0,4,True,"(110, 130)",240,staircase_8corners,DTU10MW,10
+715.0,715.0,1.0,1,True,"(60, 75)",60,staircase_8corners,Haliade-X 13MW,10
+2080.0,2080.0,1.0,16,True,"(110, 130)",270,staircase_8corners,Haliade-X 15.5MW,10
+1833.0,0.0,0.0,160,False,"(130, 150)",60,,Haliade-X 13MW,10
+572.0,572.0,1.0,1,True,"(130, 150)",0,staircase_9corners,Haliade-X 13MW,10
+780.0,0.0,0.0,160,False,"(60, 75)",330,,DTU10MW,10
+1833.0,458.25,0.25,128,True,"(60, 75)",30,staircase_9corners,DTU10MW,10
+806.0,201.5,0.25,157,True,"(30, 45)",300,staircase_6corners,Haliade-X 13MW,10
+572.0,0.0,0.0,160,False,"(3, 10)",120,,Haliade-X 13MW,10
+132.0,33.0,0.25,149,True,"(110, 130)",270,staircase_7corners,Haliade-X 15.5MW,10
+1689.0,0.0,0.0,160,False,"(130, 150)",210,,DTU10MW,10
+806.0,806.0,1.0,4,True,"(90, 110)",60,staircase_8corners,Haliade-X 15.5MW,11
+1833.0,0.0,0.0,160,False,"(3, 10)",120,,Haliade-X 15.5MW,11
+132.0,0.0,0.0,160,False,"(3, 10)",300,,Haliade-X 15.5MW,11
+715.0,0.0,0.0,160,False,"(30, 45)",330,,Haliade-X 15.5MW,11
+1833.0,916.5,0.5,91,True,"(10, 20)",90,staircase_10corners,Haliade-X 13MW,11
+572.0,0.0,0.0,160,False,"(3, 10)",30,,Haliade-X 15.5MW,11
+924.0,0.0,0.0,160,False,"(20, 30)",270,,Haliade-X 13MW,11
+780.0,0.0,0.0,160,False,"(30, 45)",60,,DTU10MW,11
+780.0,780.0,1.0,1,True,"(130, 150)",0,staircase_8corners,Haliade-X 13MW,11
+2080.0,0.0,0.0,160,False,"(20, 30)",0,,Haliade-X 15.5MW,11
+1833.0,0.0,0.0,160,False,"(90, 110)",30,,DTU10MW,11
+1833.0,0.0,0.0,160,False,"(110, 130)",120,,Haliade-X 15.5MW,11
+780.0,390.0,0.5,99,True,"(130, 150)",0,staircase_8corners,Haliade-X 13MW,11
+2080.0,0.0,0.0,160,False,"(90, 110)",330,,Haliade-X 13MW,11
+2080.0,0.0,0.0,160,False,"(110, 130)",150,,Haliade-X 15.5MW,11
+132.0,0.0,0.0,160,False,"(110, 130)",150,,Haliade-X 15.5MW,11
+132.0,99.0,0.75,43,True,"(30, 45)",240,staircase_6corners,Haliade-X 15.5MW,11
+572.0,143.0,0.25,151,True,"(30, 45)",60,staircase_6corners,Haliade-X 13MW,11
+780.0,390.0,0.5,82,True,"(20, 30)",330,staircase_7corners,DTU10MW,11
+1833.0,0.0,0.0,160,False,"(3, 10)",150,,Haliade-X 15.5MW,11
+780.0,780.0,1.0,4,True,"(75, 90)",120,staircase_7corners,Haliade-X 15.5MW,11
+326.0,0.0,0.0,160,False,"(20, 30)",120,,DTU10MW,11

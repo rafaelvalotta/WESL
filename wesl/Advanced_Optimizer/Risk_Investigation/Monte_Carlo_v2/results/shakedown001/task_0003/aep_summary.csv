@@ -1,0 +1,2 @@
+trial_id,run_id,seed,wake_model,isolated_aep_gwh,real_neighbors_aep_gwh,real_neighbors_loss_pct,time_weighted_aep_gwh,time_weighted_loss_pct,n_segments
+shakedown001_000006,shakedown001/task_0003,6,Nygaard_TurboGaussian,9070.009876235828,8272.15010099111,8.797,8209.16,9.491,18

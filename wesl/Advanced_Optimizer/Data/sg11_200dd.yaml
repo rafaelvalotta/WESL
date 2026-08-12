@@ -1,4 +1,4 @@
-name: Siemens Gamesa SG 11.0-200 DD (Revolution Wind)
+name: Siemens Gamesa SG 11.0-200 DD
 performance:
   rated_power: 11000000
   cutin_wind_speed: 3.0

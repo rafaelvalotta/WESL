@@ -1,61 +1,70 @@
-name: Vineyard + Revolution Wind (energy resource US) # Using just data just from Vineyard to cover all
+name: Vineyard + Revolution Wind (energy resource US) # 24-year mean (2000-2023) fit from Vineyard ERA5 data
 wind_resource:
   sector_probability:
     data:
-    - 0.068294  # 0°   (N)
-    - 0.080742  # 30°  (NNE)
-    - 0.067350  # 60°  (ENE)
-    - 0.063365  # 90°  (E)
-    - 0.050413  # 120° (ESE)
-    - 0.048286  # 150° (SSE)
-    - 0.077766  # 180° (S)
-    - 0.124737  # 210° (SSW)
-    - 0.139966  # 240° (WSW)
-    - 0.117260  # 270° (W)
-    - 0.117818  # 300° (WNW)
-    - 0.100638  # 330° (NNW)
+    - 0.063398  # 0°   (N)
+    - 0.072829  # 30°  (NNE)
+    - 0.059681  # 60°  (ENE)
+    - 0.047532  # 90°  (E)
+    - 0.043421  # 120° (ESE)
+    - 0.048835  # 150° (SSE)
+    - 0.079978  # 180° (S)
+    - 0.151860  # 210° (SSW)
+    - 0.141660  # 240° (WSW)
+    - 0.118474  # 270° (W)
+    - 0.104343  # 300° (WNW)
+    - 0.067990  # 330° (NNW)
     dims:
     - wind_direction
   
   # intensity used in wesl by Rafael --- (ti=0.07)
+
+  # # and we can cover (1 a 35 m/s)
+  # turbulence_intensity: 
+  #   data: [0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07]
+  #   dims:
+  #   - wind_speed
+
+ # intensity used in NREL  --- (ti=0.06)
+
   # and we can cover (1 a 35 m/s)
   turbulence_intensity: 
-    data: [0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07]
+    data: [0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06]
     dims:
     - wind_speed
 
 
   weibull_a:
     data:
-    - 10.19
-    - 10.45
-    - 9.47
-    - 9.02
-    - 9.48
-    - 9.66
-    - 11.44
-    - 13.27
-    - 12.46
-    - 11.36
-    - 12.39
-    - 10.45
+    - 10.215
+    - 10.285
+    - 9.054
+    - 8.700
+    - 8.501
+    - 9.326
+    - 10.386
+    - 11.021
+    - 10.515
+    - 11.042
+    - 10.628
+    - 9.522
     dims:
     - wind_direction
 
   weibull_k:
     data:
-    - 2.170
-    - 1.725
-    - 1.713
-    - 1.682
-    - 1.521
-    - 1.479
-    - 1.666
-    - 2.143
-    - 2.385
-    - 2.146
-    - 2.432
-    - 2.373
+    - 1.954
+    - 2.131
+    - 2.016
+    - 1.864
+    - 1.740
+    - 1.749
+    - 1.982
+    - 2.486
+    - 2.526
+    - 2.423
+    - 2.520
+    - 2.231
     dims:
     - wind_direction
 
@@ -112,3 +121,5 @@ wind_resource:
 
 
 #Ref: wesl/offshore_wind_farms/vineyard_wind.py
+#Weibull refit: 24-year pooled ERA5 hourly series (2000-2023, 210384 hours) at LAT_CENTER/LON_CENTER,
+#fit_sector_weibull() from Project_Monte_Carlo/build_pywake_sites.py, mean speed 9.084 m/s
