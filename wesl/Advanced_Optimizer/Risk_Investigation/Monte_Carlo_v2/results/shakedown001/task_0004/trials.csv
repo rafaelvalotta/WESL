@@ -1,3 +1,0 @@
-trial_id,run_id,seed,tier,lam,horizon_years,t_start_iso,t_end_iso,dt_climate_s,dt_layout_s,dt_bridge_s,dt_aep_total_s,dt_total_s,n_farms_committed,n_arrivals_attempted,n_new_farms_placed,n_turbines_total,delivered_mw_total,climate_mean_speed,climate_dominant_sector,climate_dominant_sector_freq
-shakedown001_000008,shakedown001/task_0004,8,high,2.0,25.0,2026-08-11T04:43:33.743,2026-08-11T04:51:24.271,0.0,15.19,0.01,455.32,470.53,13,63,17,1757,11701.0,8.719,8,0.1386
-shakedown001_000009,shakedown001/task_0004,9,high,2.0,25.0,2026-08-11T04:51:24.275,2026-08-11T04:54:13.978,0.01,13.08,0.0,156.61,169.7,13,55,14,1372,8594.8,9.258,7,0.1723

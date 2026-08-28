@@ -1,0 +1,24 @@
+# Advanced_env -- same env Monte_Carlo_v2/hpc uses (see that file's own comment).
+# v3 adds exactly one new dependency vs. v2's pinned set: pyarrow, for parquet output
+# (run_trial_range.py / merge_results.py -- v2 used CSV, v3 uses parquet for HPC runs).
+#
+#   conda activate Advanced_env
+#   pip install -r requirements_advanced_env.txt   # only pyarrow should actually install/change
+
+numpy==2.3.2
+scipy==1.17.1
+matplotlib==3.10.6
+xarray==2025.1.0
+shapely==2.1.2
+pyproj==3.7.0
+openmdao==3.40.0
+windIO==2.1.1
+py_wake==2.6.20
+optiwindnet==0.3.0
+ortools==9.15.6755
+h5py==3.16.0
+netCDF4==1.7.4
+openturns==1.27.post1
+scikit-learn==1.9.0
+pyyaml
+pyarrow==25.0.1

@@ -1,3 +1,44 @@
 .DS_Store
 *.egg-info/
 run_optimizer_out/
+problem_out/
+problem2_out/
+problem3_out/
+**/.ipynb_checkpoints/
+
+# generated data / scratch -- never commit
+**/__pycache__/
+**/dev_scratch/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo/results/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v2/results/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v2/figures/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/hpc/slurm_out/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/hpc/CAMPAIGN_LOG.md
+
+
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/production_10k_s1_supergaussian/
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/production_10k_s1_bastankhah/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/production_10k_s2_supergaussian/
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/production_10k_s2_bastankhah/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/production_10k_s1_supergaussian/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/production_10k_s1_supergaussian/merged/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/production_10k_s1_bastankhah/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_1/production_10k_s1_bastankhah/merged/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/production_10k_s2_supergaussian/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/production_10k_s2_supergaussian/merged/
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/production_10k_s2_bastankhah/*
+!wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/scenario_2/production_10k_s2_bastankhah/merged/
+wesl/Advanced_Optimizer/Risk_Investigation/Layout_Generation/_archive_v1_v2
+wesl/Advanced_Optimizer/Risk_Investigation/Layout_Generation/dev_scratch
+# frozen/superseded -- kept locally for reference, not part of the active repo
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v3/
+wesl/Advanced_Optimizer/Project_Monte_Carlo/
+
+# Claude Code project files -- local only, never relevant to the repo
+.claude/
+CLAUDE.md

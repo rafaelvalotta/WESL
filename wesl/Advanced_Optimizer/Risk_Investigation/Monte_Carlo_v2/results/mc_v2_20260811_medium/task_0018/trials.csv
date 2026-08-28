@@ -1,6 +1,0 @@
-trial_id,run_id,seed,tier,lam,horizon_years,t_start_iso,t_end_iso,dt_climate_s,dt_layout_s,dt_bridge_s,dt_aep_total_s,dt_total_s,n_farms_committed,n_arrivals_attempted,n_new_farms_placed,n_turbines_total,delivered_mw_total,climate_mean_speed,climate_dominant_sector,climate_dominant_sector_freq
-mc_v2_20260811_medium_000090,mc_v2_20260811_medium/task_0018,90,medium,1.0,25.0,2026-08-11T05:31:53.218,2026-08-11T05:40:26.914,0.01,13.05,0.03,500.61,513.7,13,25,10,1244,4009.0,9.221,7,0.1753
-mc_v2_20260811_medium_000091,mc_v2_20260811_medium/task_0018,91,medium,1.0,25.0,2026-08-11T05:40:26.920,2026-08-11T05:45:28.372,0.01,17.72,0.0,283.72,301.45,13,24,5,1248,1840.2,9.314,7,0.1597
-mc_v2_20260811_medium_000092,mc_v2_20260811_medium/task_0018,92,medium,1.0,25.0,2026-08-11T05:45:28.373,2026-08-11T05:51:09.713,0.01,9.03,0.0,332.3,341.34,13,17,6,1326,6063.0,8.835,7,0.1345
-mc_v2_20260811_medium_000093,mc_v2_20260811_medium/task_0018,93,medium,1.0,25.0,2026-08-11T05:51:09.714,2026-08-11T05:55:21.831,0.01,12.24,0.0,239.87,252.12,13,20,4,1208,2153.0,8.827,8,0.1619
-mc_v2_20260811_medium_000094,mc_v2_20260811_medium/task_0018,94,medium,1.0,25.0,2026-08-11T05:55:21.833,2026-08-11T06:06:38.178,0.01,26.2,0.0,650.14,676.35,13,37,12,1339,5433.2,9.358,7,0.1689

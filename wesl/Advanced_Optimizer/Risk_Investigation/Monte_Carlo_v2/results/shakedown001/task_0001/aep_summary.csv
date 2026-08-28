@@ -1,7 +1,0 @@
-trial_id,run_id,seed,wake_model,isolated_aep_gwh,real_neighbors_aep_gwh,real_neighbors_loss_pct,time_weighted_aep_gwh,time_weighted_loss_pct,n_segments
-shakedown001_000002,shakedown001/task_0001,2,Nygaard_TurboGaussian,8375.162866325001,7477.5869976571375,10.717,7382.23,11.856,16
-shakedown001_000002,shakedown001/task_0001,2,SuperGaussian,8476.851940659766,7683.558113887584,9.358,7598.99,10.356,16
-shakedown001_000002,shakedown001/task_0001,2,Bastankhah_PorteAgel_2014,8841.373106019997,8319.601917652955,5.901,8270.4,6.458,16
-shakedown001_000003,shakedown001/task_0001,3,Nygaard_TurboGaussian,7353.871052357596,6408.952575112187,12.849,6369.35,13.388,14
-shakedown001_000003,shakedown001/task_0001,3,SuperGaussian,7588.622489675055,6760.837782071743,10.908,6729.58,11.32,14
-shakedown001_000003,shakedown001/task_0001,3,Bastankhah_PorteAgel_2014,8014.15479967339,7459.252418840239,6.924,7438.35,7.185,14

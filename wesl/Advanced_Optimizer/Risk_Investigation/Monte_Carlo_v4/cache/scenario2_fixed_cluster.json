@@ -1,0 +1,50 @@
+{
+  "Bay State Wind North": {
+    "rho_target_mw_km2": 5.568,
+    "spacing_clipped": false,
+    "spacing_d": 6.945,
+    "turbine": "13 MW"
+  },
+  "Bay State Wind South": {
+    "rho_target_mw_km2": 3.384,
+    "spacing_clipped": false,
+    "spacing_d": 8.909,
+    "turbine": "13 MW"
+  },
+  "Beacon Wind": {
+    "rho_target_mw_km2": 5.387,
+    "spacing_clipped": false,
+    "spacing_d": 7.061,
+    "turbine": "13 MW"
+  },
+  "New England Wind 1": {
+    "rho_target_mw_km2": 4.89,
+    "spacing_clipped": false,
+    "spacing_d": 7.412,
+    "turbine": "13 MW"
+  },
+  "Revolution Wind North": {
+    "rho_target_mw_km2": 3.644,
+    "spacing_clipped": false,
+    "spacing_d": 8.687,
+    "turbine": "11 MW"
+  },
+  "SouthCoast Wind": {
+    "rho_target_mw_km2": 4.42,
+    "spacing_clipped": false,
+    "spacing_d": 7.796,
+    "turbine": "13 MW"
+  },
+  "Sunrise Wind North": {
+    "rho_target_mw_km2": 6.655,
+    "spacing_clipped": false,
+    "spacing_d": 6.428,
+    "turbine": "11 MW"
+  },
+  "Vineyard Northeast": {
+    "rho_target_mw_km2": 3.36,
+    "spacing_clipped": false,
+    "spacing_d": 8.941,
+    "turbine": "13 MW"
+  }
+}
