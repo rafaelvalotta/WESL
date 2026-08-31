@@ -13,7 +13,13 @@ wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo/results/
 wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v2/results/
 wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v2/figures/
 wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/hpc/slurm_out/
+
+# dev-notes .md -- local only, not meant for the repo
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/PIPELINE.md
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/SCENARIOS.md
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/TRIAL_RECORD.md
 wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/hpc/CAMPAIGN_LOG.md
+wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/hpc/README.md
 
 
 wesl/Advanced_Optimizer/Risk_Investigation/Monte_Carlo_v4/results/*

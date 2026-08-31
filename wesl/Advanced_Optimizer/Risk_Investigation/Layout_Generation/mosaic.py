@@ -1,10 +1,7 @@
 """Geometry-only mosaic generator for speculative farm parcels.
 
 Pipeline: dart-throwing Poisson-disk sampling -> weighted-Voronoi
-labelling -> gap buffer + cleanup -> polygons. No MW, no turbines, no
-target farm count anywhere here -- this draws the full universe of
-plausible parcels; picking N of them for one scenario is a separate,
-later step (`order_by_distance`, or a plain random draw).
+labelling -> gap buffer + cleanup -> polygons. 
 """
 import numpy as np
 from scipy import ndimage
@@ -19,14 +16,8 @@ DEFAULT_NEIGHBOR_K = 12     # nearest seeds considered per cell when labelling
 def sample_variable_poisson_disk(eligible, x0, y0, res, r_min, r_max, rng,
                                   ring_samples=DEFAULT_RING_SAMPLES,
                                   max_consecutive_failures=2000):
-    """Masked, variable-radius Poisson-disk sampling by global rejection
-    ("dart throwing"): every candidate is drawn uniformly over the whole
-    domain, not grown from an active list local to already-accepted points
-    (that variant only fills whatever is reachable from one lucky start --
-    breaks on masks with disconnected regions). Each accepted point gets
-    its own radius r_i ~ U[r_min, r_max]; two points must satisfy
-    dist(i, j) >= r_i + r_j. Stops after `max_consecutive_failures` throws
-    in a row fail. Returns (points (N,2), radii (N,))."""
+# Samples non-overlapping disks with random radii across the full domain (handles disconnected masks).
+# discards points that collide (dist < r_i + r_j) and stops after max consecutive failures.
     ny, nx = eligible.shape
     x1, y1 = x0 + nx * res, y0 + ny * res
 
@@ -66,11 +57,8 @@ def sample_variable_poisson_disk(eligible, x0, y0, res, r_min, r_max, rng,
 
 def label_weighted_voronoi(eligible, x0, y0, res, points, radii, neighbor_k=DEFAULT_NEIGHBOR_K,
                             reach_factor=2.5):
-    """Every eligible cell -> id of the seed minimizing (distance - r_i),
-    capped: a cell only counts if within `reach_factor * r_i` of its owner
-    (uncapped Voronoi tiles the whole domain, producing absurdly sprawling
-    parcels in sparsely-seeded areas). Returns an int32 grid, -1 where
-    unclaimed."""
+# Assigns each cell to the closest disk boundary (min: dist - r_i)
+# Returns an int32 grid of seed IDs 
     label = np.full(eligible.shape, -1, dtype=np.int32)
     if len(points) == 0:
         return label
@@ -96,9 +84,8 @@ def label_weighted_voronoi(eligible, x0, y0, res, points, radii, neighbor_k=DEFA
 
 
 def apply_gap_buffer(label, buffer_cells=1):
-    """Erode every parcel by `buffer_cells` raster cells so neighboring
-    parcels end up separated by a gap instead of touching edge-to-edge."""
-    if buffer_cells <= 0:
+
+    if buffer_cells <= 0: #debug hereeee
         return label
     shifted = label + 1  # ndimage wants background == 0
     if shifted.max() <= 0:
@@ -116,8 +103,7 @@ def apply_gap_buffer(label, buffer_cells=1):
 
 
 def clean_labels(label, min_cells=4):
-    """Per parcel: keep only its largest connected component (a mask hole
-    can pinch a parcel into two lobes) and drop parcels left too small."""
+
     shifted = label + 1
     if shifted.max() <= 0:
         return label
@@ -140,8 +126,8 @@ def clean_labels(label, min_cells=4):
 
 
 def _row_runs(iy, ix):
-    """Vectorized: given per-cell (row, col) arrays, return (row, x_start, x_end)
-    for each maximal run of horizontally-consecutive columns within a row."""
+    # Vectorized: given per-cell (row, col) arrays, return (row, x_start, x_end)
+    # for each maximal run of horizontally-consecutive columns within a row
     order = np.lexsort((ix, iy))
     iy_s, ix_s = iy[order], ix[order]
     new_run = np.empty(len(iy_s), dtype=bool)
@@ -153,12 +139,9 @@ def _row_runs(iy, ix):
 
 
 def polygons_from_labels(label, x0, y0, res):
-    """One shapely polygon per surviving label id -- union of horizontal
-    row-runs of cells, not one box per individual cell. Merging consecutive
-    same-label cells in a row into a single rectangle first means
-    `unary_union` stitches tens of pieces per parcel instead of thousands
-    -- this is where nearly all of `generate_mosaic`'s time goes otherwise
-    (measured: 96% of a ~6s run)."""
+# Converts each label into a polygon by unioning horizontal cell runs instead of individual cells.
+
+
     polys = {}
     for lab_id in np.unique(label):
         if lab_id < 0:
@@ -175,10 +158,26 @@ def polygons_from_labels(label, x0, y0, res):
         polys[int(lab_id)] = shape
     return polys
 
+    # polys = {}
+    # for lab_id in np.unique(label):
+    #     if lab_id > 0: #--- test or opposite..
+    #         continue
+    #     iy, ix = np.nonzero(label == lab_id) #label_id --"note for me"--debug this 
+    #     rows, x_starts, x_ends = _row_runs(iy, ix)
+    #     boxes = [box(x0 + xs * res, y0 + r * res, x0 + (xe + 1) * res, y0 + (r + 1) * res)
+    #              for r, xs, xe in zip(rows, x_starts, x_ends)]
+    #     shape = unary_union(boxes)
+    #     if isinstance(shape, MultiPolygon):
+    #         shape = max(shape.geoms, key=lambda g: g.area)
+    #     if shape.interiors:
+    #         shape = Polygon(shape.exterior)
+    #     polys[int(lab_id)] = shape
+    # return polys
+
 
 def generate_mosaic(eligible, x0, y0, res, r_min, r_max, rng, neighbor_k=DEFAULT_NEIGHBOR_K,
                      reach_factor=2.5, buffer_cells=1, max_consecutive_failures=2000):
-    """Runs the full pipeline once. Returns dict(points, radii, label, polygons)."""
+    # Runs the full pipeline once. Returns dict(points, radii, label, polygons).
     points, radii = sample_variable_poisson_disk(eligible, x0, y0, res, r_min, r_max, rng,
                                                    max_consecutive_failures=max_consecutive_failures)
     label = label_weighted_voronoi(eligible, x0, y0, res, points, radii, neighbor_k=neighbor_k,
@@ -190,7 +189,7 @@ def generate_mosaic(eligible, x0, y0, res, r_min, r_max, rng, neighbor_k=DEFAULT
 
 
 def order_by_distance(points, ref_xy):
-    """Parcel-seed indices ranked by distance to `ref_xy`, nearest first --
-    truncating this list at N is one way to pick a scenario's active set."""
+    # Parcel-seed indices ranked by distance to `ref_xy`, nearest first --
+    # truncating this list at N is one way to pick a scenario's active set
     d = np.hypot(points[:, 0] - ref_xy[0], points[:, 1] - ref_xy[1])
     return np.argsort(d)
