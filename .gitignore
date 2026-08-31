@@ -1,4 +1,4 @@
-.DS_Store
+**/.DS_Store
 *.egg-info/
 run_optimizer_out/
 problem_out/
@@ -48,3 +48,5 @@ wesl/Advanced_Optimizer/Project_Monte_Carlo/
 # Claude Code project files -- local only, never relevant to the repo
 .claude/
 CLAUDE.md
+
+.idea/
