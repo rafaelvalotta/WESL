@@ -97,6 +97,7 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
         elif 270 <= wd[wd_index] < 315: index = index_matrix[6,:]
         elif 315 <= wd[wd_index] < 360: index = index_matrix[7,:]
         elif wd[wd_index] == 360: index = index_matrix[0,:]
+        
         for wt_index in index:
             WS_eff_WT_new = sim_result.WS_eff.sel(wt=wt_index,wd=wd[wd_index],ws=ws).values
             
@@ -108,7 +109,8 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
             zr_prev     = np.copy(zr_new)
             gamma_prev  = np.copy(gamma_new)
 
-            xr_max = 0
+            # get wind speed for the new location
+            WS_eff_WT_new = sim_result.WS_eff.sel(wt=wt_index,wd=wd[wd_index],ws=ws).values
 
             # Iterative loop until convergence
             # similar positions are aggregated for perfomance
@@ -127,6 +129,8 @@ def displacement_solver(wd, ws, fowt_x_base, fowt_y_base, tilt_base, hub_height_
 
                     while True:
                         itt += 1
+
+
                         while(isinstance(xr_prev, np.ndarray) and xr_prev.shape != ()):
                             xr_prev = xr_prev[0]
                             yr_prev = yr_prev[0]
@@ -913,7 +917,7 @@ class FloatingBottomWindFarm(om.ExplicitComponent):
         # each of these points is evaluated 
         ws = np.arange(1,26,1)
         wd = np.linspace(0, 360, 30, endpoint=False)
-        wave_directions = np.linspace(0,360, len(current_wave_site.f), endpoint=False)
+        wave_directions = np.linspace(0,360, 6, endpoint=False)
         # lookup table is [1,7] for wave heights
         wave_heights = [1, 3, 5, 7]
 
