@@ -134,6 +134,7 @@ class point_absorber(object):
 class surrogate_swan():
     def __init__(self,x_coords, y_coords, grid_x, grid_y):
         self.coords = np.array(list(zip(x_coords,y_coords)))
+        print(1)
         self.coords = sorted(self.coords, key=lambda x: x[1])
         self.grid_x = grid_x
         self.grid_y = grid_y
@@ -142,11 +143,11 @@ class surrogate_swan():
         self.buffer_x = 120
         self.buffer_y = 120
         self.power = 0
+        print(2)
         
     # def power():
     # def plot()
     def evaluate(self, wave_direction=0, wave_height=1, wave_period=5, plot=True):
-        # print(wave_height)
         self.power = 0
         wave_height = self.lookup.height(wave_height,wave_period)
         grid = np.full((self.grid_x, self.grid_y), float(wave_height))
@@ -288,28 +289,18 @@ if __name__ == "__main__":
 #         np.save(f"{path}/wave_lookup/wave_lookup{i}.npy", data_split[i])
         
     
-    x_coords = [101, 201, 301, 401, 501,
-                101, 201, 301, 401, 501,
-                101, 201, 301, 401, 501]
+    x_coords = [101]
 
-    y_coords = [101, 101, 101, 101, 101,
-                251, 251, 251, 251, 251,
-                401, 401, 401, 401, 401]
+    y_coords = [101]
 
     period = 14
-    wave_height = 2.5
+    wave_height = 8.9
 
     # grid size of surrogate_swan
-    horizontal_grid = 1000
-    vertical_grid = 600
+    horizontal_grid = 400
+    vertical_grid = 400
 
     surrogate = surrogate_swan(x_coords=x_coords,y_coords=y_coords, grid_y=horizontal_grid, grid_x=vertical_grid)
-
-    swan = snl_swan(wec_type=0, wec_x_coords=x_coords, wec_y_coords=y_coords, resolution= 10, wave_direction=90, significant_wave_height = wave_height, wave_period = period, grid_size_x=horizontal_grid, grid_size_y=vertical_grid)
-    swan.create_input_file()
-    swan.run()
-    print(f"Power of Farm in Swan: {swan.calculate_total_power() / 1000} KW")
-    swan.plot_wakes()
 
     surrogate.evaluate(wave_height=wave_height, wave_period = period)
 
