@@ -42,10 +42,12 @@ def _checkpoints():
     return years
 
 
-def run_trial(seed, logger, scenario, model_name=wake_models.ACTIVE_MODEL, n_cpu=1):
+def generate_world(seed, scenario):
+    # Same rng-seeded steps run_trial() needs before its segment loop, pulled out
+    # so a given seed's world can be rebuilt elsewhere (see hpc/backfill_final_segment.py)
+    # without duplicating this logic or re-running the whole trial.
     rng = np.random.default_rng(seed)
 
-    t0 = time.time()
     # Tile cluster_farms first so we know its capacity before calling
     # layout.generate_scenario -- the 30GW target needs to be this scenario's
     # TOTAL capacity, not speculative on top of a different fixed baseline per
@@ -55,6 +57,12 @@ def run_trial(seed, logger, scenario, model_name=wake_models.ACTIVE_MODEL, n_cpu
     fixed_capacity_mw = sum(len(f["x"]) * aep._rated_mw(f["turbine"]) for f in cluster_farms)
     speculative_farms = layout.generate_scenario(rng, scenario, fixed_capacity_mw=fixed_capacity_mw)
     site, climate_scenario = climate.sample_site(rng)
+    return cluster_farms, speculative_farms, site, climate_scenario, fixed_capacity_mw
+
+
+def run_trial(seed, logger, scenario, model_name=wake_models.ACTIVE_MODEL, n_cpu=1):
+    t0 = time.time()
+    cluster_farms, speculative_farms, site, climate_scenario, fixed_capacity_mw = generate_world(seed, scenario)
     t_generate = time.time() - t0
 
     t0 = time.time()
@@ -91,6 +99,15 @@ def run_trial(seed, logger, scenario, model_name=wake_models.ACTIVE_MODEL, n_cpu
         result = aep.evaluate(site, active, scenario.self_farm, model_name=model_name, n_cpu=n_cpu)
         logger.log_segment(trial_id=seed, segment_id=seg_id, start_year=start, end_year=end,
                             duration_years=end - start, n_active_farms=len(active), **result)
+
+    # Final snapshot: full build-out at YEAR_END. The loop above only ever evaluates
+    # the state at each segment's START, so YEAR_END itself is never reached as an
+    # evaluation point -- every farm's arrival_year is always < YEAR_END (see
+    # timeline.draw_arrival_years), so the full build-out is simply all_farms, no filter.
+    final_year = boundaries[-1]
+    result = aep.evaluate(site, all_farms, scenario.self_farm, model_name=model_name, n_cpu=n_cpu)
+    logger.log_segment(trial_id=seed, segment_id=len(boundaries) - 1, start_year=final_year, end_year=final_year,
+                        duration_years=0, n_active_farms=len(all_farms), **result)
 
 
 if __name__ == "__main__":
